@@ -69,7 +69,7 @@ export default function Gallery() {
                 </motion.div>
 
                 <ScrollScale range={[0.82, 1]} className="mt-14">
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:[grid-auto-rows:9rem]">
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:[grid-auto-rows:9rem] sm:[grid-auto-flow:dense]">
                         {GALLERY_TILES.map((tile, index) => (
                             <motion.div
                                 key={tile.label}

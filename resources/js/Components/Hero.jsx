@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { Link } from '@inertiajs/react';
 import KineticText from '@/Components/motion/KineticText';
 import Magnetic from '@/Components/motion/Magnetic';
 import FloatingElements from '@/Components/motion/FloatingElements';
@@ -21,9 +20,9 @@ export default function Hero({
     title = 'Sytal Coffee',
     subtitle = 'Where every cup and every plate is crafted with intention — a theatrical menu built on fire, precision, and seasonal craft.',
     ctaLabel = 'Reserve a Table',
-    ctaHref = '/reservations',
+    ctaHref = '#reservations',
     secondaryLabel = 'View the Menu',
-    secondaryHref = '/menu',
+    secondaryHref = '#menu',
     images = DEFAULT_IMAGES,
 }) {
     const reduce = useReducedMotion();
@@ -131,20 +130,28 @@ export default function Hero({
                     className="mt-10 flex flex-wrap items-center justify-center gap-4"
                 >
                     <Magnetic strength={0.3}>
-                        <Link
+                        <a
                             href={ctaHref}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                document.getElementById(ctaHref.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }}
                             className="inline-flex items-center justify-center rounded-full bg-brand-gold px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98]"
                         >
                             {ctaLabel}
-                        </Link>
+                        </a>
                     </Magnetic>
                     <Magnetic strength={0.3}>
-                        <Link
+                        <a
                             href={secondaryHref}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                document.getElementById(secondaryHref.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }}
                             className="inline-flex items-center justify-center rounded-full border border-brand-foreground/40 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-foreground transition-all duration-300 hover:scale-[1.02] hover:border-brand-foreground/80 active:scale-[0.98]"
                         >
                             {secondaryLabel}
-                        </Link>
+                        </a>
                     </Magnetic>
                 </motion.div>
             </motion.div>

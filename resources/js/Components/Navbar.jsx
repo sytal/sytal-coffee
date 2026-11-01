@@ -1,14 +1,14 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LuMenu, LuX } from 'react-icons/lu';
 
 const NAV_LINKS = [
-    { label: 'Home', href: '/' },
-    { label: 'Menu', href: '/menu' },
-    { label: 'About', href: '/about' },
-    { label: 'Reservations', href: '/reservations' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Home', href: '#home' },
+    { label: 'Menu', href: '#menu' },
+    { label: 'About', href: '#about' },
+    { label: 'Reservations', href: '#reservations' },
+    { label: 'Contact', href: '#contact' },
 ];
 
 const panelVariants = {
@@ -30,8 +30,7 @@ const linkVariants = {
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const { url } = usePage();
-    const currentPath = (url || '').split('?')[0];
+    const [activeSection, setActiveSection] = useState('home');
 
     useEffect(() => {
         let ticking = false;
@@ -51,12 +50,32 @@ export default function Navbar() {
     }, []);
 
     useEffect(() => {
-        setOpen(false);
-    }, [currentPath]);
+        const sections = NAV_LINKS.map((link) => document.getElementById(link.href.slice(1))).filter(Boolean);
+        if (sections.length === 0) return;
 
-    function isActive(href) {
-        if (href === '/') return currentPath === '/';
-        return currentPath === href || currentPath.startsWith(`${href}/`);
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setActiveSection(entry.target.id);
+                    }
+                });
+            },
+            { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+        );
+
+        sections.forEach((section) => observer.observe(section));
+        return () => observer.disconnect();
+    }, []);
+
+    function handleNavClick(e, href) {
+        e.preventDefault();
+        setOpen(false);
+        const target = document.getElementById(href.slice(1));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActiveSection(href.slice(1));
+        }
     }
 
     return (
@@ -74,11 +93,12 @@ export default function Navbar() {
 
                 <nav className="hidden items-center gap-8 md:flex">
                     {NAV_LINKS.map((link) => {
-                        const active = isActive(link.href);
+                        const active = activeSection === link.href.slice(1);
                         return (
-                            <Link
+                            <a
                                 key={link.href}
                                 href={link.href}
+                                onClick={(e) => handleNavClick(e, link.href)}
                                 className={`relative py-1 text-sm uppercase tracking-wider transition hover:text-brand-gold ${
                                     active ? 'text-brand-gold' : 'text-brand-foregroundMuted'
                                 }`}
@@ -89,7 +109,7 @@ export default function Navbar() {
                                         active ? 'opacity-100' : 'opacity-0'
                                     }`}
                                 />
-                            </Link>
+                            </a>
                         );
                     })}
                 </nav>
@@ -116,17 +136,18 @@ export default function Navbar() {
                         className="flex flex-col gap-4 border-t border-brand-border/60 bg-brand-background/95 px-6 py-6 backdrop-blur md:hidden"
                     >
                         {NAV_LINKS.map((link) => {
-                            const active = isActive(link.href);
+                            const active = activeSection === link.href.slice(1);
                             return (
                                 <motion.div key={link.href} variants={linkVariants}>
-                                    <Link
+                                    <a
                                         href={link.href}
+                                        onClick={(e) => handleNavClick(e, link.href)}
                                         className={`block text-sm uppercase tracking-wider transition hover:text-brand-gold ${
                                             active ? 'text-brand-gold' : 'text-brand-foregroundMuted'
                                         }`}
                                     >
                                         {link.label}
-                                    </Link>
+                                    </a>
                                 </motion.div>
                             );
                         })}

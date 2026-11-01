@@ -4,7 +4,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Sytal Coffee') }}</title>
+
+        <!-- Favicon -->
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="alternate icon" href="/favicon.ico" sizes="any">
+        <meta name="theme-color" content="#0c0b09">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

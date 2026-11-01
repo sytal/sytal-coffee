@@ -4,12 +4,18 @@ import { motion } from 'framer-motion';
 import { FiInstagram, FiFacebook, FiTwitter, FiMapPin, FiPhone, FiClock } from 'react-icons/fi';
 
 const QUICK_LINKS = [
-    { label: 'Home', href: '/' },
-    { label: 'Menu', href: '/menu' },
-    { label: 'About', href: '/about' },
-    { label: 'Reservations', href: '/reservations' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Home', href: '#home' },
+    { label: 'Menu', href: '#menu' },
+    { label: 'About', href: '#about' },
+    { label: 'Reservations', href: '#reservations' },
+    { label: 'Contact', href: '#contact' },
 ];
+
+function scrollToSection(e, href) {
+    e.preventDefault();
+    const target = document.getElementById(href.slice(1));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 const SOCIALS = [
     { label: 'Instagram', href: 'https://instagram.com', Icon: FiInstagram },
@@ -93,13 +99,14 @@ export default function Footer() {
                         </h3>
                         <nav className="flex flex-col gap-3">
                             {QUICK_LINKS.map((link) => (
-                                <Link
+                                <a
                                     key={link.href}
                                     href={link.href}
+                                    onClick={(e) => scrollToSection(e, link.href)}
                                     className="text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
                                 >
                                     {link.label}
-                                </Link>
+                                </a>
                             ))}
                         </nav>
                     </div>

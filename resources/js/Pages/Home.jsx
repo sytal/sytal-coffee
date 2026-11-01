@@ -12,17 +12,27 @@ export default function Home() {
     return (
         <SiteLayout>
             <Head title="Sytal Coffee — Fine Dining & Coffee House" />
-            <Hero />
+            <div id="home">
+                <Hero />
+            </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-background" />
-            <Menu />
+            <div id="menu">
+                <Menu />
+            </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
             <Gallery />
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
-            <About />
+            <div id="about">
+                <About />
+            </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
-            <Reservations />
+            <div id="reservations">
+                <Reservations />
+            </div>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
-            <Contact />
+            <div id="contact">
+                <Contact />
+            </div>
         </SiteLayout>
     );
 }

@@ -71,6 +71,8 @@ export default function Hero({
                         key={images[imageIndex]}
                         src={images[imageIndex]}
                         alt=""
+                        fetchPriority={imageIndex === 0 ? 'high' : undefined}
+                        decoding="async"
                         initial={{ opacity: 0, scale: 1.06 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}

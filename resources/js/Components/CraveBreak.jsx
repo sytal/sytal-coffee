@@ -46,6 +46,8 @@ export default function CraveBreak() {
                             <img
                                 src={item.image}
                                 alt={item.word}
+                                loading="lazy"
+                                decoding="async"
                                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
 

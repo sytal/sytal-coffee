@@ -1,56 +1,57 @@
 import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useInView, useMotionValue, animate, useReducedMotion } from 'framer-motion';
 
 /**
- * Scroll-triggered number count-up, powered by GSAP + ScrollTrigger.
- * `value` may include a non-numeric suffix (e.g. "100%", "12+") — the
- * numeric part animates, the suffix is appended as static text.
+ * Scroll-triggered number count-up, powered by Framer Motion (already a
+ * project dependency) instead of pulling in GSAP + ScrollTrigger for just
+ * this. `value` may include a non-numeric suffix (e.g. "100%", "12+") —
+ * the numeric part animates, the suffix is appended as static text.
  */
 export default function CountUp({ value, duration = 1.6, className = '' }) {
     const ref = useRef(null);
+    const inView = useInView(ref, { once: true, amount: 0.6 });
+    const reduce = useReducedMotion();
+    const count = useMotionValue(0);
+
+    const match = String(value).match(/^(\d+(?:\.\d+)?)(.*)$/);
+    const target = match ? parseFloat(match[1]) : null;
+    const suffix = match ? match[2] : '';
+    const isInteger = target !== null && Number.isInteger(target);
 
     useEffect(() => {
         const el = ref.current;
-        if (!el) return;
+        if (!el || target === null) return;
 
-        const match = String(value).match(/^(\d+(?:\.\d+)?)(.*)$/);
-        if (!match) {
-            el.textContent = value;
+        if (!inView) return;
+
+        if (reduce) {
+            el.textContent = `${target}${suffix}`;
             return;
         }
-        const [, numStr, suffix] = match;
-        const target = parseFloat(numStr);
-        const counter = { n: 0 };
 
-        const tween = gsap.to(counter, {
-            n: target,
+        const controls = animate(count, target, {
             duration,
-            ease: 'power2.out',
-            scrollTrigger: {
-                trigger: el,
-                start: 'top 85%',
-                once: true,
-            },
-            onUpdate: () => {
-                const display = Number.isInteger(target)
-                    ? Math.round(counter.n)
-                    : counter.n.toFixed(1);
+            ease: [0.16, 1, 0.3, 1],
+            onUpdate: (latest) => {
+                const display = isInteger ? Math.round(latest) : latest.toFixed(1);
                 el.textContent = `${display}${suffix}`;
             },
         });
 
-        return () => {
-            tween.scrollTrigger?.kill();
-            tween.kill();
-        };
-    }, [value, duration]);
+        return () => controls.stop();
+    }, [inView, target, suffix, isInteger, duration, reduce, count]);
+
+    if (target === null) {
+        return (
+            <span ref={ref} className={className}>
+                {value}
+            </span>
+        );
+    }
 
     return (
         <span ref={ref} className={className}>
-            0
+            0{suffix}
         </span>
     );
 }

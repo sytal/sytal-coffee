@@ -127,6 +127,8 @@ export default function Reservations() {
                         <img
                             src="/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg"
                             alt="A table set for reservations at Crunches Cafe"
+                            loading="lazy"
+                            decoding="async"
                             className="absolute inset-0 h-full w-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-background/85 via-brand-background/10 to-transparent" />

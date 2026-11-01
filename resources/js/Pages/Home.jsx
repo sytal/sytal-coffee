@@ -1,13 +1,17 @@
 import { Head } from '@inertiajs/react';
+import { lazy, Suspense } from 'react';
 import SiteLayout from '@/Layouts/SiteLayout';
 import Hero from '@/Components/Hero';
 import Menu from '@/Components/Menu';
-import Gallery from '@/Components/Gallery';
-import About from '@/Components/About';
-import Reservations from '@/Components/Reservations';
-import Contact from '@/Components/Contact';
 import SectionDivider from '@/Components/SectionDivider';
 import CraveBreak from '@/Components/CraveBreak';
+
+// Below-the-fold sections are code-split so the initial page load only
+// pays for Hero/CraveBreak/Menu — the rest streams in as the user scrolls.
+const Gallery = lazy(() => import('@/Components/Gallery'));
+const About = lazy(() => import('@/Components/About'));
+const Reservations = lazy(() => import('@/Components/Reservations'));
+const Contact = lazy(() => import('@/Components/Contact'));
 
 export default function Home() {
     return (
@@ -23,18 +27,26 @@ export default function Home() {
                 <Menu />
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
-            <Gallery />
+            <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
+                <Gallery />
+            </Suspense>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="about">
-                <About />
+                <Suspense fallback={<div className="h-screen bg-brand-background" />}>
+                    <About />
+                </Suspense>
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
             <div id="reservations">
-                <Reservations />
+                <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
+                    <Reservations />
+                </Suspense>
             </div>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="contact">
-                <Contact />
+                <Suspense fallback={<div className="h-screen bg-brand-background" />}>
+                    <Contact />
+                </Suspense>
             </div>
         </SiteLayout>
     );

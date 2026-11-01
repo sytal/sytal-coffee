@@ -87,6 +87,8 @@ export default function Gallery() {
                                     <img
                                         src={tile.image}
                                         alt={tile.label}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-brand-background/80 via-brand-background/10 to-transparent" />

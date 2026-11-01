@@ -126,6 +126,8 @@ export default function About() {
                     <img
                         src="/images/about.jpg"
                         alt="Inside Crunches Cafe"
+                        loading="lazy"
+                        decoding="async"
                         className="absolute inset-0 h-full w-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-background/70 via-transparent to-brand-goldDark/10" />

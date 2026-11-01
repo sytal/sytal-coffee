@@ -251,6 +251,8 @@ export default function Menu() {
                                             src={item.image}
                                             alt={item.name}
                                             draggable={false}
+                                            loading="lazy"
+                                            decoding="async"
                                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/50 to-brand-background/10" />

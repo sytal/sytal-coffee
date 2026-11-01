@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { Link } from '@inertiajs/react';
 import KineticText from '@/Components/motion/KineticText';
 import Magnetic from '@/Components/motion/Magnetic';
@@ -7,6 +7,14 @@ import FloatingElements from '@/Components/motion/FloatingElements';
 import CursorSpotlight from '@/Components/motion/CursorSpotlight';
 
 const EASE = [0.16, 1, 0.3, 1];
+
+const DEFAULT_IMAGES = [
+    '/images/hero-bg.jpg',
+    '/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg',
+    '/images/chef-preparing-the-plates.jpg',
+    '/images/outdoors-of-the-restaurant.jpg',
+    '/images/nicely-plated-food-served-at-decorated-table.jpg',
+];
 
 export default function Hero({
     eyebrow = 'Fine Dining & Coffee House',
@@ -16,7 +24,7 @@ export default function Hero({
     ctaHref = '/reservations',
     secondaryLabel = 'View the Menu',
     secondaryHref = '/menu',
-    image = '/images/hero-bg.jpg',
+    images = DEFAULT_IMAGES,
 }) {
     const reduce = useReducedMotion();
     const ref = useRef(null);
@@ -24,6 +32,16 @@ export default function Hero({
         target: ref,
         offset: ['start start', 'end start'],
     });
+
+    const [imageIndex, setImageIndex] = useState(0);
+
+    useEffect(() => {
+        if (reduce || images.length <= 1) return;
+        const id = setInterval(() => {
+            setImageIndex((prev) => (prev + 1) % images.length);
+        }, 5000);
+        return () => clearInterval(id);
+    }, [reduce, images.length]);
 
     const contentY = useTransform(scrollYProgress, [0, 1], [0, -140]);
     const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
@@ -36,8 +54,39 @@ export default function Hero({
                 style={reduce ? undefined : { y: mediaY, scale: mediaScale }}
                 className="absolute inset-0 will-change-transform"
             >
-                <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <AnimatePresence mode="sync">
+                    <motion.img
+                        key={images[imageIndex]}
+                        src={images[imageIndex]}
+                        alt=""
+                        initial={{ opacity: 0, scale: 1.06 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1.4, ease: 'easeInOut' }}
+                        className="absolute inset-0 h-full w-full object-cover"
+                    />
+                </AnimatePresence>
             </motion.div>
+
+            {images.length > 1 && (
+                <div className="absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 gap-2 sm:bottom-28">
+                    {images.map((src, i) => (
+                        <button
+                            key={src}
+                            type="button"
+                            onClick={() => setImageIndex(i)}
+                            aria-label={`Show background ${i + 1}`}
+                            className="p-1"
+                        >
+                            <span
+                                className={`block h-1.5 rounded-full transition-all duration-300 ${
+                                    i === imageIndex ? 'w-5 bg-brand-gold' : 'w-1.5 bg-brand-foreground/30'
+                                }`}
+                            />
+                        </button>
+                    ))}
+                </div>
+            )}
 
             <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/70 to-brand-background/20" />
             <div className="absolute inset-0 bg-gradient-to-b from-brand-background/60 via-transparent to-transparent" />

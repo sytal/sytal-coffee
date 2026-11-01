@@ -8,6 +8,7 @@ export const MENU_ITEMS = [
         description: 'Single-origin beans, dark cocoa notes, pulled to order.',
         price: '$4.50',
         image: '/images/menu/bread-barrel.jpg',
+        tags: ['Single-Origin', 'Dark Roast', 'Pulled to Order'],
     },
     {
         category: 'Coffee',
@@ -15,6 +16,7 @@ export const MENU_ITEMS = [
         description: 'Slow-brewed light roast with honeyed, floral finish.',
         price: '$5.50',
         image: '/images/fire-from-wok.jpg',
+        tags: ['Light Roast', 'Slow-Brewed', 'Floral Finish'],
     },
     {
         category: 'Coffee',
@@ -22,6 +24,7 @@ export const MENU_ITEMS = [
         description: 'Equal parts espresso and steamed milk, velvet texture.',
         price: '$5.00',
         image: '/images/menu/mozzarella.jpg',
+        tags: ['Steamed Milk', 'Velvet Texture'],
     },
     {
         category: 'Coffee',
@@ -29,6 +32,7 @@ export const MENU_ITEMS = [
         description: 'House espresso, cardamom-infused milk, gold dusting.',
         price: '$6.00',
         image: '/images/menu/caesar.jpg',
+        tags: ['Cardamom', 'Gold Dusting', 'House Blend'],
     },
 
     // Breakfast
@@ -38,6 +42,7 @@ export const MENU_ITEMS = [
         description: 'Baked eggs in spiced tomato, black truffle shavings.',
         price: '$14.00',
         image: '/images/menu/greek-salad.jpg',
+        tags: ['Black Truffle', 'Baked Eggs', 'Spiced Tomato'],
     },
     {
         category: 'Breakfast',
@@ -45,6 +50,7 @@ export const MENU_ITEMS = [
         description: 'Stacked buttermilk pancakes, burnt honey, cultured cream.',
         price: '$12.50',
         image: '/images/menu/cake.jpg',
+        tags: ['Burnt Honey', 'Buttermilk', 'Cultured Cream'],
     },
     {
         category: 'Breakfast',
@@ -52,6 +58,7 @@ export const MENU_ITEMS = [
         description: 'Sourdough, whipped avocado, citrus-cured salmon.',
         price: '$15.00',
         image: '/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg',
+        tags: ['Citrus-Cured', 'Sourdough', 'Smoked Salmon'],
     },
 
     // Mains
@@ -61,6 +68,7 @@ export const MENU_ITEMS = [
         description: 'Cherry gastrique, charred fennel, potato gratin.',
         price: '$32.00',
         image: '/images/menu/tuscan-grilled.jpg',
+        tags: ['Cherry Gastrique', 'Charred Fennel', '48hr Rested'],
     },
     {
         category: 'Mains',
@@ -68,6 +76,7 @@ export const MENU_ITEMS = [
         description: 'Slow-cooked Arborio, saffron, aged parmesan, gold leaf.',
         price: '$24.00',
         image: '/images/nicely-plated-food-served-at-decorated-table.jpg',
+        tags: ['Saffron', 'Aged Parmesan', 'Gold Leaf'],
     },
     {
         category: 'Mains',
@@ -75,6 +84,7 @@ export const MENU_ITEMS = [
         description: 'Brown butter, heirloom greens, roasted lemon jus.',
         price: '$29.00',
         image: '/images/menu/lobster-roll.jpg',
+        tags: ['Brown Butter', 'Heirloom Greens', 'Lemon Jus'],
     },
 
     // Desserts
@@ -84,6 +94,7 @@ export const MENU_ITEMS = [
         description: 'Molten center, salted caramel, vanilla bean ice cream.',
         price: '$11.00',
         image: '/images/menu/cake.jpg',
+        tags: ['Molten Center', 'Salted Caramel', 'Vanilla Bean'],
     },
     {
         category: 'Desserts',
@@ -91,6 +102,7 @@ export const MENU_ITEMS = [
         description: 'Roasted figs, whipped mascarpone, honeyed pistachio.',
         price: '$10.50',
         image: '/images/menu/spinach-salad.jpg',
+        tags: ['Roasted Fig', 'Mascarpone', 'Honeyed Pistachio'],
     },
     {
         category: 'Desserts',
@@ -98,5 +110,6 @@ export const MENU_ITEMS = [
         description: 'Layered mascarpone, house espresso, cocoa dust.',
         price: '$9.50',
         image: '/images/menu/lobster-bisque.jpg',
+        tags: ['House Espresso', 'Layered', 'Cocoa Dust'],
     },
 ];

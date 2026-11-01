@@ -1,8 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuSparkles } from 'react-icons/lu';
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/data/menuItems';
-import TiltCard from '@/Components/motion/TiltCard';
 
 export default function Menu() {
     const [activeCategory, setActiveCategory] = useState(MENU_CATEGORIES[0]);
@@ -12,12 +10,17 @@ export default function Menu() {
         [activeCategory]
     );
 
-    const featured = items[0];
-    const rest = items.slice(1);
+    const [activeName, setActiveName] = useState(items[0]?.name);
+
+    useEffect(() => {
+        setActiveName(items[0]?.name);
+    }, [activeCategory]);
+
+    const activeItem = items.find((item) => item.name === activeName) ?? items[0];
 
     return (
         <section className="bg-brand-background py-24">
-            <div className="mx-auto max-w-5xl px-6">
+            <div className="mx-auto max-w-6xl px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -63,91 +66,151 @@ export default function Menu() {
                     })}
                 </motion.div>
 
-                <div className="mt-14">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeCategory}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {featured && (
-                                <motion.div
-                                    key={`featured-${activeCategory}-${featured.name}`}
-                                    initial={{ opacity: 0, y: 32, scale: 0.96 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                                    className="mb-10"
-                                >
-                                    <TiltCard
-                                        className="group relative overflow-hidden rounded-2xl border border-brand-border/60"
-                                        maxTilt={6}
-                                        scale={1.015}
-                                    >
-                                        <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[21/9]">
-                                            <img
-                                                src={featured.image}
-                                                alt={featured.name}
-                                                className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/40 to-transparent" />
-                                            <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end gap-2 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8">
-                                                <div className="max-w-xl">
-                                                    <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-brand-gold/50 bg-brand-background/60 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-brand-gold">
-                                                        <LuSparkles className="h-3 w-3" />
-                                                        Chef's Pick
-                                                    </span>
-                                                    <h3 className="font-display text-3xl text-brand-foreground sm:text-4xl">
-                                                        {featured.name}
-                                                    </h3>
-                                                    <p className="mt-2 max-w-md text-sm text-brand-foregroundMuted sm:text-base">
-                                                        {featured.description}
-                                                    </p>
-                                                </div>
-                                                <span className="shrink-0 font-display text-2xl text-brand-gold sm:text-3xl">
-                                                    {featured.price}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </TiltCard>
-                                </motion.div>
-                            )}
+                <div className="mt-14 grid gap-10 lg:grid-cols-5 lg:items-start lg:gap-12">
+                    {/* Sticky showcase image — desktop only */}
+                    <div className="hidden lg:sticky lg:top-28 lg:col-span-2 lg:block">
+                        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-brand-border/60">
+                            <AnimatePresence mode="wait">
+                                {activeItem && (
+                                    <motion.img
+                                        key={activeItem.name}
+                                        src={activeItem.image}
+                                        alt={activeItem.name}
+                                        initial={{ opacity: 0, scale: 1.06 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                                        className="absolute inset-0 h-full w-full object-cover"
+                                    />
+                                )}
+                            </AnimatePresence>
+                            <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/20 to-transparent" />
 
-                            <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-                                {rest.map((item, index) => (
-                                    <motion.div
-                                        key={`${activeCategory}-${item.name}`}
-                                        initial={{ opacity: 0, y: 16 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
-                                        className="group flex items-start gap-4 border-b border-brand-border/60 pb-4"
-                                    >
-                                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-full border border-brand-border">
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                                            />
-                                        </div>
-                                        <div className="flex flex-1 items-start justify-between gap-4">
-                                            <div>
-                                                <h3 className="font-display text-xl text-brand-foreground">
-                                                    {item.name}
-                                                </h3>
-                                                <p className="mt-1 text-sm text-brand-foregroundMuted">
-                                                    {item.description}
-                                                </p>
+                            <div className="absolute inset-x-0 bottom-0 p-6">
+                                <AnimatePresence mode="wait">
+                                    {activeItem && (
+                                        <motion.div
+                                            key={activeItem.name}
+                                            initial={{ opacity: 0, y: 12 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -8 }}
+                                            transition={{ duration: 0.4, delay: 0.1 }}
+                                        >
+                                            <div className="mb-3 flex flex-wrap gap-2">
+                                                {activeItem.tags?.map((tag, i) => (
+                                                    <motion.span
+                                                        key={tag}
+                                                        initial={{ opacity: 0, scale: 0.85 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        transition={{ duration: 0.3, delay: 0.15 + i * 0.06 }}
+                                                        className="rounded-full border border-brand-gold/40 bg-brand-background/60 px-3 py-1 text-[10px] uppercase tracking-[0.15em] text-brand-gold"
+                                                    >
+                                                        {tag}
+                                                    </motion.span>
+                                                ))}
                                             </div>
-                                            <span className="shrink-0 font-display text-lg text-brand-gold">
+                                            <h3 className="font-display text-2xl text-brand-foreground">
+                                                {activeItem.name}
+                                            </h3>
+                                            <p className="mt-1 text-sm text-brand-foregroundMuted">
+                                                {activeItem.description}
+                                            </p>
+                                            <span className="mt-2 inline-block font-display text-xl text-brand-gold">
+                                                {activeItem.price}
+                                            </span>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Scrollable list */}
+                    <div className="lg:col-span-3">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeCategory}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="divide-y divide-brand-border/60"
+                            >
+                                {items.map((item, index) => {
+                                    const isActive = item.name === activeName;
+                                    return (
+                                        <motion.button
+                                            key={item.name}
+                                            type="button"
+                                            onMouseEnter={() => setActiveName(item.name)}
+                                            onFocus={() => setActiveName(item.name)}
+                                            onClick={() => setActiveName(item.name)}
+                                            initial={{ opacity: 0, y: 16 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.4, delay: index * 0.05 }}
+                                            className={`group flex w-full flex-col gap-2 py-5 text-left transition sm:flex-row sm:items-start sm:justify-between sm:gap-6 ${
+                                                isActive ? 'px-4 -mx-4 rounded-lg bg-brand-surface/60' : ''
+                                            }`}
+                                        >
+                                            {/* Mobile-only thumbnail since there's no sticky panel below lg */}
+                                            <div className="flex items-start gap-4 sm:contents">
+                                                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border border-brand-border lg:hidden">
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-baseline justify-between gap-4">
+                                                        <h3
+                                                            className={`font-display text-xl transition-colors ${
+                                                                isActive ? 'text-brand-gold' : 'text-brand-foreground'
+                                                            }`}
+                                                        >
+                                                            {item.name}
+                                                        </h3>
+                                                        <span className="shrink-0 font-display text-lg text-brand-gold sm:hidden">
+                                                            {item.price}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mt-1 text-sm text-brand-foregroundMuted">
+                                                        {item.description}
+                                                    </p>
+
+                                                    {/* Ingredient tags — pop in on hover/active, compact on mobile */}
+                                                    <AnimatePresence>
+                                                        {isActive && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, height: 0 }}
+                                                                animate={{ opacity: 1, height: 'auto' }}
+                                                                exit={{ opacity: 0, height: 0 }}
+                                                                transition={{ duration: 0.25 }}
+                                                                className="mt-2 flex flex-wrap gap-1.5 overflow-hidden lg:hidden"
+                                                            >
+                                                                {item.tags?.map((tag) => (
+                                                                    <span
+                                                                        key={tag}
+                                                                        className="rounded-full border border-brand-gold/40 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.1em] text-brand-gold"
+                                                                    >
+                                                                        {tag}
+                                                                    </span>
+                                                                ))}
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            </div>
+
+                                            <span className="hidden shrink-0 font-display text-lg text-brand-gold sm:block">
                                                 {item.price}
                                             </span>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    </AnimatePresence>
+                                        </motion.button>
+                                    );
+                                })}
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
         </section>

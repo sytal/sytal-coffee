@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import MaskWipe from '@/Components/motion/MaskWipe';
 import CountUp from '@/Components/motion/CountUp';
 
 const STATS = [
@@ -63,10 +62,12 @@ export default function About() {
                     </motion.div>
                 </motion.div>
 
-                <MaskWipe
-                    direction="up"
-                    duration={1.1}
-                    className="relative aspect-[4/5] rounded-sm border border-brand-border"
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative aspect-[4/5] overflow-hidden rounded-sm border border-brand-border"
                 >
                     <img
                         src="/images/about.jpg"
@@ -74,7 +75,7 @@ export default function About() {
                         className="absolute inset-0 h-full w-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-background/70 via-transparent to-brand-goldDark/10" />
-                </MaskWipe>
+                </motion.div>
             </div>
         </section>
     );

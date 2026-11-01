@@ -9,9 +9,11 @@ import {
     LuCroissant,
     LuUtensils,
     LuCakeSlice,
+    LuExpand,
 } from 'react-icons/lu';
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/data/menuItems';
 import SteamWisps from '@/Components/motion/SteamWisps';
+import ImageZoomModal from '@/Components/motion/ImageZoomModal';
 
 const CATEGORY_ICONS = {
     Coffee: LuCoffee,
@@ -29,6 +31,7 @@ export default function Menu() {
     const [query, setQuery] = useState('');
     const [activeIndex, setActiveIndex] = useState(0);
     const [showHint, setShowHint] = useState(true);
+    const [zoomImage, setZoomImage] = useState(null);
     const trackRef = useRef(null);
 
     const isSearching = query.trim().length > 0;
@@ -224,6 +227,19 @@ export default function Menu() {
                                             </span>
                                         )}
 
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setZoomImage({ src: item.image, alt: item.name, caption: item.name })
+                                            }
+                                            aria-label={`Zoom in on ${item.name}`}
+                                            className={`absolute right-4 flex h-9 w-9 items-center justify-center rounded-full border border-brand-foreground/30 bg-brand-background/60 text-brand-foreground backdrop-blur transition hover:border-brand-gold hover:text-brand-gold ${
+                                                isSearching ? 'top-16' : 'top-6'
+                                            }`}
+                                        >
+                                            <LuExpand className="h-4 w-4" />
+                                        </button>
+
                                         {/* Swipe cue — only on the very first panel, dismisses on first interaction */}
                                         {index === 0 && (
                                             <AnimatePresence>
@@ -323,6 +339,8 @@ export default function Menu() {
                     ))}
                 </div>
             )}
+
+            <ImageZoomModal image={zoomImage} onClose={() => setZoomImage(null)} />
         </section>
     );
 }

@@ -1,70 +1,117 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { Link } from '@inertiajs/react';
+import KineticText from '@/Components/motion/KineticText';
+import Magnetic from '@/Components/motion/Magnetic';
+
+const EASE = [0.16, 1, 0.3, 1];
 
 export default function Hero({
     eyebrow = 'Fine Dining & Coffee House',
     title = 'Sytal Coffee',
-    subtitle = 'Where every cup and every plate is crafted with intention.',
+    subtitle = 'Where every cup and every plate is crafted with intention — a theatrical menu built on fire, precision, and seasonal craft.',
     ctaLabel = 'Reserve a Table',
     ctaHref = '/reservations',
-    image = null,
+    secondaryLabel = 'View the Menu',
+    secondaryHref = '/menu',
+    image = '/images/hero-bg.jpg',
 }) {
-    return (
-        <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-brand-background">
-            {image && (
-                <motion.img
-                    src={image}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover opacity-40"
-                    initial={{ scale: 1.1 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 8, ease: 'easeOut' }}
-                />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/60 to-brand-background/30" />
+    const reduce = useReducedMotion();
+    const ref = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ['start start', 'end start'],
+    });
 
-            <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
+    const contentY = useTransform(scrollYProgress, [0, 1], [0, -140]);
+    const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+    const mediaY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+    const mediaScale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
+
+    return (
+        <section ref={ref} className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-brand-background">
+            <motion.div
+                style={reduce ? undefined : { y: mediaY, scale: mediaScale }}
+                className="absolute inset-0 will-change-transform"
+            >
+                <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            </motion.div>
+
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/70 to-brand-background/20" />
+            <div className="absolute inset-0 bg-gradient-to-b from-brand-background/60 via-transparent to-transparent" />
+
+            <motion.div
+                style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
+                className="relative z-10 mx-auto flex h-full max-w-5xl flex-col items-center justify-center px-6 text-center"
+            >
                 <motion.p
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold"
+                    transition={{ duration: 0.9, ease: EASE, delay: 0.2 }}
+                    className="font-mono text-xs uppercase tracking-[0.3em] text-brand-gold"
                 >
                     {eyebrow}
                 </motion.p>
 
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.1 }}
-                    className="font-display text-5xl text-brand-foreground sm:text-7xl"
-                >
-                    {title}
-                </motion.h1>
+                <KineticText
+                    as="h1"
+                    text={title}
+                    delay={0.35}
+                    stagger={0.12}
+                    className="mt-5 font-display text-6xl font-light text-brand-foreground sm:text-8xl"
+                />
 
                 <motion.p
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                    className="mx-auto mt-6 max-w-xl text-brand-foregroundMuted"
+                    transition={{ duration: 1, ease: EASE, delay: 0.9 }}
+                    className="mx-auto mt-7 max-w-xl text-brand-foregroundMuted"
                 >
                     {subtitle}
                 </motion.p>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.3 }}
-                    className="mt-10"
+                    transition={{ duration: 1, ease: EASE, delay: 1.05 }}
+                    className="mt-10 flex flex-wrap items-center justify-center gap-4"
                 >
-                    <Link
-                        href={ctaHref}
-                        className="inline-block border border-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-gold transition hover:bg-brand-gold hover:text-brand-background"
-                    >
-                        {ctaLabel}
-                    </Link>
+                    <Magnetic strength={0.3}>
+                        <Link
+                            href={ctaHref}
+                            className="inline-flex items-center justify-center rounded-full bg-brand-gold px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-background transition hover:bg-brand-goldLight"
+                        >
+                            {ctaLabel}
+                        </Link>
+                    </Magnetic>
+                    <Magnetic strength={0.3}>
+                        <Link
+                            href={secondaryHref}
+                            className="inline-flex items-center justify-center rounded-full border border-brand-foreground/40 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-foreground transition hover:border-brand-foreground/80"
+                        >
+                            {secondaryLabel}
+                        </Link>
+                    </Magnetic>
                 </motion.div>
-            </div>
+            </motion.div>
+
+            {!reduce && (
+                <motion.div
+                    aria-hidden
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.4, duration: 1 }}
+                    className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 sm:block"
+                >
+                    <motion.div
+                        animate={{ y: [0, 8, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                        className="text-xs uppercase tracking-[0.3em] text-brand-foreground/70"
+                    >
+                        Scroll
+                    </motion.div>
+                </motion.div>
+            )}
         </section>
     );
 }

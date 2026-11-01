@@ -67,17 +67,12 @@ export default function About() {
                     transition={{ duration: 0.8 }}
                     className="relative aspect-[4/5] overflow-hidden rounded-sm border border-brand-border"
                 >
-                    {/*
-                        Placeholder for real photography of the dining room / roastery.
-                        Replace this gradient div with an <img> once assets are ready.
-                    */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-surfaceAlt via-brand-surface to-brand-background" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-background/80 via-transparent to-brand-goldDark/10" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="font-display text-sm uppercase tracking-[0.3em] text-brand-gold/70">
-                            Sytal Coffee
-                        </span>
-                    </div>
+                    <img
+                        src="/images/about.jpg"
+                        alt="Inside Sytal Coffee"
+                        className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-background/70 via-transparent to-brand-goldDark/10" />
                 </motion.div>
             </div>
         </section>

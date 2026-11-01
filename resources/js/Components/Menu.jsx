@@ -67,19 +67,28 @@ export default function Menu() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -16 }}
                                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                                className="flex items-start justify-between gap-4 border-b border-brand-border/60 pb-4"
+                                className="group flex items-start gap-4 border-b border-brand-border/60 pb-4"
                             >
-                                <div>
-                                    <h3 className="font-display text-xl text-brand-foreground">
-                                        {item.name}
-                                    </h3>
-                                    <p className="mt-1 text-sm text-brand-foregroundMuted">
-                                        {item.description}
-                                    </p>
+                                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-full border border-brand-border">
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                                    />
                                 </div>
-                                <span className="shrink-0 font-display text-lg text-brand-gold">
-                                    {item.price}
-                                </span>
+                                <div className="flex flex-1 items-start justify-between gap-4">
+                                    <div>
+                                        <h3 className="font-display text-xl text-brand-foreground">
+                                            {item.name}
+                                        </h3>
+                                        <p className="mt-1 text-sm text-brand-foregroundMuted">
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                    <span className="shrink-0 font-display text-lg text-brand-gold">
+                                        {item.price}
+                                    </span>
+                                </div>
                             </motion.div>
                         ))}
                     </AnimatePresence>

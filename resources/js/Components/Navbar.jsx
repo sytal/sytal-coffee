@@ -1,5 +1,7 @@
-import { Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { Link, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { LuMenu, LuX } from 'react-icons/lu';
 
 const NAV_LINKS = [
     { label: 'Home', href: '/' },
@@ -9,51 +11,128 @@ const NAV_LINKS = [
     { label: 'Contact', href: '/contact' },
 ];
 
+const panelVariants = {
+    hidden: { opacity: 0, y: -12 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.35, ease: 'easeOut', staggerChildren: 0.06, delayChildren: 0.05 },
+    },
+    exit: { opacity: 0, y: -12, transition: { duration: 0.2, ease: 'easeIn' } },
+};
+
+const linkVariants = {
+    hidden: { opacity: 0, x: 16 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: 'easeOut' } },
+    exit: { opacity: 0, x: 16 },
+};
+
 export default function Navbar() {
     const [open, setOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const { url } = usePage();
+    const currentPath = (url || '').split('?')[0];
+
+    useEffect(() => {
+        let ticking = false;
+
+        function handleScroll() {
+            if (ticking) return;
+            ticking = true;
+            window.requestAnimationFrame(() => {
+                setScrolled(window.scrollY > 80);
+                ticking = false;
+            });
+        }
+
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        setOpen(false);
+    }, [currentPath]);
+
+    function isActive(href) {
+        if (href === '/') return currentPath === '/';
+        return currentPath === href || currentPath.startsWith(`${href}/`);
+    }
 
     return (
-        <header className="fixed inset-x-0 top-0 z-50 border-b border-brand-border/60 bg-brand-background/80 backdrop-blur">
+        <header
+            className={`fixed inset-x-0 top-0 z-50 border-b transition-all duration-300 ${
+                scrolled
+                    ? 'border-brand-border/60 bg-brand-background/95 backdrop-blur'
+                    : 'border-transparent bg-transparent backdrop-blur-0'
+            }`}
+        >
             <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
                 <Link href="/" className="font-display text-xl tracking-wide text-brand-foreground">
                     Sytal <span className="text-brand-gold">Coffee</span>
                 </Link>
 
                 <nav className="hidden items-center gap-8 md:flex">
-                    {NAV_LINKS.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className="text-sm uppercase tracking-wider text-brand-foregroundMuted transition hover:text-brand-gold"
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
+                    {NAV_LINKS.map((link) => {
+                        const active = isActive(link.href);
+                        return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`relative py-1 text-sm uppercase tracking-wider transition hover:text-brand-gold ${
+                                    active ? 'text-brand-gold' : 'text-brand-foregroundMuted'
+                                }`}
+                            >
+                                {link.label}
+                                <span
+                                    className={`absolute inset-x-0 -bottom-1 h-px bg-brand-gold transition-opacity duration-300 ${
+                                        active ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                                />
+                            </Link>
+                        );
+                    })}
                 </nav>
 
                 <button
                     type="button"
                     onClick={() => setOpen((v) => !v)}
-                    className="text-brand-foreground md:hidden"
+                    className="text-2xl text-brand-foreground md:hidden"
                     aria-label="Toggle menu"
+                    aria-expanded={open}
                 >
-                    {open ? '✕' : '☰'}
+                    {open ? <LuX /> : <LuMenu />}
                 </button>
             </div>
 
-            {open && (
-                <nav className="flex flex-col gap-4 border-t border-brand-border/60 px-6 py-6 md:hidden">
-                    {NAV_LINKS.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className="text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
-                </nav>
-            )}
+            <AnimatePresence>
+                {open && (
+                    <motion.nav
+                        key="mobile-nav"
+                        variants={panelVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="flex flex-col gap-4 border-t border-brand-border/60 bg-brand-background/95 px-6 py-6 backdrop-blur md:hidden"
+                    >
+                        {NAV_LINKS.map((link) => {
+                            const active = isActive(link.href);
+                            return (
+                                <motion.div key={link.href} variants={linkVariants}>
+                                    <Link
+                                        href={link.href}
+                                        className={`block text-sm uppercase tracking-wider transition hover:text-brand-gold ${
+                                            active ? 'text-brand-gold' : 'text-brand-foregroundMuted'
+                                        }`}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </motion.div>
+                            );
+                        })}
+                    </motion.nav>
+                )}
+            </AnimatePresence>
         </header>
     );
 }

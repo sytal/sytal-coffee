@@ -39,6 +39,7 @@ export default function Hero({
 
             <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/70 to-brand-background/20" />
             <div className="absolute inset-0 bg-gradient-to-b from-brand-background/60 via-transparent to-transparent" />
+            <div aria-hidden className="bg-noise pointer-events-none absolute inset-0" />
 
             <motion.div
                 style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
@@ -65,7 +66,7 @@ export default function Hero({
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, ease: EASE, delay: 0.9 }}
-                    className="mx-auto mt-7 max-w-xl text-brand-foregroundMuted"
+                    className="mx-auto mt-7 max-w-xl leading-relaxed text-brand-foregroundMuted"
                 >
                     {subtitle}
                 </motion.p>
@@ -79,7 +80,7 @@ export default function Hero({
                     <Magnetic strength={0.3}>
                         <Link
                             href={ctaHref}
-                            className="inline-flex items-center justify-center rounded-full bg-brand-gold px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-background transition hover:bg-brand-goldLight"
+                            className="inline-flex items-center justify-center rounded-full bg-brand-gold px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98]"
                         >
                             {ctaLabel}
                         </Link>
@@ -87,7 +88,7 @@ export default function Hero({
                     <Magnetic strength={0.3}>
                         <Link
                             href={secondaryHref}
-                            className="inline-flex items-center justify-center rounded-full border border-brand-foreground/40 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-foreground transition hover:border-brand-foreground/80"
+                            className="inline-flex items-center justify-center rounded-full border border-brand-foreground/40 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-foreground transition-all duration-300 hover:scale-[1.02] hover:border-brand-foreground/80 active:scale-[0.98]"
                         >
                             {secondaryLabel}
                         </Link>

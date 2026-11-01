@@ -16,8 +16,9 @@ const fadeUp = {
 
 export default function About() {
     return (
-        <section className="bg-brand-background py-24 sm:py-32">
-            <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 px-6 lg:grid-cols-2">
+        <section className="relative bg-brand-background py-24 sm:py-32">
+            <div aria-hidden className="bg-noise pointer-events-none absolute inset-0" />
+            <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 px-6 lg:grid-cols-2">
                 <motion.div
                     {...fadeUp}
                     transition={{ duration: 0.7 }}
@@ -28,14 +29,14 @@ export default function About() {
                     <h2 className="font-display text-4xl text-brand-foreground sm:text-5xl">
                         A House Built on Patience &amp; Fire
                     </h2>
-                    <p className="mt-6 text-brand-foregroundMuted">
+                    <p className="mt-6 leading-relaxed text-brand-foregroundMuted">
                         Sytal Coffee began as a single roaster in the back of a corner
                         kitchen, where the owners refused to rush a bean or a broth.
                         Today that same philosophy guides every plate and every pour:
                         slow extraction, honest sourcing, and a dining room that feels
                         like a quiet indulgence rather than a performance.
                     </p>
-                    <p className="mt-4 text-brand-foregroundMuted">
+                    <p className="mt-4 leading-relaxed text-brand-foregroundMuted">
                         We pair single-origin coffee with a seasonal, chef-driven menu,
                         treating the cup and the course as one continuous experience —
                         considered, unhurried, and built to be remembered.
@@ -54,7 +55,7 @@ export default function About() {
                                     value={stat.value}
                                     className="font-display text-3xl text-brand-gold"
                                 />
-                                <p className="mt-1 text-xs uppercase tracking-wider text-brand-foregroundMuted">
+                                <p className="mt-1 text-xs uppercase tracking-[0.15em] text-brand-foregroundMuted">
                                     {stat.label}
                                 </p>
                             </div>

@@ -40,9 +40,9 @@ export default function Gallery() {
                                 key={tile.label}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.08 }}
-                                whileHover={{ scale: 1.03 }}
+                                viewport={{ once: true, amount: 0.2 }}
+                                transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                                whileHover={{ scale: 1.03, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
                                 className={`group relative h-40 overflow-hidden rounded-lg border border-brand-border/60 sm:h-full ${tile.span}`}
                             >
                                 <img

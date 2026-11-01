@@ -36,7 +36,7 @@ const SOCIAL_LINKS = [
 ];
 
 const inputClasses =
-    'w-full rounded-sm border border-brand-border bg-brand-surface px-4 py-3 text-brand-foreground placeholder:text-brand-foregroundMuted/50 outline-none transition focus:border-brand-gold focus:ring-1 focus:ring-brand-gold';
+    'w-full rounded-sm border border-brand-border bg-brand-surface px-4 py-3 text-brand-foreground placeholder:text-brand-foregroundMuted/50 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/40';
 
 export default function Contact() {
     const [form, setForm] = useState(EMPTY_FORM);
@@ -86,7 +86,7 @@ export default function Contact() {
                     <h2 className="font-display text-4xl text-brand-foreground sm:text-5xl">
                         Contact Us
                     </h2>
-                    <p className="mx-auto mt-4 max-w-xl text-brand-foregroundMuted">
+                    <p className="mx-auto mt-4 max-w-xl leading-relaxed text-brand-foregroundMuted">
                         Questions, private events, or feedback — we&rsquo;d love to hear
                         from you.
                     </p>
@@ -124,7 +124,7 @@ export default function Contact() {
                                     target="_blank"
                                     rel="noreferrer"
                                     aria-label={label}
-                                    className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                    className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition-all duration-300 hover:scale-110 hover:border-brand-gold hover:text-brand-gold"
                                 >
                                     <Icon className="h-4 w-4" />
                                 </a>
@@ -145,14 +145,14 @@ export default function Contact() {
                                 <h3 className="font-display text-2xl text-brand-foreground">
                                     Message Sent
                                 </h3>
-                                <p className="max-w-sm text-brand-foregroundMuted">
+                                <p className="max-w-sm leading-relaxed text-brand-foregroundMuted">
                                     Thank you, {form.name.split(' ')[0] || 'friend'}. We&rsquo;ll
                                     get back to you shortly.
                                 </p>
                                 <button
                                     type="button"
                                     onClick={handleReset}
-                                    className="mt-2 border border-brand-gold px-6 py-2 text-sm uppercase tracking-wider text-brand-gold transition hover:bg-brand-gold hover:text-brand-background"
+                                    className="mt-2 border border-brand-gold px-6 py-2 text-sm uppercase tracking-wider text-brand-gold transition-all duration-300 hover:scale-[1.02] hover:bg-brand-gold hover:text-brand-background active:scale-[0.98]"
                                 >
                                     Send Another Message
                                 </button>
@@ -217,7 +217,7 @@ export default function Contact() {
 
                                 <button
                                     type="submit"
-                                    className="flex w-full items-center justify-center gap-2 bg-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight sm:w-auto"
+                                    className="flex w-full items-center justify-center gap-2 bg-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98] sm:w-auto"
                                 >
                                     <LuSend className="h-4 w-4" />
                                     Send Message

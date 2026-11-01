@@ -3,7 +3,8 @@
  * Every component should reference these tokens (via Tailwind classes below
  * or by importing this file) instead of hardcoding hex/rgb values.
  *
- * Palette: dark, warm luxury base with a champagne-gold accent.
+ * Palette: dark storefront base with the vibrant orange from Crunches'
+ * actual logo (black background, orange script "Crunches Cafe" wordmark).
  */
 export const colors = {
     background: '#0c0b09',
@@ -14,12 +15,12 @@ export const colors = {
     foreground: '#f5f1e8',
     foregroundMuted: '#b9b2a2',
 
-    gold: '#cda45e',
-    goldLight: '#e3c98f',
-    goldDark: '#a5793b',
+    gold: '#f4691f',
+    goldLight: '#ff9248',
+    goldDark: '#c44c13',
 
     success: '#5fae70',
-    danger: '#c5563f',
+    danger: '#d6462f',
 };
 
 export default colors;

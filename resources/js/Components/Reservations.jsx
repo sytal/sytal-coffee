@@ -51,7 +51,7 @@ export default function Reservations() {
         glowY.set(((e.clientY - rect.top) / rect.height) * 100);
     };
 
-    const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(205, 164, 94, 0.22), transparent 70%)`;
+    const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(244, 105, 31, 0.22), transparent 70%)`;
 
     const update = (field) => (e) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));

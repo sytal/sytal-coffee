@@ -13,4 +13,13 @@
         opacity: 0.04;
         mix-blend-mode: overlay;
     }
+
+    /* Hides scrollbar on horizontally-dragged scroll-snap tracks (Menu's tasting strip). */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
 }

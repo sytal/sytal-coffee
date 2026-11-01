@@ -122,38 +122,54 @@ export default function Menu() {
                     </div>
                 </motion.div>
 
-                {/* Category pills */}
+                {/* Category tiles */}
                 <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
-                    className={`mt-6 flex flex-wrap justify-center gap-3 transition-opacity ${
+                    className={`mt-8 transition-opacity ${
                         isSearching ? 'pointer-events-none opacity-40' : 'opacity-100'
                     }`}
                 >
-                    {MENU_CATEGORIES.map((category) => {
-                        const Icon = CATEGORY_ICONS[category];
-                        const isActive = !isSearching && category === activeCategory;
-                        return (
-                            <button
-                                key={category}
-                                type="button"
-                                onClick={() => {
-                                    setQuery('');
-                                    setActiveCategory(category);
-                                }}
-                                className={`inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm uppercase tracking-wider transition ${
-                                    isActive
-                                        ? 'border-brand-gold bg-brand-gold text-brand-background'
-                                        : 'border-brand-border text-brand-foregroundMuted hover:border-brand-gold hover:text-brand-gold'
-                                }`}
-                            >
-                                {Icon && <Icon className="h-4 w-4" />}
-                                {category}
-                            </button>
-                        );
-                    })}
+                    <div className="scrollbar-hide flex justify-start gap-4 overflow-x-auto px-1 py-1 sm:justify-center">
+                        {MENU_CATEGORIES.map((category) => {
+                            const Icon = CATEGORY_ICONS[category];
+                            const isActive = !isSearching && category === activeCategory;
+                            return (
+                                <button
+                                    key={category}
+                                    type="button"
+                                    onClick={() => {
+                                        setQuery('');
+                                        setActiveCategory(category);
+                                    }}
+                                    className={`flex shrink-0 flex-col items-center gap-2.5 rounded-2xl px-5 py-4 transition-all duration-300 ${
+                                        isActive
+                                            ? 'bg-brand-gold shadow-lg shadow-brand-gold/20'
+                                            : 'hover:bg-brand-surface'
+                                    }`}
+                                >
+                                    <span
+                                        className={`flex h-12 w-12 items-center justify-center rounded-full border transition-colors ${
+                                            isActive
+                                                ? 'border-transparent bg-brand-background text-brand-gold'
+                                                : 'border-brand-border bg-brand-surface text-brand-foregroundMuted'
+                                        }`}
+                                    >
+                                        {Icon && <Icon className="h-5 w-5" />}
+                                    </span>
+                                    <span
+                                        className={`text-xs font-semibold uppercase tracking-wider ${
+                                            isActive ? 'text-brand-background' : 'text-brand-foregroundMuted'
+                                        }`}
+                                    >
+                                        {category}
+                                    </span>
+                                </button>
+                            );
+                        })}
+                    </div>
                 </motion.div>
 
                 {isSearching && (

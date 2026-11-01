@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import { LuCalendarCheck, LuCircleCheck } from 'react-icons/lu';
 import KineticText from '@/Components/motion/KineticText';
+import { playUiSound } from '@/lib/uiSound';
 
 const PARTY_SIZES = Array.from({ length: 10 }, (_, i) => i + 1);
 
@@ -69,6 +70,7 @@ export default function Reservations() {
         const validationErrors = validate();
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0) {
+            playUiSound('success');
             setSubmitted(true);
         }
     };

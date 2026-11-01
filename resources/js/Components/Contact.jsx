@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import KineticText from '@/Components/motion/KineticText';
+import { playUiSound } from '@/lib/uiSound';
 import {
     LuMapPin,
     LuPhone,
@@ -76,6 +77,7 @@ export default function Contact() {
         const validationErrors = validate();
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0) {
+            playUiSound('success');
             setSubmitted(true);
         }
     };

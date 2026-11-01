@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LuMenu, LuX } from 'react-icons/lu';
 import useSmoothScroll from '@/lib/useSmoothScroll';
+import { playUiSound } from '@/lib/uiSound';
+import SoundToggle from '@/Components/SoundToggle';
+import LiveStatusBadge from '@/Components/LiveStatusBadge';
 
 const NAV_LINKS = [
     { label: 'Home', href: '#home' },
@@ -73,6 +76,7 @@ export default function Navbar() {
     function handleNavClick(e, href) {
         e.preventDefault();
         setOpen(false);
+        playUiSound('click');
         scrollToSection(href.slice(1));
         setActiveSection(href.slice(1));
     }
@@ -113,6 +117,11 @@ export default function Navbar() {
                     })}
                 </nav>
 
+                <div className="hidden items-center gap-4 md:flex">
+                    <LiveStatusBadge />
+                    <SoundToggle />
+                </div>
+
                 <button
                     type="button"
                     onClick={() => setOpen((v) => !v)}
@@ -150,6 +159,10 @@ export default function Navbar() {
                                 </motion.div>
                             );
                         })}
+                        <motion.div variants={linkVariants} className="flex items-center justify-between pt-2">
+                            <LiveStatusBadge />
+                            <SoundToggle />
+                        </motion.div>
                     </motion.nav>
                 )}
             </AnimatePresence>

@@ -4,6 +4,7 @@ import SmoothScroll from '@/Components/motion/SmoothScroll';
 import TopProgressBar from '@/Components/motion/TopProgressBar';
 import ScrollProgressDot from '@/Components/motion/ScrollProgressDot';
 import BackgroundMorph from '@/Components/motion/BackgroundMorph';
+import CoffeeMascot from '@/Components/motion/CoffeeMascot';
 
 export default function SiteLayout({ children }) {
     return (
@@ -16,6 +17,7 @@ export default function SiteLayout({ children }) {
                 <Footer />
             </div>
             <ScrollProgressDot />
+            <CoffeeMascot />
         </SmoothScroll>
     );
 }

@@ -11,6 +11,7 @@ import {
     LuCakeSlice,
 } from 'react-icons/lu';
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/data/menuItems';
+import SteamWisps from '@/Components/motion/SteamWisps';
 
 const CATEGORY_ICONS = {
     Coffee: LuCoffee,
@@ -80,7 +81,8 @@ export default function Menu() {
                     transition={{ duration: 0.6 }}
                     className="mx-auto max-w-2xl text-center"
                 >
-                    <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
+                    <p className="relative mb-3 inline-block font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
+                        <SteamWisps count={3} className="absolute -top-8 left-1/2 h-10 w-10 -translate-x-1/2" />
                         The Tasting Journey
                     </p>
                     <h2 className="font-display text-4xl text-brand-foreground sm:text-5xl">

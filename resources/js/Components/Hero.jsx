@@ -5,8 +5,17 @@ import Magnetic from '@/Components/motion/Magnetic';
 import FloatingElements from '@/Components/motion/FloatingElements';
 import CursorSpotlight from '@/Components/motion/CursorSpotlight';
 import useSmoothScroll from '@/lib/useSmoothScroll';
+import { playUiSound } from '@/lib/uiSound';
+import { getTimeOfDay } from '@/lib/timeOfDay';
 
 const EASE = [0.16, 1, 0.3, 1];
+
+const AMBIANCE_TINT = {
+    morning: 'bg-[radial-gradient(circle_at_50%_20%,rgba(227,201,143,0.12),transparent_60%)]',
+    afternoon: '',
+    evening: 'bg-[radial-gradient(circle_at_50%_30%,rgba(205,164,94,0.14),transparent_65%)]',
+    night: 'bg-[radial-gradient(circle_at_50%_30%,rgba(23,32,56,0.35),transparent_65%)]',
+};
 
 const DEFAULT_IMAGES = [
     '/images/hero-bg.jpg',
@@ -17,7 +26,7 @@ const DEFAULT_IMAGES = [
 ];
 
 export default function Hero({
-    eyebrow = 'Fine Dining & Coffee House',
+    eyebrow,
     title = 'Sytal Coffee',
     subtitle = 'Where every cup and every plate is crafted with intention — a theatrical menu built on fire, precision, and seasonal craft.',
     ctaLabel = 'Reserve a Table',
@@ -35,6 +44,8 @@ export default function Hero({
     });
 
     const [imageIndex, setImageIndex] = useState(0);
+    const [timeOfDay] = useState(() => getTimeOfDay());
+    const displayEyebrow = eyebrow ?? `${timeOfDay.label} · Fine Dining & Coffee House`;
 
     useEffect(() => {
         if (reduce || images.length <= 1) return;
@@ -91,6 +102,9 @@ export default function Hero({
 
             <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/70 to-brand-background/20" />
             <div className="absolute inset-0 bg-gradient-to-b from-brand-background/60 via-transparent to-transparent" />
+            {AMBIANCE_TINT[timeOfDay.key] && (
+                <div aria-hidden className={`pointer-events-none absolute inset-0 ${AMBIANCE_TINT[timeOfDay.key]}`} />
+            )}
             <div aria-hidden className="bg-noise pointer-events-none absolute inset-0" />
             <FloatingElements />
             <CursorSpotlight />
@@ -105,7 +119,7 @@ export default function Hero({
                     transition={{ duration: 0.9, ease: EASE, delay: 0.2 }}
                     className="font-mono text-xs uppercase tracking-[0.3em] text-brand-gold"
                 >
-                    {eyebrow}
+                    {displayEyebrow}
                 </motion.p>
 
                 <KineticText
@@ -136,6 +150,7 @@ export default function Hero({
                             href={ctaHref}
                             onClick={(e) => {
                                 e.preventDefault();
+                                playUiSound('click');
                                 scrollToSection(ctaHref.slice(1));
                             }}
                             className="inline-flex items-center justify-center rounded-full bg-brand-gold px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98]"
@@ -148,6 +163,7 @@ export default function Hero({
                             href={secondaryHref}
                             onClick={(e) => {
                                 e.preventDefault();
+                                playUiSound('click');
                                 scrollToSection(secondaryHref.slice(1));
                             }}
                             className="inline-flex items-center justify-center rounded-full border border-brand-foreground/40 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-foreground transition-all duration-300 hover:scale-[1.02] hover:border-brand-foreground/80 active:scale-[0.98]"

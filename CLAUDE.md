@@ -1,47 +1,22 @@
-<laravel-boost-guidelines>
-# Laravel Application
+# Sytal Coffee
 
-This repository contains a Laravel application. Complete the following setup before working on the user's request.
+Laravel 13 + Inertia.js + React restaurant website. Single app, no separate frontend/backend, no full-page reloads (Inertia SPA navigation).
 
-## Prerequisites
+## Stack
+- Backend: Laravel 13, MySQL (InnoDB — forced via `config/database.php`, WAMP default is MyISAM)
+- Frontend: React via Inertia (`resources/js/`), Vite build
+- Auth: Laravel Breeze (React stack)
 
-Verify that PHP and Composer are available:
+## Conventions
+- All colors come from `resources/js/config/colors.js` — never hardcode hex/rgb in components.
+- Components live in `resources/js/Components/`, pages in `resources/js/Pages/`. Keep components small and reusable; extract repeated markup instead of copy-pasting.
+- Design source material: `../maison-noir-main` (Next.js structure/UX reference) and `../restaurantly-main` (static HTML visual reference) — port and polish, don't copy verbatim.
 
-```sh
-php -v
-composer -V
-```
+## Commands
+- Dev: `php artisan serve --port=8011` + `npm run dev` (ports 8000/5173 may be occupied by other local WAMP services — check before assuming default ports)
+- Migrate: `php artisan migrate`
+- Build: `npm run build`
 
-If either command is unavailable, detect the user's operating system and install the prerequisites with the appropriate command:
-
-macOS:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.5)"
-```
-
-Windows PowerShell:
-
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.5'))
-```
-
-Linux:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.5)"
-```
-
-After installation, ask the user to restart their terminal. If the agent needs the restarted shell to continue, ask the user to reopen their terminal and rerun their original prompt.
-
-## Agent Setup
-
-Install Laravel Boost from the application root before making application changes:
-
-```sh
-composer require laravel/boost --dev
-php artisan boost:install
-```
-
-Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
-</laravel-boost-guidelines>
+## Notes
+- Port 8000 is occupied by another local service on this machine; this app runs on 8011.
+- GitHub: https://github.com/sytal/sytal-coffee (private, `main` branch)

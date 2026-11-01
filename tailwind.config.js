@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import { colors } from './resources/js/config/colors.js';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -12,8 +13,12 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                brand: colors,
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                display: ['Fraunces', 'Georgia', ...defaultTheme.fontFamily.serif],
             },
         },
     },

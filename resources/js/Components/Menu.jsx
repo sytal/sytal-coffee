@@ -33,6 +33,7 @@ export default function Menu() {
     const [showHint, setShowHint] = useState(true);
     const [zoomImage, setZoomImage] = useState(null);
     const trackRef = useRef(null);
+    const dragState = useRef({ isDown: false, moved: false, startX: 0, startScrollLeft: 0 });
 
     const isSearching = query.trim().length > 0;
 
@@ -72,6 +73,37 @@ export default function Menu() {
             el.scrollTo({ left: panel.offsetLeft - el.offsetLeft, behavior: 'smooth' });
         }
         setShowHint(false);
+    };
+
+    // Mouse click-and-drag to scroll the strip — native overflow-x-auto only
+    // responds to touch/trackpad swipe, not a mouse grab, so this fills that in.
+    const handlePointerDown = (e) => {
+        const el = trackRef.current;
+        if (!el) return;
+        dragState.current = { isDown: true, moved: false, startX: e.pageX, startScrollLeft: el.scrollLeft };
+    };
+
+    const handlePointerMove = (e) => {
+        const state = dragState.current;
+        const el = trackRef.current;
+        if (!state.isDown || !el) return;
+        const delta = e.pageX - state.startX;
+        if (Math.abs(delta) > 4) state.moved = true;
+        el.scrollLeft = state.startScrollLeft - delta;
+        if (showHint) setShowHint(false);
+    };
+
+    const endDrag = () => {
+        dragState.current.isDown = false;
+    };
+
+    const handleTrackClickCapture = (e) => {
+        // Suppress click-through (e.g. accidentally opening the zoom button)
+        // when the pointer actually dragged rather than tapped.
+        if (dragState.current.moved) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     };
 
     return (
@@ -202,7 +234,12 @@ export default function Menu() {
                             <div
                                 ref={trackRef}
                                 onScroll={updateActiveFromScroll}
-                                className="scrollbar-hide flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 active:cursor-grabbing sm:px-[8vw]"
+                                onMouseDown={handlePointerDown}
+                                onMouseMove={handlePointerMove}
+                                onMouseUp={endDrag}
+                                onMouseLeave={endDrag}
+                                onClickCapture={handleTrackClickCapture}
+                                className="scrollbar-hide flex cursor-grab select-none snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 active:cursor-grabbing sm:px-[8vw]"
                             >
                                 {items.map((item, index) => (
                                     <div
@@ -213,6 +250,7 @@ export default function Menu() {
                                         <img
                                             src={item.image}
                                             alt={item.name}
+                                            draggable={false}
                                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/50 to-brand-background/10" />

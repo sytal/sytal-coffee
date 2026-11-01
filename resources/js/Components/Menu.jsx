@@ -5,9 +5,9 @@ import {
     LuChevronRight,
     LuSearch,
     LuX,
-    LuCoffee,
-    LuCroissant,
-    LuUtensils,
+    LuFlame,
+    LuBeef,
+    LuCupSoda,
     LuCakeSlice,
     LuExpand,
 } from 'react-icons/lu';
@@ -16,9 +16,9 @@ import SteamWisps from '@/Components/motion/SteamWisps';
 import ImageZoomModal from '@/Components/motion/ImageZoomModal';
 
 const CATEGORY_ICONS = {
-    Coffee: LuCoffee,
-    Breakfast: LuCroissant,
-    Mains: LuUtensils,
+    'Loaded Fries': LuFlame,
+    Burgers: LuBeef,
+    'Shakes & Drinks': LuCupSoda,
     Desserts: LuCakeSlice,
 };
 

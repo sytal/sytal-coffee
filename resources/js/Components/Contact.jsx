@@ -15,7 +15,7 @@ import {
 } from 'react-icons/lu';
 import { FiInstagram, FiFacebook, FiTwitter } from 'react-icons/fi';
 
-const EMPTY_FORM = { name: '', email: '', message: '' };
+const EMPTY_FORM = { name: '', email: '', phone: '', message: '' };
 
 const CONTACT_INFO = [
     {
@@ -69,7 +69,8 @@ export default function Contact() {
         const next = {};
         if (!form.name.trim()) next.name = 'Name is required';
         if (!form.email.trim()) next.email = 'Email is required';
-        else if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = 'Enter a valid email';
+        else if (!isValidEmail(form.email)) next.email = 'Enter a valid email';
+        if (!form.phone.trim()) next.phone = 'Phone number is required';
         if (!form.message.trim()) next.message = 'Message is required';
         return next;
     };
@@ -212,6 +213,16 @@ export default function Contact() {
                                         valid={isValidEmail(form.email)}
                                     />
                                 </div>
+
+                                <FloatingField
+                                    label="Best number to reach you"
+                                    icon={LuPhone}
+                                    type="tel"
+                                    value={form.phone}
+                                    onChange={update('phone')}
+                                    error={errors.phone}
+                                    valid={form.phone.trim().length > 0}
+                                />
 
                                 <FloatingField
                                     label="What's on your mind (or your plate wishlist)?"

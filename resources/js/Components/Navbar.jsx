@@ -91,7 +91,7 @@ export default function Navbar() {
         >
             <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
                 <Link href="/" className="font-display text-xl tracking-wide text-brand-foreground">
-                    Sytal <span className="text-brand-gold">Coffee</span>
+                    Crunches <span className="text-brand-gold">Cafe</span>
                 </Link>
 
                 <nav className="hidden items-center gap-8 md:flex">

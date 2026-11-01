@@ -11,7 +11,7 @@ import SectionDivider from '@/Components/SectionDivider';
 export default function Home() {
     return (
         <SiteLayout>
-            <Head title="Sytal Coffee — Fine Dining & Coffee House" />
+            <Head title="Crunches Cafe — Fast Food & Hangout Spot in Faisalabad" />
             <div id="home">
                 <Hero />
             </div>

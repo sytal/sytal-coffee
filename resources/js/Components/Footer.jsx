@@ -69,10 +69,11 @@ export default function Footer() {
                 >
                     <div className="flex flex-col gap-4 lg:col-span-1">
                         <Link href="/" className="font-display text-2xl tracking-wide text-brand-foreground">
-                            Sytal <span className="text-brand-gold">Coffee</span>
+                            Crunches <span className="text-brand-gold">Cafe</span>
                         </Link>
                         <p className="text-sm leading-relaxed text-brand-foregroundMuted">
-                            A quiet corner of fine coffee and considered dining — crafted with care, served with warmth.
+                            Faisalabad's go-to fast food cafe — loaded fries, stacked burgers, and desserts worth
+                            the drive. Gulberg's favorite hangout spot.
                         </p>
                         <div className="flex items-center gap-4 pt-2">
                             {SOCIALS.map(({ label, href, Icon }) => (
@@ -118,15 +119,15 @@ export default function Footer() {
                         <ul className="flex flex-col gap-3 text-sm text-brand-foregroundMuted">
                             <li className="flex items-start gap-2">
                                 <FiMapPin className="mt-0.5 shrink-0 text-brand-gold" size={15} />
-                                <span>128 Harborlight Avenue, Suite 4, Rivermark</span>
+                                <span>Gulberg Thana Road, Faisalabad</span>
                             </li>
                             <li className="flex items-start gap-2">
                                 <FiPhone className="mt-0.5 shrink-0 text-brand-gold" size={15} />
-                                <span>(555) 014-2290</span>
+                                <span>Call for reservations</span>
                             </li>
                             <li className="flex items-start gap-2">
                                 <FiClock className="mt-0.5 shrink-0 text-brand-gold" size={15} />
-                                <span>Tue&ndash;Sun, 8am&ndash;10pm</span>
+                                <span>Daily, 1pm&ndash;1am</span>
                             </li>
                         </ul>
                     </div>
@@ -144,7 +145,7 @@ export default function Footer() {
 
                 <div className="mt-14 flex flex-col items-center gap-2 border-t border-brand-border/60 pt-8 text-center sm:flex-row sm:justify-between sm:text-left">
                     <p className="text-xs text-brand-foregroundMuted">
-                        &copy; {new Date().getFullYear()} Sytal Coffee. All rights reserved.
+                        &copy; {new Date().getFullYear()} Crunches Cafe. All rights reserved.
                     </p>
                     <p className="text-xs text-brand-foregroundMuted">Built with care.</p>
                 </div>

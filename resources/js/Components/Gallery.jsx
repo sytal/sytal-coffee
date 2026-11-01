@@ -63,7 +63,7 @@ export default function Gallery() {
                         A Space to Savor
                     </h2>
                     <p className="mt-4 text-brand-foregroundMuted">
-                        A glimpse into the atmosphere of Sytal Coffee — warm, considered,
+                        A glimpse into the Crunches experience — neon lights, loud energy,
                         and unmistakably ours.
                     </p>
                 </motion.div>

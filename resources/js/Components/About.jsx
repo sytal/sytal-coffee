@@ -3,26 +3,25 @@ import CountUp from '@/Components/motion/CountUp';
 import KineticText from '@/Components/motion/KineticText';
 
 const STATS = [
-    { label: 'Years of Craft', value: '12+' },
-    { label: 'Signature Dishes', value: '48' },
-    { label: 'Culinary Awards', value: '9' },
-    { label: 'Beans Sourced Direct', value: '100%' },
+    { label: 'Google Rating', value: '4.2' },
+    { label: 'Happy Reviews', value: '38+' },
+    { label: 'Menu Items', value: '30+' },
+    { label: 'Days Open Weekly', value: '7' },
 ];
 
 const PARAGRAPHS = [
-    `Sytal Coffee began as a single roaster in the back of a corner
-    kitchen, where the owners refused to rush a bean or a broth. Every
-    batch was tended by hand, every pour measured against patience
-    rather than the clock.`,
-    `Today that same philosophy guides every plate and every pour: slow
-    extraction, honest sourcing, and a dining room that feels like a
-    quiet indulgence rather than a performance.`,
-    `We pair single-origin coffee with a seasonal, chef-driven menu,
-    treating the cup and the course as one continuous experience —
-    considered, unhurried, and built to be remembered.`,
-    `From the first roast to the last course, nothing leaves our kitchen
-    until it has earned its place on the table. That standard hasn't
-    changed since the day we opened the doors.`,
+    `Crunches started on Gulberg Thana Road with one idea: Faisalabad
+    deserved a late-night spot that didn't cut corners on flavor. No
+    fuss, no pretense — just loaded fries, stacked burgers, and a
+    kitchen that doesn't slow down after dark.`,
+    `Today it's the spot where the crew lands after a long day — neon
+    signage out front, a menu built for sharing (or not), and a
+    kitchen that's always running hot.`,
+    `From crispy loaded fries to our signature stacked burgers and that
+    molten chocolate brownie everyone talks about, every item earns
+    its spot on the menu the hard way: by actually being good.`,
+    `We're not trying to be fine dining. We're trying to be the place
+    you crave at 11pm — and the reviews say we're getting it right.`,
 ];
 
 const fadeUp = {
@@ -126,7 +125,7 @@ export default function About() {
                 >
                     <img
                         src="/images/about.jpg"
-                        alt="Inside Sytal Coffee"
+                        alt="Inside Crunches Cafe"
                         className="absolute inset-0 h-full w-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-background/70 via-transparent to-brand-goldDark/10" />

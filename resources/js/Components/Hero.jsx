@@ -27,9 +27,9 @@ const DEFAULT_IMAGES = [
 
 export default function Hero({
     eyebrow,
-    title = 'Sytal Coffee',
-    subtitle = 'Where every cup and every plate is crafted with intention — a theatrical menu built on fire, precision, and seasonal craft.',
-    ctaLabel = 'Reserve a Table',
+    title = 'Crunches Cafe',
+    subtitle = 'Faisalabad’s favorite fast food hangout — loaded fries, stacked burgers, and desserts built for sharing (or not).',
+    ctaLabel = 'Book a Table',
     ctaHref = '#reservations',
     secondaryLabel = 'View the Menu',
     secondaryHref = '#menu',
@@ -45,7 +45,7 @@ export default function Hero({
 
     const [imageIndex, setImageIndex] = useState(0);
     const [timeOfDay] = useState(() => getTimeOfDay());
-    const displayEyebrow = eyebrow ?? `${timeOfDay.label} · Fine Dining & Coffee House`;
+    const displayEyebrow = eyebrow ?? `${timeOfDay.label} · Fast Food Cafe, Faisalabad`;
 
     useEffect(() => {
         if (reduce || images.length <= 1) return;

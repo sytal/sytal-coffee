@@ -30,11 +30,9 @@ export default function Home() {
                 <Menu />
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
-            <ScrollScaleSection>
-                <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
-                    <Gallery />
-                </Suspense>
-            </ScrollScaleSection>
+            <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
+                <Gallery />
+            </Suspense>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="about">
                 <ScrollScaleSection>
@@ -45,11 +43,9 @@ export default function Home() {
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
             <div id="reservations">
-                <ScrollScaleSection>
-                    <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
-                        <Reservations />
-                    </Suspense>
-                </ScrollScaleSection>
+                <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
+                    <Reservations />
+                </Suspense>
             </div>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="contact">

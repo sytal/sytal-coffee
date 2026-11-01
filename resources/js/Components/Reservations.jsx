@@ -64,7 +64,7 @@ export default function Reservations() {
 
     return (
         <section className="bg-brand-surface py-24 sm:py-32">
-            <div className="mx-auto max-w-3xl px-6">
+            <div className="mx-auto max-w-6xl px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -84,13 +84,37 @@ export default function Reservations() {
                     </p>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.7, delay: 0.1 }}
-                    className="rounded-sm border border-brand-border bg-brand-surfaceAlt p-8 sm:p-10"
-                >
+                <div className="grid items-stretch gap-8 lg:grid-cols-5">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="relative hidden min-h-[520px] overflow-hidden rounded-sm border border-brand-border lg:col-span-2 lg:block"
+                    >
+                        <img
+                            src="/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg"
+                            alt="A table set for reservations at Sytal Coffee"
+                            className="absolute inset-0 h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-background/85 via-brand-background/10 to-transparent" />
+                        <div className="relative flex h-full flex-col justify-end p-8">
+                            <p className="font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
+                                Every Table, Considered
+                            </p>
+                            <p className="mt-3 font-display text-2xl text-brand-foreground">
+                                An evening worth the wait.
+                            </p>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.7, delay: 0.1 }}
+                        className="rounded-sm border border-brand-border bg-brand-surfaceAlt p-8 sm:p-10 lg:col-span-3"
+                    >
                     {submitted ? (
                         <div className="flex flex-col items-center gap-4 py-10 text-center">
                             <LuCircleCheck className="h-12 w-12 text-brand-success" />
@@ -226,7 +250,8 @@ export default function Reservations() {
                             </button>
                         </form>
                     )}
-                </motion.div>
+                    </motion.div>
+                </div>
             </div>
         </section>
     );

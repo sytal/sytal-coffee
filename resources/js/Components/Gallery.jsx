@@ -77,6 +77,8 @@ export default function Gallery() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true, amount: 0.2 }}
                                 transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                                data-cursor="view"
+                                data-cursor-text="View"
                                 className={`h-40 sm:h-auto ${tile.span}`}
                             >
                                 <TiltCard

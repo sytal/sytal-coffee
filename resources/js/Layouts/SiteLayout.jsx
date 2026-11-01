@@ -4,11 +4,13 @@ import SmoothScroll from '@/Components/motion/SmoothScroll';
 import TopProgressBar from '@/Components/motion/TopProgressBar';
 import ScrollProgressDot from '@/Components/motion/ScrollProgressDot';
 import BackgroundMorph from '@/Components/motion/BackgroundMorph';
+import CustomCursor from '@/Components/motion/CustomCursor';
 
 export default function SiteLayout({ children }) {
     return (
         <SmoothScroll>
             <BackgroundMorph />
+            <CustomCursor />
             <TopProgressBar />
             <div className="relative z-10 min-h-screen bg-brand-background font-sans text-brand-foreground">
                 <Navbar />

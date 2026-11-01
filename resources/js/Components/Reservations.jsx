@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
-import { LuCalendarCheck, LuCircleCheck } from 'react-icons/lu';
+import { LuCalendarCheck, LuCircleCheck, LuUser, LuMail, LuPhone, LuMessageSquareHeart } from 'react-icons/lu';
 import KineticText from '@/Components/motion/KineticText';
+import FloatingField from '@/Components/FloatingField';
 import { playUiSound } from '@/lib/uiSound';
 
 const PARTY_SIZES = Array.from({ length: 10 }, (_, i) => i + 1);
@@ -30,6 +31,8 @@ function Field({ label, children }) {
 const inputClasses =
     'w-full rounded-sm border border-brand-border bg-brand-surface px-4 py-3 text-brand-foreground placeholder:text-brand-foregroundMuted/50 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/40';
 
+const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
+
 export default function Reservations() {
     const [form, setForm] = useState(EMPTY_FORM);
     const [errors, setErrors] = useState({});
@@ -48,8 +51,7 @@ export default function Reservations() {
         glowY.set(((e.clientY - rect.top) / rect.height) * 100);
     };
 
-    // Brand gold (#cda45e) expressed as rgba for a translucent cursor-follow glow.
-    const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(205, 164, 94, 0.22), transparent 70%)`;
+    const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(255, 61, 104, 0.22), transparent 70%)`;
 
     const update = (field) => (e) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -58,7 +60,7 @@ export default function Reservations() {
         const next = {};
         if (!form.name.trim()) next.name = 'Name is required';
         if (!form.email.trim()) next.email = 'Email is required';
-        else if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = 'Enter a valid email';
+        else if (!isValidEmail(form.email)) next.email = 'Enter a valid email';
         if (!form.phone.trim()) next.phone = 'Phone number is required';
         if (!form.date) next.date = 'Select a date';
         if (!form.time) next.time = 'Select a time';
@@ -92,18 +94,18 @@ export default function Reservations() {
                     className="mb-12 text-center"
                 >
                     <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
-                        Book Your Table
+                        Save Your Seat
                     </p>
                     <KineticText
                         as="h2"
-                        text="Reservations"
+                        text="Reserve a Table"
                         className="font-display text-4xl text-brand-foreground sm:text-5xl"
                         stagger={0.1}
                         duration={0.9}
                     />
                     <p className="mx-auto mt-4 max-w-xl leading-relaxed text-brand-foregroundMuted">
-                        Reserve your evening with us. We hold tables for fifteen minutes
-                        past the booked time.
+                        Claim your table before the kitchen runs out of today&rsquo;s cravings. We
+                        hold reservations for fifteen minutes past the booked time.
                     </p>
                 </motion.div>
 
@@ -130,10 +132,10 @@ export default function Reservations() {
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-background/85 via-brand-background/10 to-transparent" />
                         <div className="relative flex h-full flex-col justify-end p-8">
                             <p className="font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
-                                Every Table, Considered
+                                Reserved for the Hungry
                             </p>
                             <p className="mt-3 font-display text-2xl text-brand-foreground">
-                                An evening worth the wait.
+                                A table worth craving.
                             </p>
                         </div>
                     </motion.div>
@@ -149,14 +151,14 @@ export default function Reservations() {
                         <div className="flex flex-col items-center gap-4 py-10 text-center">
                             <LuCircleCheck className="h-12 w-12 text-brand-success" />
                             <h3 className="font-display text-2xl text-brand-foreground">
-                                Reservation Requested
+                                Your Table Is Saved
                             </h3>
                             <p className="max-w-sm leading-relaxed text-brand-foregroundMuted">
                                 Thank you, {form.name.split(' ')[0] || 'friend'}. We&rsquo;ve
-                                noted your request for {form.partySize}{' '}
+                                saved your spot for {form.partySize}{' '}
                                 {Number(form.partySize) === 1 ? 'guest' : 'guests'} on{' '}
-                                {form.date} at {form.time}. A confirmation will follow by
-                                email shortly.
+                                {form.date} at {form.time}. Come hungry &mdash; a confirmation
+                                is on its way to your inbox.
                             </p>
                             <button
                                 type="button"
@@ -169,52 +171,37 @@ export default function Reservations() {
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                             <div className="grid gap-6 sm:grid-cols-2">
-                                <Field label="Full Name">
-                                    <input
-                                        type="text"
-                                        value={form.name}
-                                        onChange={update('name')}
-                                        className={inputClasses}
-                                        placeholder="Jane Doe"
-                                    />
-                                    {errors.name && (
-                                        <span className="mt-1 block text-xs text-brand-danger">
-                                            {errors.name}
-                                        </span>
-                                    )}
-                                </Field>
+                                <FloatingField
+                                    label="Who's joining the feast?"
+                                    icon={LuUser}
+                                    type="text"
+                                    value={form.name}
+                                    onChange={update('name')}
+                                    error={errors.name}
+                                    valid={form.name.trim().length > 0}
+                                />
 
-                                <Field label="Email">
-                                    <input
-                                        type="email"
-                                        value={form.email}
-                                        onChange={update('email')}
-                                        className={inputClasses}
-                                        placeholder="jane@example.com"
-                                    />
-                                    {errors.email && (
-                                        <span className="mt-1 block text-xs text-brand-danger">
-                                            {errors.email}
-                                        </span>
-                                    )}
-                                </Field>
+                                <FloatingField
+                                    label="Where should we send your confirmation?"
+                                    icon={LuMail}
+                                    type="email"
+                                    value={form.email}
+                                    onChange={update('email')}
+                                    error={errors.email}
+                                    valid={isValidEmail(form.email)}
+                                />
                             </div>
 
                             <div className="grid gap-6 sm:grid-cols-2">
-                                <Field label="Phone">
-                                    <input
-                                        type="tel"
-                                        value={form.phone}
-                                        onChange={update('phone')}
-                                        className={inputClasses}
-                                        placeholder="(555) 123-4567"
-                                    />
-                                    {errors.phone && (
-                                        <span className="mt-1 block text-xs text-brand-danger">
-                                            {errors.phone}
-                                        </span>
-                                    )}
-                                </Field>
+                                <FloatingField
+                                    label="Best number to reach you"
+                                    icon={LuPhone}
+                                    type="tel"
+                                    value={form.phone}
+                                    onChange={update('phone')}
+                                    error={errors.phone}
+                                    valid={form.phone.trim().length > 0}
+                                />
 
                                 <Field label="Party Size">
                                     <select
@@ -261,22 +248,22 @@ export default function Reservations() {
                                 </Field>
                             </div>
 
-                            <Field label="Special Requests (optional)">
-                                <textarea
-                                    value={form.requests}
-                                    onChange={update('requests')}
-                                    rows={4}
-                                    className={inputClasses}
-                                    placeholder="Allergies, celebrations, seating preferences…"
-                                />
-                            </Field>
+                            <FloatingField
+                                label="Cravings, allergies, or a celebration we should know about?"
+                                icon={LuMessageSquareHeart}
+                                as="textarea"
+                                rows={3}
+                                value={form.requests}
+                                onChange={update('requests')}
+                                className="resize-none"
+                            />
 
                             <button
                                 type="submit"
                                 className="flex w-full items-center justify-center gap-2 bg-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98]"
                             >
                                 <LuCalendarCheck className="h-4 w-4" />
-                                Request Reservation
+                                Save My Table
                             </button>
                         </form>
                     )}

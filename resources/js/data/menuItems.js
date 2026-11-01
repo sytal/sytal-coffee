@@ -1,133 +1,131 @@
-export const MENU_CATEGORIES = ['Coffee', 'Breakfast', 'Mains', 'Desserts'];
-
-const IMAGE_POOL = [
-    '/images/menu/bread-barrel.jpg',
-    '/images/menu/caesar.jpg',
-    '/images/menu/cake.jpg',
-    '/images/menu/greek-salad.jpg',
-    '/images/menu/lobster-bisque.jpg',
-    '/images/menu/lobster-roll.jpg',
-    '/images/menu/mozzarella.jpg',
-    '/images/menu/spinach-salad.jpg',
-    '/images/menu/tuscan-grilled.jpg',
-    '/images/fire-from-wok.jpg',
-    '/images/scallop.jpg',
-    '/images/chef-preparing-the-plates.jpg',
-    '/images/nicely-plated-food-served-at-decorated-table.jpg',
-    '/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg',
-];
-
-const TAG_POOL = [
-    'Single-Origin',
-    'Slow-Brewed',
-    'House Blend',
-    'Seasonal',
-    'Chef\'s Special',
-    'Hand-Finished',
-    'Wood-Fired',
-    'Direct-Trade',
-    'Small-Batch',
-    'Locally Sourced',
-    'Cold-Pressed',
-    'Aged',
-    'Char-Grilled',
-    'Family Recipe',
-];
-
-function buildItems(category, names) {
-    return names.map((name, i) => ({
-        category,
-        name,
-        description:
-            DESCRIPTIONS[category][i % DESCRIPTIONS[category].length],
-        price: `$${(PRICE_BASE[category] + i * PRICE_STEP[category]).toFixed(2)}`,
-        image: IMAGE_POOL[(IMAGE_OFFSET[category] + i) % IMAGE_POOL.length],
-        tags: [
-            TAG_POOL[i % TAG_POOL.length],
-            TAG_POOL[(i + 3) % TAG_POOL.length],
-            TAG_POOL[(i + 6) % TAG_POOL.length],
-        ],
-    }));
-}
-
-const PRICE_BASE = { Coffee: 4, Breakfast: 10, Mains: 20, Desserts: 8 };
-const PRICE_STEP = { Coffee: 0.25, Breakfast: 0.4, Mains: 0.75, Desserts: 0.3 };
-const IMAGE_OFFSET = { Coffee: 0, Breakfast: 3, Mains: 7, Desserts: 10 };
-
-const DESCRIPTIONS = {
-    Coffee: [
-        'Single-origin beans, dark cocoa notes, pulled to order.',
-        'Slow-brewed light roast with a honeyed, floral finish.',
-        'Equal parts espresso and steamed milk, velvet texture.',
-        'House espresso, cardamom-infused milk, gold dusting.',
-        'Cold-extracted for eighteen hours, smooth and low-acid.',
-        'Double shot over vanilla bean cream, lightly whipped.',
-        'Whole-bean pour, citrus brightness, clean finish.',
-        'Steamed oat milk, toasted hazelnut syrup, cinnamon dust.',
-    ],
-    Breakfast: [
-        'Baked eggs in spiced tomato, black truffle shavings.',
-        'Stacked buttermilk pancakes, burnt honey, cultured cream.',
-        'Sourdough, whipped avocado, citrus-cured salmon.',
-        'Charred sourdough, confit garlic, heirloom tomato.',
-        'Folded omelette, aged gruyère, wild mushroom.',
-        'Granola, poached pear, honeyed yogurt.',
-        'Brioche French toast, salted maple, seasonal berries.',
-    ],
-    Mains: [
-        'Cherry gastrique, charred fennel, potato gratin.',
-        'Slow-cooked Arborio, saffron, aged parmesan, gold leaf.',
-        'Brown butter, heirloom greens, roasted lemon jus.',
-        'Dry-aged ribeye, bone marrow butter, charred shallot.',
-        'Wood-fired, confit garlic, rosemary jus.',
-        'Pan-roasted, root vegetable purée, red wine reduction.',
-        'Hand-rolled pasta, slow-braised short rib ragù.',
-    ],
-    Desserts: [
-        'Molten center, salted caramel, vanilla bean ice cream.',
-        'Roasted figs, whipped mascarpone, honeyed pistachio.',
-        'Layered mascarpone, house espresso, cocoa dust.',
-        'Burnt Basque cheesecake, seasonal berry coulis.',
-        'Dark chocolate ganache, candied orange, sea salt.',
-        'Caramelized pear tart, almond frangipane.',
-    ],
-};
-
-const COFFEE_NAMES = [
-    'Signature Espresso', 'Golden Pour-Over', 'Maison Cortado', 'Spiced Cardamom Latte',
-    'Eighteen-Hour Cold Brew', 'Vanilla Bean Affogato', 'Honduran Single-Origin', 'Hazelnut Oat Flat White',
-    'Caramel Macchiato', 'Double Ristretto', 'Iced Vietnamese', 'Mocha Noir',
-    'Turmeric Gold Latte', 'Maple Pecan Latte', 'Classic Americano', 'Nitro Cold Brew',
-    'Lavender Honey Latte', 'Espresso Tonic', 'Pistachio Cortado', 'Smoked Cinnamon Mocha',
-];
-
-const BREAKFAST_NAMES = [
-    'Truffle Shakshuka', 'Burnt Honey Pancakes', 'Avocado & Smoked Salmon Toast', 'Garlic Confit Toast',
-    'Wild Mushroom Omelette', 'Honey Pear Granola', 'Brioche French Toast', 'Smashed Pea & Feta Toast',
-    'Chorizo Hash', 'Baked Ricotta & Fig', 'Breakfast Burrito', 'Classic Eggs Benedict',
-    'Buckwheat Crêpes', 'Herbed Shakshuka', 'Maple Bacon Waffles', 'Smoked Trout Bagel',
-    'Golden Beet Toast', 'Spiced Chai Oats', 'Sourdough Breakfast Board', 'Lemon Ricotta Pancakes',
-];
-
-const MAINS_NAMES = [
-    'Pan-Seared Duck Breast', 'Saffron Risotto', 'Charred Sea Bass', 'Dry-Aged Ribeye',
-    'Wood-Fired Half Chicken', 'Braised Lamb Shank', 'Short Rib Pappardelle', 'Miso-Glazed Salmon',
-    'Porcini Tagliatelle', 'Herb-Crusted Rack of Lamb', 'Seared Scallops', 'Truffle Mushroom Gnocchi',
-    'Grilled Octopus', 'Black Garlic Tenderloin', 'Roasted Half Lobster', 'Harissa-Spiced Cauliflower',
-    'Smoked Brisket Plate', 'Pan-Roasted Halibut', 'Confit Duck Leg', 'Wild Mushroom Wellington',
-];
-
-const DESSERTS_NAMES = [
-    'Dark Chocolate Fondant', 'Fig & Mascarpone Tart', 'Espresso Tiramisu', 'Burnt Basque Cheesecake',
-    'Orange Chocolate Ganache', 'Caramelized Pear Tart', 'Salted Caramel Profiteroles', 'Pistachio Panna Cotta',
-    'Lemon Olive Oil Cake', 'Hazelnut Praline Mousse', 'Vanilla Bean Crème Brûlée', 'Roasted Peach Galette',
-    'Dark Cherry Clafoutis', 'Honey Lavender Sorbet', 'Spiced Apple Tarte Tatin', 'Matcha White Chocolate Tart',
-    'Toasted Coconut Mousse', 'Caramel Walnut Brownie', 'Berry Mille-Feuille', 'Cardamom Rice Pudding',
-];
+export const MENU_CATEGORIES = ['Loaded Fries', 'Burgers', 'Shakes & Drinks', 'Desserts'];
 
 export const MENU_ITEMS = [
-    ...buildItems('Coffee', COFFEE_NAMES),
-    ...buildItems('Breakfast', BREAKFAST_NAMES),
-    ...buildItems('Mains', MAINS_NAMES),
-    ...buildItems('Desserts', DESSERTS_NAMES),
+    // Loaded Fries
+    {
+        category: 'Loaded Fries',
+        name: 'The Crunches Loaded',
+        description: 'Crispy fries buried under melted cheese, beef crumble, and house sauce.',
+        price: 'Rs. 650',
+        image: '/images/menu/lobster-roll.jpg',
+        tags: ['Fan Favorite', 'Extra Cheese', 'Shareable'],
+    },
+    {
+        category: 'Loaded Fries',
+        name: 'Peri Peri Fries',
+        description: 'Hand-cut fries tossed in fiery peri peri spice, finished with garlic mayo.',
+        price: 'Rs. 450',
+        image: '/images/menu/tuscan-grilled.jpg',
+        tags: ['Spicy', 'Hand-Cut', 'Crowd Favorite'],
+    },
+    {
+        category: 'Loaded Fries',
+        name: 'Smoky BBQ Fries',
+        description: 'Loaded with smoky BBQ pulled beef, cheddar drizzle, and crispy onions.',
+        price: 'Rs. 700',
+        image: '/images/menu/caesar.jpg',
+        tags: ['Smoky', 'BBQ', 'Loaded'],
+    },
+    {
+        category: 'Loaded Fries',
+        name: 'Classic Salted Fries',
+        description: 'Golden, crispy, and simple — the fries that started it all.',
+        price: 'Rs. 350',
+        image: '/images/menu/bread-barrel.jpg',
+        tags: ['Classic', 'Crispy', 'Quick Bite'],
+    },
+
+    // Burgers
+    {
+        category: 'Burgers',
+        name: 'Crunches Signature Stack',
+        description: 'Double beef patty, melted cheese, caramelized onions, house special sauce.',
+        price: 'Rs. 950',
+        image: '/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg',
+        tags: ["Chef's Pick", 'Double Patty', 'Signature'],
+    },
+    {
+        category: 'Burgers',
+        name: 'Smoky BBQ Burger',
+        description: 'Beef patty glazed in smoky BBQ sauce, crispy onion rings, smoked cheddar.',
+        price: 'Rs. 850',
+        image: '/images/menu/mozzarella.jpg',
+        tags: ['BBQ', 'Smoked Cheddar', 'Onion Rings'],
+    },
+    {
+        category: 'Burgers',
+        name: 'Zinger Crunch Burger',
+        description: 'Crispy fried chicken fillet, spicy mayo, fresh lettuce, toasted bun.',
+        price: 'Rs. 800',
+        image: '/images/menu/greek-salad.jpg',
+        tags: ['Crispy Chicken', 'Spicy Mayo', 'Best Seller'],
+    },
+    {
+        category: 'Burgers',
+        name: 'Cheese Melt Burger',
+        description: 'Single patty drenched in a triple-cheese blend — simple, messy, worth it.',
+        price: 'Rs. 700',
+        image: '/images/nicely-plated-food-served-at-decorated-table.jpg',
+        tags: ['Triple Cheese', 'Classic', 'Gooey'],
+    },
+
+    // Shakes & Drinks
+    {
+        category: 'Shakes & Drinks',
+        name: 'Nutella Overload Shake',
+        description: 'Thick Nutella shake, whipped cream, chocolate drizzle, crushed wafers.',
+        price: 'Rs. 550',
+        image: '/images/menu/cake.jpg',
+        tags: ['Nutella', 'Thick Shake', 'Indulgent'],
+    },
+    {
+        category: 'Shakes & Drinks',
+        name: 'Oreo Blast',
+        description: 'Crushed Oreos blended into a creamy vanilla base, topped with cookie crumbs.',
+        price: 'Rs. 500',
+        image: '/images/menu/spinach-salad.jpg',
+        tags: ['Oreo', 'Creamy', 'Crowd Favorite'],
+    },
+    {
+        category: 'Shakes & Drinks',
+        name: 'Classic Lemonade',
+        description: 'Fresh-squeezed lemonade, mint, and a hint of soda for the fizz.',
+        price: 'Rs. 350',
+        image: '/images/menu/lobster-bisque.jpg',
+        tags: ['Fresh', 'Minty', 'Refreshing'],
+    },
+    {
+        category: 'Shakes & Drinks',
+        name: 'Iced Mocha Freeze',
+        description: 'Blended cold coffee, chocolate syrup, and a cloud of whipped cream.',
+        price: 'Rs. 480',
+        image: '/images/fire-from-wok.jpg',
+        tags: ['Cold Coffee', 'Chocolate', 'Blended'],
+    },
+
+    // Desserts
+    {
+        category: 'Desserts',
+        name: 'Molten Chocolate Brownie',
+        description: 'Warm chocolate brownie, molten center, vanilla ice cream, chocolate drizzle.',
+        price: 'Rs. 480',
+        image: '/images/menu/cake.jpg',
+        tags: ["Crunches' Classic", 'Molten Center', 'Warm'],
+    },
+    {
+        category: 'Desserts',
+        name: 'Nutella Waffle',
+        description: 'Crisp waffle loaded with Nutella, banana slices, and powdered sugar.',
+        price: 'Rs. 550',
+        image: '/images/menu/spinach-salad.jpg',
+        tags: ['Nutella', 'Crisp', 'Shareable'],
+    },
+    {
+        category: 'Desserts',
+        name: 'Churros & Dip',
+        description: 'Crispy cinnamon-sugar churros served with warm chocolate dip.',
+        price: 'Rs. 450',
+        image: '/images/menu/lobster-bisque.jpg',
+        tags: ['Crispy', 'Cinnamon Sugar', 'Dippable'],
+    },
 ];

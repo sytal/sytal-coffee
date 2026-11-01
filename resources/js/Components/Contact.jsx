@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import KineticText from '@/Components/motion/KineticText';
+import FloatingField from '@/Components/FloatingField';
 import { playUiSound } from '@/lib/uiSound';
 import {
     LuMapPin,
@@ -8,6 +9,9 @@ import {
     LuClock,
     LuSend,
     LuCircleCheck,
+    LuUser,
+    LuMail,
+    LuMessageCircle,
 } from 'react-icons/lu';
 import { FiInstagram, FiFacebook, FiTwitter } from 'react-icons/fi';
 
@@ -17,17 +21,17 @@ const CONTACT_INFO = [
     {
         icon: LuMapPin,
         label: 'Address',
-        value: '128 Amber Lane, Downtown District',
+        value: 'Gulberg Thana Road, Faisalabad',
     },
     {
         icon: LuPhone,
         label: 'Phone',
-        value: '+1 (555) 982-4471',
+        value: 'Call for reservations',
     },
     {
         icon: LuClock,
         label: 'Hours',
-        value: 'Tue–Sun, 8am – 11pm',
+        value: 'Daily, 1pm – 1am',
     },
 ];
 
@@ -37,8 +41,7 @@ const SOCIAL_LINKS = [
     { icon: FiTwitter, label: 'Twitter', href: 'https://twitter.com' },
 ];
 
-const inputClasses =
-    'w-full rounded-sm border border-brand-border bg-brand-surface px-4 py-3 text-brand-foreground placeholder:text-brand-foregroundMuted/50 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/40';
+const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
 export default function Contact() {
     const [form, setForm] = useState(EMPTY_FORM);
@@ -50,8 +53,7 @@ export default function Contact() {
     const glowY = useMotionValue(50);
     const springX = useSpring(glowX, { stiffness: 150, damping: 20 });
     const springY = useSpring(glowY, { stiffness: 150, damping: 20 });
-    // Brand gold (#cda45e) expressed as rgba for a translucent cursor-follow glow.
-    const infoGlow = useMotionTemplate`radial-gradient(240px circle at ${springX}% ${springY}%, rgba(205, 164, 94, 0.16), transparent 70%)`;
+    const infoGlow = useMotionTemplate`radial-gradient(240px circle at ${springX}% ${springY}%, rgba(255, 61, 104, 0.16), transparent 70%)`;
 
     const handleInfoMouseMove = (e) => {
         const rect = infoRef.current?.getBoundingClientRect();
@@ -99,18 +101,18 @@ export default function Contact() {
                     className="mb-16 text-center"
                 >
                     <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
-                        Get in Touch
+                        Say Hello
                     </p>
                     <KineticText
                         as="h2"
-                        text="Contact Us"
+                        text="Let's Talk"
                         className="font-display text-4xl text-brand-foreground sm:text-5xl"
                         stagger={0.1}
                         duration={0.9}
                     />
                     <p className="mx-auto mt-4 max-w-xl leading-relaxed text-brand-foregroundMuted">
-                        Questions, private events, or feedback — we&rsquo;d love to hear
-                        from you.
+                        Catering, private events, or just telling us how good the fries
+                        were — we&rsquo;re all ears.
                     </p>
                 </motion.div>
 
@@ -172,11 +174,12 @@ export default function Contact() {
                             <div className="flex flex-col items-center gap-4 py-10 text-center">
                                 <LuCircleCheck className="h-12 w-12 text-brand-success" />
                                 <h3 className="font-display text-2xl text-brand-foreground">
-                                    Message Sent
+                                    Message Received
                                 </h3>
                                 <p className="max-w-sm leading-relaxed text-brand-foregroundMuted">
-                                    Thank you, {form.name.split(' ')[0] || 'friend'}. We&rsquo;ll
-                                    get back to you shortly.
+                                    Thanks, {form.name.split(' ')[0] || 'friend'} — we&rsquo;ll be
+                                    in touch soon. In the meantime, maybe start thinking about
+                                    what you&rsquo;re ordering.
                                 </p>
                                 <button
                                     type="button"
@@ -189,60 +192,38 @@ export default function Contact() {
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                                 <div className="grid gap-6 sm:grid-cols-2">
-                                    <label className="block">
-                                        <span className="mb-2 block text-xs uppercase tracking-wider text-brand-foregroundMuted">
-                                            Name
-                                        </span>
-                                        <input
-                                            type="text"
-                                            value={form.name}
-                                            onChange={update('name')}
-                                            className={inputClasses}
-                                            placeholder="Jane Doe"
-                                        />
-                                        {errors.name && (
-                                            <span className="mt-1 block text-xs text-brand-danger">
-                                                {errors.name}
-                                            </span>
-                                        )}
-                                    </label>
+                                    <FloatingField
+                                        label="What should we call you?"
+                                        icon={LuUser}
+                                        type="text"
+                                        value={form.name}
+                                        onChange={update('name')}
+                                        error={errors.name}
+                                        valid={form.name.trim().length > 0}
+                                    />
 
-                                    <label className="block">
-                                        <span className="mb-2 block text-xs uppercase tracking-wider text-brand-foregroundMuted">
-                                            Email
-                                        </span>
-                                        <input
-                                            type="email"
-                                            value={form.email}
-                                            onChange={update('email')}
-                                            className={inputClasses}
-                                            placeholder="jane@example.com"
-                                        />
-                                        {errors.email && (
-                                            <span className="mt-1 block text-xs text-brand-danger">
-                                                {errors.email}
-                                            </span>
-                                        )}
-                                    </label>
+                                    <FloatingField
+                                        label="Where can we reply?"
+                                        icon={LuMail}
+                                        type="email"
+                                        value={form.email}
+                                        onChange={update('email')}
+                                        error={errors.email}
+                                        valid={isValidEmail(form.email)}
+                                    />
                                 </div>
 
-                                <label className="block">
-                                    <span className="mb-2 block text-xs uppercase tracking-wider text-brand-foregroundMuted">
-                                        Message
-                                    </span>
-                                    <textarea
-                                        value={form.message}
-                                        onChange={update('message')}
-                                        rows={5}
-                                        className={inputClasses}
-                                        placeholder="How can we help?"
-                                    />
-                                    {errors.message && (
-                                        <span className="mt-1 block text-xs text-brand-danger">
-                                            {errors.message}
-                                        </span>
-                                    )}
-                                </label>
+                                <FloatingField
+                                    label="What's on your mind (or your plate wishlist)?"
+                                    icon={LuMessageCircle}
+                                    as="textarea"
+                                    rows={5}
+                                    value={form.message}
+                                    onChange={update('message')}
+                                    error={errors.message}
+                                    valid={form.message.trim().length > 0}
+                                    className="resize-none"
+                                />
 
                                 <button
                                     type="submit"

@@ -46,7 +46,7 @@ export default function About() {
 
                     <KineticText
                         as="h2"
-                        text="A House Built on Patience & Fire"
+                        text="Built on Late Nights & Loaded Plates"
                         className="font-display text-4xl text-brand-foreground sm:text-5xl"
                         stagger={0.1}
                         duration={0.9}
@@ -67,8 +67,8 @@ export default function About() {
                         transition={{ duration: 0.7 }}
                         className="my-10 border-l-2 border-brand-gold py-1 pl-6 font-display text-xl italic text-brand-foreground sm:text-2xl"
                     >
-                        &ldquo;Slow extraction, honest sourcing &mdash; a dining room
-                        that feels like a quiet indulgence.&rdquo;
+                        &ldquo;No fuss, no pretense &mdash; just a kitchen that doesn&rsquo;t
+                        slow down after dark.&rdquo;
                     </motion.blockquote>
 
                     <motion.p

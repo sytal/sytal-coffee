@@ -41,7 +41,7 @@ function NewsletterForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email"
+                placeholder="Where the first bite goes"
                 className="w-full flex-1 rounded-sm border border-brand-border bg-brand-background px-4 py-2.5 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/70 focus:border-brand-gold focus:outline-none"
             />
             <button
@@ -134,10 +134,10 @@ export default function Footer() {
 
                     <div className="flex flex-col gap-4">
                         <h3 className="font-display text-sm uppercase tracking-widest text-brand-gold">
-                            Stay in Touch
+                            Get First Dibs
                         </h3>
                         <p className="text-sm text-brand-foregroundMuted">
-                            Seasonal menus, tastings, and news — no spam, just coffee.
+                            New menu drops, secret specials, and deals — straight to your inbox.
                         </p>
                         <NewsletterForm />
                     </div>

@@ -1,4 +1,4 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
+import defaultTheme from 'tailwindcss/defaultTheme.js';
 import forms from '@tailwindcss/forms';
 import { colors } from './resources/js/config/colors.js';
 

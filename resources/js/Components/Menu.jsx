@@ -197,9 +197,7 @@ export default function Menu() {
                             <div
                                 ref={trackRef}
                                 onScroll={updateActiveFromScroll}
-                                data-cursor="drag"
-                                data-cursor-text="Drag"
-                                className="scrollbar-hide flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 sm:px-[8vw]"
+                                className="scrollbar-hide flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 active:cursor-grabbing sm:px-[8vw]"
                             >
                                 {items.map((item, index) => (
                                     <div

@@ -47,8 +47,8 @@ const GALLERY_TILES = [
 
 export default function Gallery() {
     return (
-        <section className="bg-brand-surface py-24">
-            <div className="mx-auto max-w-6xl px-6">
+        <section className="bg-brand-surface py-28">
+            <div className="mx-auto max-w-7xl px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -59,17 +59,17 @@ export default function Gallery() {
                     <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
                         Ambiance
                     </p>
-                    <h2 className="font-display text-4xl text-brand-foreground sm:text-5xl">
+                    <h2 className="font-display text-5xl text-brand-foreground sm:text-6xl">
                         A Space to Savor
                     </h2>
-                    <p className="mt-4 text-brand-foregroundMuted">
+                    <p className="mt-4 text-lg text-brand-foregroundMuted">
                         A glimpse into the Crunches experience — neon lights, loud energy,
                         and unmistakably ours.
                     </p>
                 </motion.div>
 
-                <ScrollScale range={[0.82, 1]} className="mt-14">
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:[grid-auto-rows:9rem] sm:[grid-auto-flow:dense]">
+                <ScrollScale range={[0.82, 1]} className="mt-16">
+                    <div className="grid grid-cols-2 gap-5 sm:grid-cols-4 sm:[grid-auto-rows:12rem] sm:[grid-auto-flow:dense]">
                         {GALLERY_TILES.map((tile, index) => (
                             <motion.div
                                 key={tile.label}
@@ -77,7 +77,7 @@ export default function Gallery() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true, amount: 0.2 }}
                                 transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                                className={`h-40 cursor-pointer sm:h-auto ${tile.span}`}
+                                className={`h-48 cursor-pointer sm:h-auto ${tile.span}`}
                             >
                                 <TiltCard
                                     className="group relative h-full w-full overflow-hidden rounded-lg border border-brand-border/60"

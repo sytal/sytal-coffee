@@ -1,6 +1,16 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
-import { LuCalendarCheck, LuCircleCheck, LuUser, LuMail, LuPhone, LuMessageSquareHeart } from 'react-icons/lu';
+import {
+    LuCalendarCheck,
+    LuCircleCheck,
+    LuUser,
+    LuMail,
+    LuPhone,
+    LuMessageSquareHeart,
+    LuUsers,
+    LuCalendar,
+    LuClock,
+} from 'react-icons/lu';
 import KineticText from '@/Components/motion/KineticText';
 import FloatingField from '@/Components/FloatingField';
 import { playUiSound } from '@/lib/uiSound';
@@ -16,20 +26,6 @@ const EMPTY_FORM = {
     partySize: 2,
     requests: '',
 };
-
-function Field({ label, children }) {
-    return (
-        <label className="block">
-            <span className="mb-2 block text-xs uppercase tracking-wider text-brand-foregroundMuted">
-                {label}
-            </span>
-            {children}
-        </label>
-    );
-}
-
-const inputClasses =
-    'w-full rounded-sm border border-brand-border bg-brand-surface px-4 py-3 text-brand-foreground placeholder:text-brand-foregroundMuted/50 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/40';
 
 const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
@@ -205,49 +201,42 @@ export default function Reservations() {
                                     valid={form.phone.trim().length > 0}
                                 />
 
-                                <Field label="Party Size">
-                                    <select
-                                        value={form.partySize}
-                                        onChange={update('partySize')}
-                                        className={inputClasses}
-                                    >
-                                        {PARTY_SIZES.map((size) => (
-                                            <option key={size} value={size}>
-                                                {size} {size === 1 ? 'Guest' : 'Guests'}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </Field>
+                                <FloatingField
+                                    label="Party Size"
+                                    icon={LuUsers}
+                                    as="select"
+                                    alwaysFloated
+                                    value={form.partySize}
+                                    onChange={update('partySize')}
+                                >
+                                    {PARTY_SIZES.map((size) => (
+                                        <option key={size} value={size}>
+                                            {size} {size === 1 ? 'Guest' : 'Guests'}
+                                        </option>
+                                    ))}
+                                </FloatingField>
                             </div>
 
                             <div className="grid gap-6 sm:grid-cols-2">
-                                <Field label="Date">
-                                    <input
-                                        type="date"
-                                        value={form.date}
-                                        onChange={update('date')}
-                                        className={inputClasses}
-                                    />
-                                    {errors.date && (
-                                        <span className="mt-1 block text-xs text-brand-danger">
-                                            {errors.date}
-                                        </span>
-                                    )}
-                                </Field>
+                                <FloatingField
+                                    label="Date"
+                                    icon={LuCalendar}
+                                    alwaysFloated
+                                    type="date"
+                                    value={form.date}
+                                    onChange={update('date')}
+                                    error={errors.date}
+                                />
 
-                                <Field label="Time">
-                                    <input
-                                        type="time"
-                                        value={form.time}
-                                        onChange={update('time')}
-                                        className={inputClasses}
-                                    />
-                                    {errors.time && (
-                                        <span className="mt-1 block text-xs text-brand-danger">
-                                            {errors.time}
-                                        </span>
-                                    )}
-                                </Field>
+                                <FloatingField
+                                    label="Time"
+                                    icon={LuClock}
+                                    alwaysFloated
+                                    type="time"
+                                    value={form.time}
+                                    onChange={update('time')}
+                                    error={errors.time}
+                                />
                             </div>
 
                             <FloatingField

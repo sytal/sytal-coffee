@@ -5,6 +5,7 @@ import Hero from '@/Components/Hero';
 import Menu from '@/Components/Menu';
 import SectionDivider from '@/Components/SectionDivider';
 import CraveBreak from '@/Components/CraveBreak';
+import { ScrollScaleSection } from '@/Components/motion/ScrollScale';
 
 // Below-the-fold sections are code-split so the initial page load only
 // pays for Hero/CraveBreak/Menu — the rest streams in as the user scrolls.
@@ -21,32 +22,42 @@ export default function Home() {
                 <Hero />
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
-            <CraveBreak />
+            <ScrollScaleSection>
+                <CraveBreak />
+            </ScrollScaleSection>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="menu">
                 <Menu />
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
-            <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
-                <Gallery />
-            </Suspense>
+            <ScrollScaleSection>
+                <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
+                    <Gallery />
+                </Suspense>
+            </ScrollScaleSection>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="about">
-                <Suspense fallback={<div className="h-screen bg-brand-background" />}>
-                    <About />
-                </Suspense>
+                <ScrollScaleSection>
+                    <Suspense fallback={<div className="h-screen bg-brand-background" />}>
+                        <About />
+                    </Suspense>
+                </ScrollScaleSection>
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
             <div id="reservations">
-                <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
-                    <Reservations />
-                </Suspense>
+                <ScrollScaleSection>
+                    <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
+                        <Reservations />
+                    </Suspense>
+                </ScrollScaleSection>
             </div>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="contact">
-                <Suspense fallback={<div className="h-screen bg-brand-background" />}>
-                    <Contact />
-                </Suspense>
+                <ScrollScaleSection>
+                    <Suspense fallback={<div className="h-screen bg-brand-background" />}>
+                        <Contact />
+                    </Suspense>
+                </ScrollScaleSection>
             </div>
         </SiteLayout>
     );

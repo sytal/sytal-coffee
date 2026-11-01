@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiInstagram, FiFacebook, FiTwitter, FiMapPin, FiPhone, FiClock } from 'react-icons/fi';
+import useSmoothScroll from '@/lib/useSmoothScroll';
 
 const QUICK_LINKS = [
     { label: 'Home', href: '#home' },
@@ -10,12 +11,6 @@ const QUICK_LINKS = [
     { label: 'Reservations', href: '#reservations' },
     { label: 'Contact', href: '#contact' },
 ];
-
-function scrollToSection(e, href) {
-    e.preventDefault();
-    const target = document.getElementById(href.slice(1));
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
 const SOCIALS = [
     { label: 'Instagram', href: 'https://instagram.com', Icon: FiInstagram },
@@ -60,6 +55,8 @@ function NewsletterForm() {
 }
 
 export default function Footer() {
+    const scrollToSection = useSmoothScroll();
+
     return (
         <footer className="border-t border-brand-border/60 bg-brand-surface">
             <div className="mx-auto max-w-6xl px-6 py-16">
@@ -102,7 +99,10 @@ export default function Footer() {
                                 <a
                                     key={link.href}
                                     href={link.href}
-                                    onClick={(e) => scrollToSection(e, link.href)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        scrollToSection(link.href.slice(1));
+                                    }}
                                     className="text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
                                 >
                                     {link.label}

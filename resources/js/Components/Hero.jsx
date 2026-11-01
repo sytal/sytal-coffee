@@ -4,6 +4,7 @@ import KineticText from '@/Components/motion/KineticText';
 import Magnetic from '@/Components/motion/Magnetic';
 import FloatingElements from '@/Components/motion/FloatingElements';
 import CursorSpotlight from '@/Components/motion/CursorSpotlight';
+import useSmoothScroll from '@/lib/useSmoothScroll';
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -26,6 +27,7 @@ export default function Hero({
     images = DEFAULT_IMAGES,
 }) {
     const reduce = useReducedMotion();
+    const scrollToSection = useSmoothScroll();
     const ref = useRef(null);
     const { scrollYProgress } = useScroll({
         target: ref,
@@ -134,7 +136,7 @@ export default function Hero({
                             href={ctaHref}
                             onClick={(e) => {
                                 e.preventDefault();
-                                document.getElementById(ctaHref.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                scrollToSection(ctaHref.slice(1));
                             }}
                             className="inline-flex items-center justify-center rounded-full bg-brand-gold px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98]"
                         >
@@ -146,7 +148,7 @@ export default function Hero({
                             href={secondaryHref}
                             onClick={(e) => {
                                 e.preventDefault();
-                                document.getElementById(secondaryHref.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                scrollToSection(secondaryHref.slice(1));
                             }}
                             className="inline-flex items-center justify-center rounded-full border border-brand-foreground/40 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-foreground transition-all duration-300 hover:scale-[1.02] hover:border-brand-foreground/80 active:scale-[0.98]"
                         >

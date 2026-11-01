@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LuMenu, LuX } from 'react-icons/lu';
+import useSmoothScroll from '@/lib/useSmoothScroll';
 
 const NAV_LINKS = [
     { label: 'Home', href: '#home' },
@@ -31,6 +32,7 @@ export default function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState('home');
+    const scrollToSection = useSmoothScroll();
 
     useEffect(() => {
         let ticking = false;
@@ -71,11 +73,8 @@ export default function Navbar() {
     function handleNavClick(e, href) {
         e.preventDefault();
         setOpen(false);
-        const target = document.getElementById(href.slice(1));
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            setActiveSection(href.slice(1));
-        }
+        scrollToSection(href.slice(1));
+        setActiveSection(href.slice(1));
     }
 
     return (

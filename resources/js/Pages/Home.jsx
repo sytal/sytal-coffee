@@ -7,6 +7,7 @@ import About from '@/Components/About';
 import Reservations from '@/Components/Reservations';
 import Contact from '@/Components/Contact';
 import SectionDivider from '@/Components/SectionDivider';
+import CraveBreak from '@/Components/CraveBreak';
 
 export default function Home() {
     return (
@@ -15,7 +16,9 @@ export default function Home() {
             <div id="home">
                 <Hero />
             </div>
-            <SectionDivider fromClass="from-brand-background" toClass="to-brand-background" />
+            <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
+            <CraveBreak />
+            <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="menu">
                 <Menu />
             </div>

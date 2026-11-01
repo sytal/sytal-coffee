@@ -12,12 +12,44 @@ function getCtx() {
 
 const FREQUENCIES = { click: 560, hover: 780, success: 900 };
 
-/** Synthesized UI sound — no audio assets needed, just a soft sine blip. */
+function playSizzle(ctx) {
+    const duration = 0.25;
+    const bufferSize = Math.floor(ctx.sampleRate * duration);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const bandpass = ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.value = 3200;
+    bandpass.Q.value = 0.7;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    noise.connect(bandpass);
+    bandpass.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start();
+}
+
+/** Synthesized UI sound — no audio assets needed, just a soft sine blip (or a noise-burst "sizzle"). */
 export function playUiSound(type = 'click') {
     if (muted) return;
     const ctx = getCtx();
     if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume();
+
+    if (type === 'sizzle') {
+        playSizzle(ctx);
+        return;
+    }
 
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();

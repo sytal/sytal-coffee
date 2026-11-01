@@ -3,6 +3,8 @@ import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion
 import { Link } from '@inertiajs/react';
 import KineticText from '@/Components/motion/KineticText';
 import Magnetic from '@/Components/motion/Magnetic';
+import FloatingElements from '@/Components/motion/FloatingElements';
+import CursorSpotlight from '@/Components/motion/CursorSpotlight';
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -40,6 +42,8 @@ export default function Hero({
             <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/70 to-brand-background/20" />
             <div className="absolute inset-0 bg-gradient-to-b from-brand-background/60 via-transparent to-transparent" />
             <div aria-hidden className="bg-noise pointer-events-none absolute inset-0" />
+            <FloatingElements />
+            <CursorSpotlight />
 
             <motion.div
                 style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}

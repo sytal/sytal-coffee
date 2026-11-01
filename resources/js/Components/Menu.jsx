@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LuSparkles } from 'react-icons/lu';
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/data/menuItems';
+import TiltCard from '@/Components/motion/TiltCard';
 
 export default function Menu() {
     const [activeCategory, setActiveCategory] = useState(MENU_CATEGORIES[0]);
@@ -77,33 +78,39 @@ export default function Menu() {
                                     initial={{ opacity: 0, y: 32, scale: 0.96 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                                    className="group relative mb-10 overflow-hidden rounded-2xl border border-brand-border/60"
+                                    className="mb-10"
                                 >
-                                    <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[21/9]">
-                                        <img
-                                            src={featured.image}
-                                            alt={featured.name}
-                                            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/40 to-transparent" />
-                                        <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end gap-2 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8">
-                                            <div className="max-w-xl">
-                                                <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-brand-gold/50 bg-brand-background/60 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-brand-gold">
-                                                    <LuSparkles className="h-3 w-3" />
-                                                    Chef's Pick
+                                    <TiltCard
+                                        className="group relative overflow-hidden rounded-2xl border border-brand-border/60"
+                                        maxTilt={6}
+                                        scale={1.015}
+                                    >
+                                        <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[21/9]">
+                                            <img
+                                                src={featured.image}
+                                                alt={featured.name}
+                                                className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/40 to-transparent" />
+                                            <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end gap-2 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8">
+                                                <div className="max-w-xl">
+                                                    <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-brand-gold/50 bg-brand-background/60 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-brand-gold">
+                                                        <LuSparkles className="h-3 w-3" />
+                                                        Chef's Pick
+                                                    </span>
+                                                    <h3 className="font-display text-3xl text-brand-foreground sm:text-4xl">
+                                                        {featured.name}
+                                                    </h3>
+                                                    <p className="mt-2 max-w-md text-sm text-brand-foregroundMuted sm:text-base">
+                                                        {featured.description}
+                                                    </p>
+                                                </div>
+                                                <span className="shrink-0 font-display text-2xl text-brand-gold sm:text-3xl">
+                                                    {featured.price}
                                                 </span>
-                                                <h3 className="font-display text-3xl text-brand-foreground sm:text-4xl">
-                                                    {featured.name}
-                                                </h3>
-                                                <p className="mt-2 max-w-md text-sm text-brand-foregroundMuted sm:text-base">
-                                                    {featured.description}
-                                                </p>
                                             </div>
-                                            <span className="shrink-0 font-display text-2xl text-brand-gold sm:text-3xl">
-                                                {featured.price}
-                                            </span>
                                         </div>
-                                    </div>
+                                    </TiltCard>
                                 </motion.div>
                             )}
 

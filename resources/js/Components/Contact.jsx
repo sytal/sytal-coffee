@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
+import KineticText from '@/Components/motion/KineticText';
 import {
     LuMapPin,
     LuPhone,
@@ -43,6 +44,21 @@ export default function Contact() {
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
 
+    const infoRef = useRef(null);
+    const glowX = useMotionValue(50);
+    const glowY = useMotionValue(50);
+    const springX = useSpring(glowX, { stiffness: 150, damping: 20 });
+    const springY = useSpring(glowY, { stiffness: 150, damping: 20 });
+    // Brand gold (#cda45e) expressed as rgba for a translucent cursor-follow glow.
+    const infoGlow = useMotionTemplate`radial-gradient(240px circle at ${springX}% ${springY}%, rgba(205, 164, 94, 0.16), transparent 70%)`;
+
+    const handleInfoMouseMove = (e) => {
+        const rect = infoRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        glowX.set(((e.clientX - rect.left) / rect.width) * 100);
+        glowY.set(((e.clientY - rect.top) / rect.height) * 100);
+    };
+
     const update = (field) => (e) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -83,9 +99,13 @@ export default function Contact() {
                     <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
                         Get in Touch
                     </p>
-                    <h2 className="font-display text-4xl text-brand-foreground sm:text-5xl">
-                        Contact Us
-                    </h2>
+                    <KineticText
+                        as="h2"
+                        text="Contact Us"
+                        className="font-display text-4xl text-brand-foreground sm:text-5xl"
+                        stagger={0.1}
+                        duration={0.9}
+                    />
                     <p className="mx-auto mt-4 max-w-xl leading-relaxed text-brand-foregroundMuted">
                         Questions, private events, or feedback — we&rsquo;d love to hear
                         from you.
@@ -98,8 +118,15 @@ export default function Contact() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.7 }}
-                        className="lg:col-span-2"
+                        onMouseMove={handleInfoMouseMove}
+                        ref={infoRef}
+                        className="relative lg:col-span-2"
                     >
+                        <motion.div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
+                            style={{ background: infoGlow }}
+                        />
                         <div className="space-y-8">
                             {CONTACT_INFO.map(({ icon: Icon, label, value }) => (
                                 <div key={label} className="flex items-start gap-4">

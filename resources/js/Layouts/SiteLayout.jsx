@@ -3,12 +3,14 @@ import Footer from '@/Components/Footer';
 import SmoothScroll from '@/Components/motion/SmoothScroll';
 import TopProgressBar from '@/Components/motion/TopProgressBar';
 import ScrollProgressDot from '@/Components/motion/ScrollProgressDot';
+import BackgroundMorph from '@/Components/motion/BackgroundMorph';
 
 export default function SiteLayout({ children }) {
     return (
         <SmoothScroll>
+            <BackgroundMorph />
             <TopProgressBar />
-            <div className="min-h-screen bg-brand-background font-sans text-brand-foreground">
+            <div className="relative z-10 min-h-screen bg-brand-background font-sans text-brand-foreground">
                 <Navbar />
                 <main>{children}</main>
                 <Footer />

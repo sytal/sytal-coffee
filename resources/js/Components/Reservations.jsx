@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import { LuCalendarCheck, LuCircleCheck } from 'react-icons/lu';
+import KineticText from '@/Components/motion/KineticText';
 
 const PARTY_SIZES = Array.from({ length: 10 }, (_, i) => i + 1);
 
@@ -32,6 +33,22 @@ export default function Reservations() {
     const [form, setForm] = useState(EMPTY_FORM);
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
+
+    const panelRef = useRef(null);
+    const glowX = useMotionValue(50);
+    const glowY = useMotionValue(50);
+    const springX = useSpring(glowX, { stiffness: 150, damping: 20 });
+    const springY = useSpring(glowY, { stiffness: 150, damping: 20 });
+
+    const handlePanelMouseMove = (e) => {
+        const rect = panelRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        glowX.set(((e.clientX - rect.left) / rect.width) * 100);
+        glowY.set(((e.clientY - rect.top) / rect.height) * 100);
+    };
+
+    // Brand gold (#cda45e) expressed as rgba for a translucent cursor-follow glow.
+    const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(205, 164, 94, 0.22), transparent 70%)`;
 
     const update = (field) => (e) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -75,9 +92,13 @@ export default function Reservations() {
                     <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
                         Book Your Table
                     </p>
-                    <h2 className="font-display text-4xl text-brand-foreground sm:text-5xl">
-                        Reservations
-                    </h2>
+                    <KineticText
+                        as="h2"
+                        text="Reservations"
+                        className="font-display text-4xl text-brand-foreground sm:text-5xl"
+                        stagger={0.1}
+                        duration={0.9}
+                    />
                     <p className="mx-auto mt-4 max-w-xl leading-relaxed text-brand-foregroundMuted">
                         Reserve your evening with us. We hold tables for fifteen minutes
                         past the booked time.
@@ -90,8 +111,15 @@ export default function Reservations() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
+                        onMouseMove={handlePanelMouseMove}
+                        ref={panelRef}
                         className="relative hidden min-h-[520px] overflow-hidden rounded-sm border border-brand-border lg:col-span-2 lg:block"
                     >
+                        <motion.div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 z-10"
+                            style={{ background: panelGlow }}
+                        />
                         <img
                             src="/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg"
                             alt="A table set for reservations at Sytal Coffee"

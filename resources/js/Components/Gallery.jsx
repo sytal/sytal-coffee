@@ -1,13 +1,48 @@
 import { motion } from 'framer-motion';
 import ScrollScale from '@/Components/motion/ScrollScale';
+import TiltCard from '@/Components/motion/TiltCard';
 
 const GALLERY_TILES = [
-    { image: '/images/outdoors-of-the-restaurant.jpg', label: 'The Terrace', span: 'sm:row-span-2' },
-    { image: '/images/fire-from-wok.jpg', label: 'Open Kitchen', span: '' },
-    { image: '/images/gallery/gallery-2.jpg', label: 'The Dining Room', span: '' },
-    { image: '/images/gallery/gallery-4.jpg', label: 'Evening Service', span: '' },
-    { image: '/images/chef-preparing-the-plates.jpg', label: 'In the Kitchen', span: 'sm:row-span-2' },
-    { image: '/images/gallery/gallery-6.jpg', label: 'Private Lounge', span: '' },
+    {
+        image: '/images/outdoors-of-the-restaurant.jpg',
+        label: 'The Terrace',
+        span: 'col-span-2 row-span-2 sm:col-span-2 sm:row-span-2',
+    },
+    {
+        image: '/images/chef-preparing-the-plates.jpg',
+        label: 'In the Kitchen',
+        span: 'col-span-1 row-span-2 sm:col-span-1 sm:row-span-2',
+    },
+    {
+        image: '/images/fire-from-wok.jpg',
+        label: 'Open Kitchen',
+        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
+    },
+    {
+        image: '/images/gallery/gallery-2.jpg',
+        label: 'The Dining Room',
+        span: 'col-span-2 row-span-1 sm:col-span-2 sm:row-span-1',
+    },
+    {
+        image: '/images/gallery/gallery-4.jpg',
+        label: 'Evening Service',
+        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
+    },
+    {
+        image: '/images/gallery/gallery-6.jpg',
+        label: 'Private Lounge',
+        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
+    },
+    {
+        image: '/images/gallery/gallery-3.jpg',
+        label: 'Afternoon Light',
+        span: 'col-span-1 row-span-1 sm:col-span-2 sm:row-span-1',
+    },
+    {
+        image: '/images/gallery/gallery-7.jpg',
+        label: 'Bar Service',
+        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
+    },
 ];
 
 export default function Gallery() {
@@ -34,7 +69,7 @@ export default function Gallery() {
                 </motion.div>
 
                 <ScrollScale range={[0.82, 1]} className="mt-14">
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:[grid-template-rows:repeat(2,14rem)]">
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:[grid-auto-rows:9rem]">
                         {GALLERY_TILES.map((tile, index) => (
                             <motion.div
                                 key={tile.label}
@@ -42,21 +77,26 @@ export default function Gallery() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true, amount: 0.2 }}
                                 transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                                whileHover={{ scale: 1.03, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
-                                className={`group relative h-40 overflow-hidden rounded-lg border border-brand-border/60 sm:h-full ${tile.span}`}
+                                className={`h-40 sm:h-auto ${tile.span}`}
                             >
-                                <img
-                                    src={tile.image}
-                                    alt={tile.label}
-                                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-brand-background/80 via-brand-background/10 to-transparent" />
+                                <TiltCard
+                                    className="group relative h-full w-full overflow-hidden rounded-lg border border-brand-border/60"
+                                    maxTilt={7}
+                                    scale={1.03}
+                                >
+                                    <img
+                                        src={tile.image}
+                                        alt={tile.label}
+                                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-brand-background/80 via-brand-background/10 to-transparent" />
 
-                                <div className="relative flex h-full flex-col items-end justify-end p-4">
-                                    <span className="font-display text-sm uppercase tracking-[0.2em] text-brand-foreground">
-                                        {tile.label}
-                                    </span>
-                                </div>
+                                    <div className="relative flex h-full flex-col items-end justify-end p-4">
+                                        <span className="font-display text-sm uppercase tracking-[0.2em] text-brand-foreground">
+                                            {tile.label}
+                                        </span>
+                                    </div>
+                                </TiltCard>
                             </motion.div>
                         ))}
                     </div>

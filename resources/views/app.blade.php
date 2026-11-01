@@ -9,7 +9,7 @@
         <!-- Favicon -->
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="alternate icon" href="/favicon.ico" sizes="any">
-        <meta name="theme-color" content="#0c0b0d">
+        <meta name="theme-color" content="#0c0b09">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

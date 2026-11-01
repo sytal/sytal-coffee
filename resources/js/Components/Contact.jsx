@@ -53,7 +53,7 @@ export default function Contact() {
     const glowY = useMotionValue(50);
     const springX = useSpring(glowX, { stiffness: 150, damping: 20 });
     const springY = useSpring(glowY, { stiffness: 150, damping: 20 });
-    const infoGlow = useMotionTemplate`radial-gradient(240px circle at ${springX}% ${springY}%, rgba(255, 61, 104, 0.16), transparent 70%)`;
+    const infoGlow = useMotionTemplate`radial-gradient(240px circle at ${springX}% ${springY}%, rgba(205, 164, 94, 0.16), transparent 70%)`;
 
     const handleInfoMouseMove = (e) => {
         const rect = infoRef.current?.getBoundingClientRect();

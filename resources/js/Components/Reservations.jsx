@@ -51,7 +51,7 @@ export default function Reservations() {
         glowY.set(((e.clientY - rect.top) / rect.height) * 100);
     };
 
-    const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(255, 61, 104, 0.22), transparent 70%)`;
+    const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(205, 164, 94, 0.22), transparent 70%)`;
 
     const update = (field) => (e) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -182,7 +182,7 @@ export default function Reservations() {
                                 />
 
                                 <FloatingField
-                                    label="Where should we send your confirmation?"
+                                    label="Where should we send confirmation?"
                                     icon={LuMail}
                                     type="email"
                                     value={form.email}

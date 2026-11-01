@@ -28,7 +28,7 @@ export default function FloatingField({
                     {...props}
                 />
                 <label
-                    className={`pointer-events-none absolute top-5 -translate-y-1/2 text-sm text-brand-foregroundMuted/80 transition-all duration-200 peer-focus:top-3 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:uppercase peer-focus:tracking-wider peer-focus:text-brand-gold peer-[&:not(:placeholder-shown)]:top-3 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-[11px] peer-[&:not(:placeholder-shown)]:uppercase peer-[&:not(:placeholder-shown)]:tracking-wider ${
+                    className={`pointer-events-none absolute top-5 right-3 -translate-y-1/2 truncate text-sm text-brand-foregroundMuted/80 transition-all duration-200 peer-focus:top-3 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:uppercase peer-focus:tracking-wider peer-focus:text-brand-gold peer-[&:not(:placeholder-shown)]:top-3 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-[11px] peer-[&:not(:placeholder-shown)]:uppercase peer-[&:not(:placeholder-shown)]:tracking-wider ${
                         Icon ? 'left-11' : 'left-4'
                     }`}
                 >

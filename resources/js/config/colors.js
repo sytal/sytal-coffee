@@ -3,24 +3,23 @@
  * Every component should reference these tokens (via Tailwind classes below
  * or by importing this file) instead of hardcoding hex/rgb values.
  *
- * Palette: dark storefront base with a neon pink-red accent, matching
- * Crunches' real signage (Gulberg Thana Rd, Faisalabad).
+ * Palette: dark, warm luxury base with a champagne-gold accent.
  */
 export const colors = {
-    background: '#0c0b0d',
-    surface: '#18141a',
-    surfaceAlt: '#211a24',
-    border: '#3a2e3d',
+    background: '#0c0b09',
+    surface: '#17140f',
+    surfaceAlt: '#1f1b15',
+    border: '#37332a',
 
-    foreground: '#f7f1f4',
-    foregroundMuted: '#bdadb5',
+    foreground: '#f5f1e8',
+    foregroundMuted: '#b9b2a2',
 
-    gold: '#ff3d68',
-    goldLight: '#ff7196',
-    goldDark: '#c41f49',
+    gold: '#cda45e',
+    goldLight: '#e3c98f',
+    goldDark: '#a5793b',
 
     success: '#5fae70',
-    danger: '#e23b5a',
+    danger: '#c5563f',
 };
 
 export default colors;

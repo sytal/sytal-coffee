@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     LuLayoutDashboard,
@@ -24,6 +24,11 @@ const NAV_ITEMS = [
 export default function AdminLayout({ title, children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const user = usePage().props.auth?.user;
+
+    function logout() {
+        router.post('/logout');
+    }
 
     function isActive(href) {
         if (href === '/admin') return currentPath === '/admin';
@@ -76,13 +81,20 @@ export default function AdminLayout({ title, children }) {
                 <div className="absolute inset-x-0 bottom-0 border-t border-brand-border p-4">
                     <div className="flex items-center gap-3 rounded-sm bg-brand-surfaceAlt px-4 py-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-gold text-sm font-semibold text-brand-background">
-                            A
+                            {user?.name?.charAt(0)?.toUpperCase() ?? 'A'}
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm text-brand-foreground">Admin</p>
-                            <p className="truncate text-xs text-brand-foregroundMuted">admin@crunchescafe.com</p>
+                            <p className="truncate text-sm text-brand-foreground">{user?.name ?? 'Admin'}</p>
+                            <p className="truncate text-xs text-brand-foregroundMuted">{user?.email ?? ''}</p>
                         </div>
-                        <LuLogOut className="h-4 w-4 shrink-0 text-brand-foregroundMuted" />
+                        <button
+                            type="button"
+                            onClick={logout}
+                            aria-label="Log out"
+                            className="shrink-0 text-brand-foregroundMuted transition hover:text-brand-gold"
+                        >
+                            <LuLogOut className="h-4 w-4" />
+                        </button>
                     </div>
                 </div>
             </aside>

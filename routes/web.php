@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Requests\StoreContactMessageRequest;
 use App\Http\Requests\StoreMenuItemRequest;
@@ -39,9 +40,12 @@ Route::post('/newsletter', function (SubscribeNewsletterRequest $request, Newsle
     return back()->with('success', "You're subscribed!");
 })->name('newsletter.store');
 
-// Preview-only admin panel — intentionally no auth middleware.
-// Wired to the real backend services/models below.
-Route::prefix('admin')->middleware('admin.auth')->group(function () {
+Route::get('/login', [LoginController::class, 'create'])->name('login');
+Route::post('/login', [LoginController::class, 'store']);
+Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+
+// Role-gated admin panel, wired to the real backend services/models below.
+Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(function () {
     Route::get('/', function (ReservationService $reservationService, ContactMessageService $contactMessageService) {
         return Inertia::render('Admin/Dashboard', [
             'stats' => [

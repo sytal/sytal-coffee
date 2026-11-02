@@ -113,7 +113,64 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                 </button>
             </div>
 
-            <div className="mt-6 overflow-x-auto rounded-sm border border-brand-border bg-brand-surface">
+            {/* Mobile: stacked cards */}
+            <div className="mt-6 flex flex-col gap-3 sm:hidden">
+                {items.slice(0, 40).map((item) => (
+                    <div key={item.id} className="rounded-sm border border-brand-border bg-brand-surface p-4">
+                        <div className="flex items-start gap-3">
+                            <img
+                                src={item.image}
+                                alt={item.name}
+                                loading="lazy"
+                                className="h-12 w-12 shrink-0 rounded-sm object-cover"
+                            />
+                            <div className="min-w-0 flex-1">
+                                <p className="truncate text-brand-foreground">{item.name}</p>
+                                <p className="text-xs text-brand-foregroundMuted">{item.category}</p>
+                                <p className="mt-1 text-brand-gold">{item.price}</p>
+                            </div>
+                            <div className="flex shrink-0 gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => openEdit(item)}
+                                    className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                    aria-label={`Edit ${item.name}`}
+                                >
+                                    <LuPencil className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleDelete(item)}
+                                    className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
+                                    aria-label={`Delete ${item.name}`}
+                                >
+                                    <LuTrash2 className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        </div>
+                        {item.tags?.length > 0 && (
+                            <div className="mt-3 flex flex-wrap gap-1">
+                                {item.tags.slice(0, 4).map((tag) => (
+                                    <span
+                                        key={tag}
+                                        className="rounded-full border border-brand-border px-2 py-0.5 text-[10px] text-brand-foregroundMuted"
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                ))}
+                {items.length === 0 && (
+                    <p className="rounded-sm border border-brand-border bg-brand-surface p-8 text-center text-sm text-brand-foregroundMuted">
+                        No items match your search.
+                    </p>
+                )}
+            </div>
+
+            {/* Tablet+: table */}
+            <div className="mt-6 hidden overflow-x-auto rounded-sm border border-brand-border bg-brand-surface sm:block">
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="border-b border-brand-border text-xs uppercase tracking-wider text-brand-foregroundMuted">

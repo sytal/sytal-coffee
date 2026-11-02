@@ -1,10 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { LuX } from 'react-icons/lu';
 
-/**
- * Static UI-only slide-over panel for add/edit forms — this admin panel
- * has no backend yet, so "Save" just closes the panel.
- */
 export default function SlideOver({ open, onClose, title, children }) {
     return (
         <AnimatePresence>

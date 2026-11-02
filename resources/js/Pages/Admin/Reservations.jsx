@@ -56,7 +56,58 @@ export default function Reservations({ reservations = [] }) {
                 </div>
             </div>
 
-            <div className="mt-6 overflow-x-auto rounded-sm border border-brand-border bg-brand-surface">
+            {/* Mobile: stacked cards */}
+            <div className="mt-6 flex flex-col gap-3 sm:hidden">
+                {rows.map((r) => (
+                    <div key={r.id} className="rounded-sm border border-brand-border bg-brand-surface p-4">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                                <p className="truncate text-brand-foreground">{r.name}</p>
+                                <p className="truncate text-xs text-brand-foregroundMuted">{r.email}</p>
+                                <p className="text-xs text-brand-foregroundMuted">{r.phone}</p>
+                            </div>
+                            <StatusBadge status={r.status} />
+                        </div>
+                        <div className="mt-3 flex items-center justify-between text-sm text-brand-foregroundMuted">
+                            <span>{r.party_size} guests</span>
+                            <span>{r.date} &middot; {r.time}</span>
+                        </div>
+                        <div className="mt-3 flex justify-end gap-2">
+                            <button
+                                type="button"
+                                className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                aria-label={`View ${r.name}`}
+                            >
+                                <LuEye className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => updateStatus(r, 'Confirmed')}
+                                className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-success hover:text-brand-success"
+                                aria-label={`Confirm ${r.name}`}
+                            >
+                                <LuCheck className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => updateStatus(r, 'Cancelled')}
+                                className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
+                                aria-label={`Cancel ${r.name}`}
+                            >
+                                <LuX className="h-3.5 w-3.5" />
+                            </button>
+                        </div>
+                    </div>
+                ))}
+                {rows.length === 0 && (
+                    <p className="rounded-sm border border-brand-border bg-brand-surface p-8 text-center text-sm text-brand-foregroundMuted">
+                        No reservations match this filter.
+                    </p>
+                )}
+            </div>
+
+            {/* Tablet+: table */}
+            <div className="mt-6 hidden overflow-x-auto rounded-sm border border-brand-border bg-brand-surface sm:block">
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="border-b border-brand-border text-xs uppercase tracking-wider text-brand-foregroundMuted">

@@ -1,18 +1,18 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import SlideOver from '@/Components/Admin/SlideOver';
 import FloatingField from '@/Components/FloatingField';
-import { MENU_CATEGORIES, MENU_ITEMS } from '@/data/menuItems';
 import { LuPlus, LuPencil, LuTrash2, LuSearch } from 'react-icons/lu';
 
-export default function MenuItems() {
+export default function MenuItems({ menuItems = [], categories = [] }) {
     const [query, setQuery] = useState('');
     const [category, setCategory] = useState('All');
     const [panelOpen, setPanelOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
-    const items = MENU_ITEMS.filter((item) => {
+    const items = menuItems.filter((item) => {
         const matchesCategory = category === 'All' || item.category === category;
         const matchesQuery = item.name.toLowerCase().includes(query.toLowerCase());
         return matchesCategory && matchesQuery;
@@ -26,6 +26,53 @@ export default function MenuItems() {
     function openEdit(item) {
         setEditingItem(item);
         setPanelOpen(true);
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        const formEl = e.target;
+        const formData = new FormData(formEl);
+
+        const tags = (formData.get('tags') || '')
+            .toString()
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean);
+        formData.delete('tags');
+        tags.forEach((tag) => formData.append('tags[]', tag));
+
+        // Drop the file field entirely if nothing was chosen so validation
+        // treats it as absent rather than an empty file.
+        const imageFile = formData.get('image');
+        if (imageFile instanceof File && imageFile.size === 0) {
+            formData.delete('image');
+        }
+
+        setSubmitting(true);
+        const onDone = () => {
+            setSubmitting(false);
+            setPanelOpen(false);
+        };
+
+        if (editingItem) {
+            formData.append('_method', 'put');
+            router.post(`/admin/menu/${editingItem.id}`, formData, {
+                forceFormData: true,
+                onSuccess: onDone,
+                onError: () => setSubmitting(false),
+            });
+        } else {
+            router.post('/admin/menu', formData, {
+                forceFormData: true,
+                onSuccess: onDone,
+                onError: () => setSubmitting(false),
+            });
+        }
+    }
+
+    function handleDelete(item) {
+        if (!window.confirm(`Delete "${item.name}"?`)) return;
+        router.delete(`/admin/menu/${item.id}`);
     }
 
     return (
@@ -50,7 +97,7 @@ export default function MenuItems() {
                         className="rounded-sm border border-brand-border bg-brand-surface px-3 py-2 text-sm text-brand-foreground outline-none focus:border-brand-gold"
                     >
                         <option>All</option>
-                        {MENU_CATEGORIES.map((c) => (
+                        {categories.map((c) => (
                             <option key={c}>{c}</option>
                         ))}
                     </select>
@@ -79,7 +126,7 @@ export default function MenuItems() {
                     </thead>
                     <tbody>
                         {items.slice(0, 40).map((item) => (
-                            <tr key={item.name} className="border-b border-brand-border/60 last:border-0">
+                            <tr key={item.id} className="border-b border-brand-border/60 last:border-0">
                                 <td className="flex items-center gap-3 p-4">
                                     <img
                                         src={item.image}
@@ -115,6 +162,7 @@ export default function MenuItems() {
                                         </button>
                                         <button
                                             type="button"
+                                            onClick={() => handleDelete(item)}
                                             className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
                                             aria-label={`Delete ${item.name}`}
                                         >
@@ -136,38 +184,42 @@ export default function MenuItems() {
                 onClose={() => setPanelOpen(false)}
                 title={editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
             >
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        setPanelOpen(false);
-                    }}
-                    className="space-y-5"
-                >
-                    <FloatingField label="Item name" defaultValue={editingItem?.name} type="text" />
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <FloatingField label="Item name" name="name" defaultValue={editingItem?.name} type="text" required />
                     <FloatingField
                         label="Description"
+                        name="description"
                         as="textarea"
                         rows={3}
                         defaultValue={editingItem?.description}
                         className="resize-none"
+                        required
                     />
                     <div className="grid grid-cols-2 gap-4">
-                        <FloatingField label="Price" defaultValue={editingItem?.price} type="text" />
+                        <FloatingField label="Price" name="price" defaultValue={editingItem?.price} type="text" required />
                         <FloatingField
                             label="Category"
+                            name="category"
                             as="select"
                             alwaysFloated
-                            defaultValue={editingItem?.category ?? MENU_CATEGORIES[0]}
+                            defaultValue={editingItem?.category ?? categories[0]}
                         >
-                            {MENU_CATEGORIES.map((c) => (
+                            {categories.map((c) => (
                                 <option key={c}>{c}</option>
                             ))}
                         </FloatingField>
                     </div>
-                    <FloatingField label="Tags (comma separated)" defaultValue={editingItem?.tags?.join(', ')} type="text" />
+                    <FloatingField
+                        label="Tags (comma separated)"
+                        name="tags"
+                        defaultValue={editingItem?.tags?.join(', ')}
+                        type="text"
+                    />
+                    <FloatingField label="Image" name="image" type="file" accept="image/*" alwaysFloated />
                     <button
                         type="submit"
-                        className="w-full rounded-sm bg-brand-gold px-6 py-3 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight"
+                        disabled={submitting}
+                        className="w-full rounded-sm bg-brand-gold px-6 py-3 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight disabled:opacity-60"
                     >
                         {editingItem ? 'Save Changes' : 'Add Item'}
                     </button>

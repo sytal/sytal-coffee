@@ -1,42 +1,69 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { LuUpload, LuTrash2, LuEye } from 'react-icons/lu';
 
-const GALLERY_IMAGES = [
-    { src: '/images/outdoors-of-the-restaurant.jpg', label: 'The Terrace' },
-    { src: '/images/fire-from-wok.jpg', label: 'Open Kitchen' },
-    { src: '/images/gallery/gallery-2.jpg', label: 'The Dining Room' },
-    { src: '/images/gallery/gallery-4.jpg', label: 'Evening Service' },
-    { src: '/images/chef-preparing-the-plates.jpg', label: 'In the Kitchen' },
-    { src: '/images/gallery/gallery-6.jpg', label: 'Private Lounge' },
-    { src: '/images/gallery/gallery-3.jpg', label: 'Afternoon Light' },
-    { src: '/images/gallery/gallery-7.jpg', label: 'Bar Service' },
-];
+export default function Gallery({ images = [] }) {
+    const fileInputRef = useRef(null);
+    const [uploading, setUploading] = useState(false);
 
-export default function Gallery() {
+    function handleDelete(img) {
+        if (!window.confirm(`Delete "${img.label}"?`)) return;
+        router.delete(`/admin/gallery/${img.id}`, { preserveScroll: true });
+    }
+
+    function handleFileChange(e) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const label = window.prompt('Label for this image?', '') ?? '';
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('label', label);
+
+        setUploading(true);
+        router.post('/admin/gallery', formData, {
+            forceFormData: true,
+            preserveScroll: true,
+            onFinish: () => {
+                setUploading(false);
+                if (fileInputRef.current) fileInputRef.current.value = '';
+            },
+        });
+    }
+
     return (
         <AdminLayout title="Gallery">
             <Head title="Admin — Gallery" />
 
             <div className="flex items-center justify-between">
-                <p className="text-sm text-brand-foregroundMuted">{GALLERY_IMAGES.length} images</p>
+                <p className="text-sm text-brand-foregroundMuted">{images.length} images</p>
                 <button
                     type="button"
-                    className="flex items-center gap-2 rounded-sm bg-brand-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight"
+                    disabled={uploading}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2 rounded-sm bg-brand-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight disabled:opacity-60"
                 >
                     <LuUpload className="h-4 w-4" />
-                    Upload Images
+                    {uploading ? 'Uploading...' : 'Upload Images'}
                 </button>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                />
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                {GALLERY_IMAGES.map((img) => (
+                {images.map((img) => (
                     <div
-                        key={img.src}
+                        key={img.id}
                         className="group relative aspect-square overflow-hidden rounded-sm border border-brand-border"
                     >
                         <img
-                            src={img.src}
+                            src={img.image}
                             alt={img.label}
                             loading="lazy"
                             className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-105"
@@ -53,6 +80,7 @@ export default function Gallery() {
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={() => handleDelete(img)}
                                     className="flex h-7 w-7 items-center justify-center rounded-sm bg-white/15 text-white backdrop-blur transition hover:bg-brand-danger"
                                     aria-label={`Delete ${img.label}`}
                                 >
@@ -66,7 +94,7 @@ export default function Gallery() {
                 <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold">
                     <LuUpload className="h-6 w-6" />
                     <span className="text-xs uppercase tracking-wider">Add Image</span>
-                    <input type="file" className="hidden" accept="image/*" />
+                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                 </label>
             </div>
         </AdminLayout>

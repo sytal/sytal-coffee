@@ -1,30 +1,26 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import StatusBadge from '@/Components/Admin/StatusBadge';
 import { LuCheck, LuX, LuEye, LuSearch } from 'react-icons/lu';
 
-const RESERVATIONS = [
-    { name: 'Ahmed Raza', email: 'ahmed.raza@example.com', phone: '0300-1234567', guests: 4, date: '2026-11-02', time: '8:30 PM', status: 'Confirmed' },
-    { name: 'Fatima Noor', email: 'fatima.n@example.com', phone: '0321-9876543', guests: 2, date: '2026-11-02', time: '9:00 PM', status: 'Pending' },
-    { name: 'Bilal Khan', email: 'bilal.khan@example.com', phone: '0333-4455667', guests: 6, date: '2026-11-03', time: '7:00 PM', status: 'Confirmed' },
-    { name: 'Ayesha Malik', email: 'ayesha.m@example.com', phone: '0312-7788990', guests: 3, date: '2026-11-03', time: '8:00 PM', status: 'Cancelled' },
-    { name: 'Usman Tariq', email: 'usman.t@example.com', phone: '0345-1122334', guests: 5, date: '2026-11-04', time: '6:30 PM', status: 'Pending' },
-    { name: 'Hira Shahid', email: 'hira.s@example.com', phone: '0301-5566778', guests: 2, date: '2026-11-04', time: '9:30 PM', status: 'Confirmed' },
-    { name: 'Hassan Ali', email: 'hassan.ali@example.com', phone: '0322-3344556', guests: 8, date: '2026-11-05', time: '7:30 PM', status: 'Pending' },
-];
-
 const STATUSES = ['All', 'Confirmed', 'Pending', 'Cancelled'];
 
-export default function Reservations() {
+export default function Reservations({ reservations = [] }) {
     const [status, setStatus] = useState('All');
     const [query, setQuery] = useState('');
 
-    const rows = RESERVATIONS.filter((r) => {
+    const rows = reservations.filter((r) => {
         const matchesStatus = status === 'All' || r.status === status;
         const matchesQuery = r.name.toLowerCase().includes(query.toLowerCase());
         return matchesStatus && matchesQuery;
     });
+
+    function updateStatus(reservation, newStatus) {
+        router.patch(`/admin/reservations/${reservation.id}/status`, { status: newStatus }, {
+            preserveScroll: true,
+        });
+    }
 
     return (
         <AdminLayout title="Reservations">
@@ -74,7 +70,7 @@ export default function Reservations() {
                     </thead>
                     <tbody>
                         {rows.map((r) => (
-                            <tr key={r.email} className="border-b border-brand-border/60 last:border-0">
+                            <tr key={r.id} className="border-b border-brand-border/60 last:border-0">
                                 <td className="p-4 text-brand-foreground">{r.name}</td>
                                 <td className="p-4 text-brand-foregroundMuted">
                                     <div>{r.email}</div>
@@ -98,6 +94,7 @@ export default function Reservations() {
                                         </button>
                                         <button
                                             type="button"
+                                            onClick={() => updateStatus(r, 'Confirmed')}
                                             className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-success hover:text-brand-success"
                                             aria-label={`Confirm ${r.name}`}
                                         >
@@ -105,6 +102,7 @@ export default function Reservations() {
                                         </button>
                                         <button
                                             type="button"
+                                            onClick={() => updateStatus(r, 'Cancelled')}
                                             className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
                                             aria-label={`Cancel ${r.name}`}
                                         >

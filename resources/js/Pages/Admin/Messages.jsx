@@ -1,51 +1,27 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import StatusBadge from '@/Components/Admin/StatusBadge';
 import { LuTrash2, LuReply, LuMail } from 'react-icons/lu';
 
-const MESSAGES = [
-    {
-        id: 1,
-        name: 'Hassan Ali',
-        email: 'hassan.ali@example.com',
-        phone: '0322-3344556',
-        message: 'Do you have a private party booking option for 20 people? Looking to celebrate a birthday next weekend.',
-        time: '12m ago',
-        status: 'New',
-    },
-    {
-        id: 2,
-        name: 'Sara Ahmed',
-        email: 'sara.ahmed@example.com',
-        phone: '0300-9988776',
-        message: 'Loved the loaded fries! Any chance you deliver outside Faisalabad city limits?',
-        time: '1h ago',
-        status: 'New',
-    },
-    {
-        id: 3,
-        name: 'Usman Tariq',
-        email: 'usman.t@example.com',
-        phone: '0345-1122334',
-        message: 'What time do you close on Fridays? Planning to stop by after Jummah.',
-        time: '3h ago',
-        status: 'Read',
-    },
-    {
-        id: 4,
-        name: 'Mariam Baig',
-        email: 'mariam.b@example.com',
-        phone: '0311-6677889',
-        message: 'The Nutella waffle was amazing. Can you share the Instagram handle so I can tag you?',
-        time: 'Yesterday',
-        status: 'Read',
-    },
-];
+export default function Messages({ messages = [] }) {
+    const [activeId, setActiveId] = useState(messages[0]?.id ?? null);
+    const active = messages.find((m) => m.id === activeId) ?? messages[0];
 
-export default function Messages() {
-    const [activeId, setActiveId] = useState(MESSAGES[0].id);
-    const active = MESSAGES.find((m) => m.id === activeId);
+    function selectMessage(message) {
+        setActiveId(message.id);
+        if (message.status === 'New') {
+            router.patch(`/admin/messages/${message.id}/read`, {}, {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }
+    }
+
+    function handleDelete(message) {
+        if (!window.confirm(`Delete the message from ${message.name}?`)) return;
+        router.delete(`/admin/messages/${message.id}`, { preserveScroll: true });
+    }
 
     return (
         <AdminLayout title="Messages">
@@ -53,18 +29,20 @@ export default function Messages() {
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
                 <div className="overflow-hidden rounded-sm border border-brand-border bg-brand-surface lg:col-span-2">
-                    {MESSAGES.map((m) => (
+                    {messages.map((m) => (
                         <button
                             key={m.id}
                             type="button"
-                            onClick={() => setActiveId(m.id)}
+                            onClick={() => selectMessage(m)}
                             className={`block w-full border-b border-brand-border/60 p-4 text-left transition last:border-0 ${
                                 activeId === m.id ? 'bg-brand-surfaceAlt' : 'hover:bg-brand-surfaceAlt/50'
                             }`}
                         >
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-brand-foreground">{m.name}</span>
-                                <span className="text-xs text-brand-foregroundMuted">{m.time}</span>
+                                <span className="text-xs text-brand-foregroundMuted">
+                                    {new Date(m.created_at).toLocaleDateString()}
+                                </span>
                             </div>
                             <p className="mt-1 truncate text-sm text-brand-foregroundMuted">{m.message}</p>
                             <div className="mt-2">
@@ -72,6 +50,9 @@ export default function Messages() {
                             </div>
                         </button>
                     ))}
+                    {messages.length === 0 && (
+                        <p className="p-8 text-center text-sm text-brand-foregroundMuted">No messages yet.</p>
+                    )}
                 </div>
 
                 <div className="rounded-sm border border-brand-border bg-brand-surface p-6 lg:col-span-3">
@@ -96,6 +77,7 @@ export default function Messages() {
                                     </button>
                                     <button
                                         type="button"
+                                        onClick={() => handleDelete(active)}
                                         className="flex h-9 w-9 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
                                         aria-label="Delete"
                                     >

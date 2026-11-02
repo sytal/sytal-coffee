@@ -23,12 +23,20 @@ const IMAGES = {
     },
 };
 
-// Fixed diagonal divider: top edge at 60% across, bottom edge at 48% —
-// a gentle "top-right down to bottom-left" lean that stays legible for text
-// on either side, rather than a crude corner-to-corner cut.
-const RIGHT_REGION = 'polygon(60% 0, 100% 0, 100% 100%, 48% 100%)';
-const LEFT_REGION = 'polygon(0 0, 60% 0, 48% 100%, 0 100%)';
-const SEAM_REGION = 'polygon(59.4% 0, 60.6% 0, 48.6% 100%, 47.4% 100%)';
+// Wavy divider instead of a straight diagonal: a gentle S-curve from
+// top-right down to bottom-left, defined once in a 0-1 "object bounding
+// box" coordinate space via an SVG <clipPath> so it scales with the card's
+// actual size. The curve stays within a narrow 54%-66% band across the
+// whole height so it never swings out far enough to cross under the form
+// text, which sits further out at pl-24/pr-24.
+const WAVE_CLIP_PATH_RIGHT = 'url(#auth-wave-right)';
+const WAVE_CLIP_PATH_LEFT = 'url(#auth-wave-left)';
+// The curve itself: top anchor (0.6, 0) down to bottom anchor (0.52, 1),
+// bowing out to ~0.68 and back in to ~0.46 along the way for the S-wave.
+const WAVE_CURVE = 'C0.68,0.22 0.52,0.4 0.6,0.5 C0.68,0.6 0.46,0.78 0.52,1';
+const WAVE_RIGHT_D = `M0.6,0 ${WAVE_CURVE} L1,1 L1,0 Z`;
+const WAVE_LEFT_D = `M0,0 L0.6,0 ${WAVE_CURVE} L0,1 Z`;
+const WAVE_LINE_D = `M0.6,0 ${WAVE_CURVE}`;
 
 const panelVariants = {
     initial: (fromSide) => ({ opacity: 0, x: fromSide === 'left' ? -40 : 40 }),
@@ -118,6 +126,21 @@ export default function AuthScreen({ initialMode }) {
                     which keeps the "top-right to bottom-left" diagonal readable
                     and consistent as the panels swap. */}
                 <div className="relative hidden h-[640px] md:block">
+                    {/* clipPathUnits="objectBoundingBox" makes the 0-1 curve
+                        coordinates scale with the panel's actual rendered
+                        size, so the wave stays proportionally correct at any
+                        width between the card's md and max-w-5xl bounds. */}
+                    <svg width="0" height="0" className="absolute">
+                        <defs>
+                            <clipPath id="auth-wave-right" clipPathUnits="objectBoundingBox">
+                                <path d={WAVE_RIGHT_D} />
+                            </clipPath>
+                            <clipPath id="auth-wave-left" clipPathUnits="objectBoundingBox">
+                                <path d={WAVE_LEFT_D} />
+                            </clipPath>
+                        </defs>
+                    </svg>
+
                     <AnimatePresence initial={false} custom={imageSide}>
                         <motion.div
                             key={`image-${imageSide}`}
@@ -128,7 +151,7 @@ export default function AuthScreen({ initialMode }) {
                             exit="exit"
                             transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                             className="absolute inset-0"
-                            style={{ clipPath: imageSide === 'right' ? RIGHT_REGION : LEFT_REGION }}
+                            style={{ clipPath: imageSide === 'right' ? WAVE_CLIP_PATH_RIGHT : WAVE_CLIP_PATH_LEFT }}
                         >
                             <AnimatePresence mode="wait">
                                 <motion.img
@@ -154,13 +177,33 @@ export default function AuthScreen({ initialMode }) {
                         contrast, independent of what the photo looks like. */}
                     <motion.div
                         key={`backdrop-${formSide}`}
-                        animate={{ clipPath: formSide === 'left' ? LEFT_REGION : RIGHT_REGION }}
+                        animate={{ clipPath: formSide === 'left' ? WAVE_CLIP_PATH_LEFT : WAVE_CLIP_PATH_RIGHT }}
                         transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                         className="pointer-events-none absolute inset-0 bg-brand-surface"
                     />
 
-                    {/* Diagonal gold seam drawn on top of both panels. */}
-                    <div className="pointer-events-none absolute inset-0" style={{ clipPath: SEAM_REGION, background: 'linear-gradient(180deg, rgba(244,105,31,0.9), rgba(244,105,31,0.15))' }} />
+                    {/* Gold seam traced along the same wave, drawn as a
+                        stroked SVG path (not a clipped sliver) so it stays a
+                        clean, constant-width line through every curve. */}
+                    <svg
+                        className="pointer-events-none absolute inset-0 h-full w-full"
+                        viewBox="0 0 100 100"
+                        preserveAspectRatio="none"
+                    >
+                        <defs>
+                            <linearGradient id="auth-seam-gradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="rgba(244,105,31,0.9)" />
+                                <stop offset="100%" stopColor="rgba(244,105,31,0.15)" />
+                            </linearGradient>
+                        </defs>
+                        <path
+                            d={WAVE_LINE_D.replace(/[\d.]+/g, (n) => Number(n) * 100)}
+                            fill="none"
+                            stroke="url(#auth-seam-gradient)"
+                            strokeWidth="2.5"
+                            vectorEffect="non-scaling-stroke"
+                        />
+                    </svg>
 
                     <AnimatePresence initial={false} custom={formSide}>
                         <motion.div
@@ -171,7 +214,7 @@ export default function AuthScreen({ initialMode }) {
                             animate="animate"
                             exit="exit"
                             transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                            className={`absolute inset-y-0 flex w-1/2 items-center ${formSide === 'right' ? 'right-0 justify-start pl-20' : 'left-0 justify-end pr-20'}`}
+                            className={`absolute inset-y-0 flex w-1/2 items-center ${formSide === 'right' ? 'right-0 justify-start pl-24' : 'left-0 justify-end pr-24'}`}
                         >
                             <div className="w-full max-w-[19rem]">
                                 <AnimatePresence mode="wait">

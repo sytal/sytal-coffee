@@ -82,4 +82,33 @@ class OrderService
 
         return $order;
     }
+
+    /**
+     * Cheap "anything new since X?" check for the admin polling UI. $since
+     * is either the last order id the client saw (numeric) or an ISO
+     * timestamp string; either way this stays a COUNT + MAX query, never
+     * loading the order rows themselves.
+     */
+    public function latestCheck(?string $since): array
+    {
+        $latest = Order::query()->latest('id')->first(['id', 'created_at']);
+
+        $newCount = 0;
+
+        if ($since !== null && $since !== '') {
+            $newCount = Order::query()
+                ->when(
+                    is_numeric($since),
+                    fn ($query) => $query->where('id', '>', (int) $since),
+                    fn ($query) => $query->where('created_at', '>', $since)
+                )
+                ->count();
+        }
+
+        return [
+            'new_count' => $newCount,
+            'latest_order_id' => $latest?->id,
+            'latest_created_at' => $latest?->created_at,
+        ];
+    }
 }

@@ -179,6 +179,18 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
         ]);
     })->name('admin.orders');
 
+    // Lightweight polling endpoint for the admin Orders page. No websocket
+    // broadcasting driver is configured in this project (no Reverb/Pusher),
+    // so "live" order notifications are done via a cheap interval poll
+    // instead of a persistent connection. `since` is either the last known
+    // order id or an ISO timestamp; we return just a count + markers so the
+    // client can decide whether to prompt a refresh, never the full list.
+    Route::get('/orders/latest-check', function (Request $request, OrderService $orderService) {
+        $since = $request->query('since');
+
+        return response()->json($orderService->latestCheck($since));
+    })->name('admin.orders.latest-check');
+
     Route::patch('/orders/{order}/status', function (Request $request, Order $order, OrderService $orderService) {
         $request->validate([
             'status' => ['required', 'in:Pending,Preparing,Out for Delivery,Completed,Cancelled'],

@@ -1,8 +1,26 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { useEffect } from 'react';
 import SiteLayout from '@/Layouts/SiteLayout';
 import StatusBadge from '@/Components/Admin/StatusBadge';
 
+// This app has no websocket/broadcasting driver configured (no
+// Reverb/Pusher/Echo), so there is no live push when staff change an
+// order's status. Instead we poll in the background for a status update —
+// a one-directional refresh, not a chat/notification channel — and
+// silently refresh the order list via an Inertia partial reload so a
+// "Preparing" -> "Out for Delivery" change shows up without the customer
+// having to hit refresh themselves.
+const POLL_INTERVAL_MS = 18000;
+
 export default function Mine({ orders = [] }) {
+    useEffect(() => {
+        const timer = setInterval(() => {
+            router.reload({ only: ['orders'] });
+        }, POLL_INTERVAL_MS);
+
+        return () => clearInterval(timer);
+    }, []);
+
     return (
         <SiteLayout>
             <Head title="My Orders — Crunches Cafe" />

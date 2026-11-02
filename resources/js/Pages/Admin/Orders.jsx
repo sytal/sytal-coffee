@@ -1,16 +1,59 @@
 import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import axios from 'axios';
 import AdminLayout from '@/Layouts/AdminLayout';
 import SlideOver from '@/Components/Admin/SlideOver';
 import StatusBadge from '@/Components/Admin/StatusBadge';
-import { LuEye, LuSearch } from 'react-icons/lu';
+import { LuEye, LuSearch, LuRefreshCw } from 'react-icons/lu';
 
 const STATUSES = ['All', 'Pending', 'Preparing', 'Out for Delivery', 'Completed', 'Cancelled'];
+
+// No websocket broadcasting driver is configured for this app (no
+// Reverb/Pusher/Echo wired up), so "real-time" here means a cheap interval
+// poll against a lightweight count-only endpoint rather than a live socket.
+const POLL_INTERVAL_MS = 12000;
 
 export default function Orders({ orders = [] }) {
     const [status, setStatus] = useState('All');
     const [query, setQuery] = useState('');
     const [viewing, setViewing] = useState(null);
+    const [newCount, setNewCount] = useState(0);
+    const latestIdRef = useRef(orders.reduce((max, o) => Math.max(max, o.id), 0));
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const poll = async () => {
+            try {
+                const { data } = await axios.get('/admin/orders/latest-check', {
+                    params: { since: latestIdRef.current },
+                });
+                if (!cancelled && data?.new_count > 0) {
+                    setNewCount((n) => n + data.new_count);
+                }
+            } catch {
+                // Silently ignore — polling is a nice-to-have, not critical.
+            }
+        };
+
+        const timer = setInterval(poll, POLL_INTERVAL_MS);
+        return () => {
+            cancelled = true;
+            clearInterval(timer);
+        };
+    }, []);
+
+    // Keep the "seen" marker in sync whenever the orders list itself
+    // changes (full page load, status update, or the reload below).
+    useEffect(() => {
+        latestIdRef.current = orders.reduce((max, o) => Math.max(max, o.id), latestIdRef.current);
+    }, [orders]);
+
+    function refreshForNewOrders() {
+        setNewCount(0);
+        router.reload({ only: ['orders'] });
+    }
 
     const rows = orders.filter((o) => {
         const matchesStatus = status === 'All' || o.status === status;
@@ -29,6 +72,22 @@ export default function Orders({ orders = [] }) {
     return (
         <AdminLayout title="Orders">
             <Head title="Admin — Orders" />
+
+            <AnimatePresence>
+                {newCount > 0 && (
+                    <motion.button
+                        type="button"
+                        onClick={refreshForNewOrders}
+                        initial={{ opacity: 0, y: -12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -12 }}
+                        className="mb-4 flex w-full items-center justify-center gap-2 rounded-sm border border-brand-gold bg-brand-gold/10 px-4 py-2.5 text-sm text-brand-gold transition hover:bg-brand-gold/20"
+                    >
+                        <LuRefreshCw className="h-4 w-4" />
+                        {newCount} new order{newCount === 1 ? '' : 's'} — click to refresh
+                    </motion.button>
+                )}
+            </AnimatePresence>
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative">

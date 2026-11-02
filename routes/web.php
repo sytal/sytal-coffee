@@ -41,7 +41,7 @@ Route::post('/newsletter', function (SubscribeNewsletterRequest $request, Newsle
 
 // Preview-only admin panel — intentionally no auth middleware.
 // Wired to the real backend services/models below.
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/', function (ReservationService $reservationService, ContactMessageService $contactMessageService) {
         return Inertia::render('Admin/Dashboard', [
             'stats' => [

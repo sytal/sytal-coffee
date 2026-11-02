@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useForm } from '@inertiajs/react';
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import KineticText from '@/Components/motion/KineticText';
 import FloatingField from '@/Components/FloatingField';
@@ -44,8 +45,7 @@ const SOCIAL_LINKS = [
 const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
 export default function Contact() {
-    const [form, setForm] = useState(EMPTY_FORM);
-    const [errors, setErrors] = useState({});
+    const { data: form, setData, post, errors, processing, reset } = useForm(EMPTY_FORM);
     const [submitted, setSubmitted] = useState(false);
 
     const infoRef = useRef(null);
@@ -62,32 +62,21 @@ export default function Contact() {
         glowY.set(((e.clientY - rect.top) / rect.height) * 100);
     };
 
-    const update = (field) => (e) =>
-        setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-    const validate = () => {
-        const next = {};
-        if (!form.name.trim()) next.name = 'Name is required';
-        if (!form.email.trim()) next.email = 'Email is required';
-        else if (!isValidEmail(form.email)) next.email = 'Enter a valid email';
-        if (!form.phone.trim()) next.phone = 'Phone number is required';
-        if (!form.message.trim()) next.message = 'Message is required';
-        return next;
-    };
+    const update = (field) => (e) => setData(field, e.target.value);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const validationErrors = validate();
-        setErrors(validationErrors);
-        if (Object.keys(validationErrors).length === 0) {
-            playUiSound('success');
-            setSubmitted(true);
-        }
+        post('/contact', {
+            preserveScroll: true,
+            onSuccess: () => {
+                playUiSound('success');
+                setSubmitted(true);
+            },
+        });
     };
 
     const handleReset = () => {
-        setForm(EMPTY_FORM);
-        setErrors({});
+        reset();
         setSubmitted(false);
     };
 
@@ -238,10 +227,11 @@ export default function Contact() {
 
                                 <button
                                     type="submit"
-                                    className="flex w-full items-center justify-center gap-2 bg-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98] sm:w-auto"
+                                    disabled={processing}
+                                    className="flex w-full items-center justify-center gap-2 bg-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98] disabled:opacity-60 sm:w-auto"
                                 >
                                     <LuSend className="h-4 w-4" />
-                                    Send Message
+                                    {processing ? 'Sending…' : 'Send Message'}
                                 </button>
                             </form>
                         )}

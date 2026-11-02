@@ -14,7 +14,7 @@ const About = lazy(() => import('@/Components/About'));
 const Reservations = lazy(() => import('@/Components/Reservations'));
 const Contact = lazy(() => import('@/Components/Contact'));
 
-export default function Home() {
+export default function Home({ menuItems = [], menuCategories = [], galleryImages = [] }) {
     return (
         <SiteLayout>
             <Head title="Crunches Cafe — Fast Food & Hangout Spot in Faisalabad" />
@@ -27,11 +27,11 @@ export default function Home() {
             </ScrollScaleSection>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="menu">
-                <Menu />
+                <Menu menuItems={menuItems} menuCategories={menuCategories} />
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
             <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
-                <Gallery />
+                <Gallery galleryImages={galleryImages} />
             </Suspense>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="about">

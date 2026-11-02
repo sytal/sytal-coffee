@@ -9,7 +9,6 @@ import {
     LuCakeSlice,
     LuChevronDown,
 } from 'react-icons/lu';
-import { MENU_CATEGORIES, MENU_ITEMS } from '@/data/menuItems';
 import SteamWisps from '@/Components/motion/SteamWisps';
 import ImageZoomModal from '@/Components/motion/ImageZoomModal';
 import FlipCard from '@/Components/motion/FlipCard';
@@ -26,26 +25,32 @@ const GRID_ROW_CAP = 5;
 const GRID_COLS = 3;
 const GRID_CAP = GRID_ROW_CAP * GRID_COLS;
 
-export default function Menu() {
-    const [activeCategory, setActiveCategory] = useState(MENU_CATEGORIES[0]);
+export default function Menu({ menuItems = [], menuCategories = [] }) {
+    const [activeCategory, setActiveCategory] = useState(menuCategories[0]);
     const [query, setQuery] = useState('');
     const [zoomImage, setZoomImage] = useState(null);
     const [showAll, setShowAll] = useState(false);
+
+    useEffect(() => {
+        if (!activeCategory && menuCategories.length > 0) {
+            setActiveCategory(menuCategories[0]);
+        }
+    }, [menuCategories, activeCategory]);
 
     const isSearching = query.trim().length > 0;
 
     const items = useMemo(() => {
         if (isSearching) {
             const q = query.trim().toLowerCase();
-            return MENU_ITEMS.filter(
+            return menuItems.filter(
                 (item) =>
                     item.name.toLowerCase().includes(q) ||
                     item.description.toLowerCase().includes(q) ||
                     item.tags?.some((tag) => tag.toLowerCase().includes(q))
             );
         }
-        return MENU_ITEMS.filter((item) => item.category === activeCategory);
-    }, [activeCategory, query, isSearching]);
+        return menuItems.filter((item) => item.category === activeCategory);
+    }, [activeCategory, query, isSearching, menuItems]);
 
     useEffect(() => {
         setShowAll(false);
@@ -120,7 +125,7 @@ export default function Menu() {
                     }`}
                 >
                     <div className="scrollbar-hide flex justify-start gap-4 overflow-x-auto px-1 py-1 sm:justify-center">
-                        {MENU_CATEGORIES.map((category) => {
+                        {menuCategories.map((category) => {
                             const Icon = CATEGORY_ICONS[category];
                             const isActive = !isSearching && category === activeCategory;
                             return (
@@ -187,7 +192,7 @@ export default function Menu() {
                                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                         {featuredItems.map((item, index) => (
                                             <FlipCard
-                                                key={item.name}
+                                                key={item.id ?? item.name}
                                                 item={item}
                                                 index={index}
                                                 size="featured"
@@ -204,7 +209,7 @@ export default function Menu() {
                                     <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                                         {visibleRegularItems.map((item, index) => (
                                             <FlipCard
-                                                key={item.name}
+                                                key={item.id ?? item.name}
                                                 item={item}
                                                 index={index}
                                                 size="regular"

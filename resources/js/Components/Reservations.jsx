@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useForm } from '@inertiajs/react';
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import {
     LuCalendarCheck,
@@ -23,15 +24,14 @@ const EMPTY_FORM = {
     phone: '',
     date: '',
     time: '',
-    partySize: 2,
+    party_size: 2,
     requests: '',
 };
 
 const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
 export default function Reservations() {
-    const [form, setForm] = useState(EMPTY_FORM);
-    const [errors, setErrors] = useState({});
+    const { data: form, setData, post, errors, processing, reset } = useForm(EMPTY_FORM);
     const [submitted, setSubmitted] = useState(false);
 
     const panelRef = useRef(null);
@@ -49,33 +49,21 @@ export default function Reservations() {
 
     const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(244, 105, 31, 0.22), transparent 70%)`;
 
-    const update = (field) => (e) =>
-        setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-    const validate = () => {
-        const next = {};
-        if (!form.name.trim()) next.name = 'Name is required';
-        if (!form.email.trim()) next.email = 'Email is required';
-        else if (!isValidEmail(form.email)) next.email = 'Enter a valid email';
-        if (!form.phone.trim()) next.phone = 'Phone number is required';
-        if (!form.date) next.date = 'Select a date';
-        if (!form.time) next.time = 'Select a time';
-        return next;
-    };
+    const update = (field) => (e) => setData(field, e.target.value);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const validationErrors = validate();
-        setErrors(validationErrors);
-        if (Object.keys(validationErrors).length === 0) {
-            playUiSound('success');
-            setSubmitted(true);
-        }
+        post('/reservations', {
+            preserveScroll: true,
+            onSuccess: () => {
+                playUiSound('success');
+                setSubmitted(true);
+            },
+        });
     };
 
     const handleReset = () => {
-        setForm(EMPTY_FORM);
-        setErrors({});
+        reset();
         setSubmitted(false);
     };
 
@@ -153,8 +141,8 @@ export default function Reservations() {
                             </h3>
                             <p className="max-w-sm leading-relaxed text-brand-foregroundMuted">
                                 Thank you, {form.name.split(' ')[0] || 'friend'}. We&rsquo;ve
-                                saved your spot for {form.partySize}{' '}
-                                {Number(form.partySize) === 1 ? 'guest' : 'guests'} on{' '}
+                                saved your spot for {form.party_size}{' '}
+                                {Number(form.party_size) === 1 ? 'guest' : 'guests'} on{' '}
                                 {form.date} at {form.time}. Come hungry &mdash; a confirmation
                                 is on its way to your inbox.
                             </p>
@@ -206,8 +194,9 @@ export default function Reservations() {
                                     icon={LuUsers}
                                     as="select"
                                     alwaysFloated
-                                    value={form.partySize}
-                                    onChange={update('partySize')}
+                                    value={form.party_size}
+                                    onChange={update('party_size')}
+                                    error={errors.party_size}
                                 >
                                     {PARTY_SIZES.map((size) => (
                                         <option key={size} value={size}>
@@ -251,10 +240,11 @@ export default function Reservations() {
 
                             <button
                                 type="submit"
-                                className="flex w-full items-center justify-center gap-2 bg-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98]"
+                                disabled={processing}
+                                className="flex w-full items-center justify-center gap-2 bg-brand-gold px-8 py-3 text-sm uppercase tracking-wider text-brand-background transition-all duration-300 hover:scale-[1.02] hover:bg-brand-goldLight hover:shadow-lg hover:shadow-brand-gold/20 active:scale-[0.98] disabled:opacity-60"
                             >
                                 <LuCalendarCheck className="h-4 w-4" />
-                                Save My Table
+                                {processing ? 'Saving…' : 'Save My Table'}
                             </button>
                         </form>
                     )}

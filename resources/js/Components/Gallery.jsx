@@ -2,50 +2,26 @@ import { motion } from 'framer-motion';
 import ScrollScale from '@/Components/motion/ScrollScale';
 import TiltCard from '@/Components/motion/TiltCard';
 
-const GALLERY_TILES = [
-    {
-        image: '/images/outdoors-of-the-restaurant.jpg',
-        label: 'The Terrace',
-        span: 'col-span-2 row-span-2 sm:col-span-2 sm:row-span-2',
-    },
-    {
-        image: '/images/chef-preparing-the-plates.jpg',
-        label: 'In the Kitchen',
-        span: 'col-span-1 row-span-2 sm:col-span-1 sm:row-span-2',
-    },
-    {
-        image: '/images/fire-from-wok.jpg',
-        label: 'Open Kitchen',
-        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
-    },
-    {
-        image: '/images/gallery/gallery-2.jpg',
-        label: 'The Dining Room',
-        span: 'col-span-2 row-span-1 sm:col-span-2 sm:row-span-1',
-    },
-    {
-        image: '/images/gallery/gallery-4.jpg',
-        label: 'Evening Service',
-        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
-    },
-    {
-        image: '/images/gallery/gallery-6.jpg',
-        label: 'Private Lounge',
-        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
-    },
-    {
-        image: '/images/gallery/gallery-3.jpg',
-        label: 'Afternoon Light',
-        span: 'col-span-1 row-span-1 sm:col-span-2 sm:row-span-1',
-    },
-    {
-        image: '/images/gallery/gallery-7.jpg',
-        label: 'Bar Service',
-        span: 'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
-    },
+// Bento span pattern repeated across the grid, matching the shape of the
+// original hand-picked layout (big hero tile, tall tile, then a mix of
+// small/wide tiles).
+const SPAN_PATTERN = [
+    'col-span-2 row-span-2 sm:col-span-2 sm:row-span-2',
+    'col-span-1 row-span-2 sm:col-span-1 sm:row-span-2',
+    'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
+    'col-span-2 row-span-1 sm:col-span-2 sm:row-span-1',
+    'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
+    'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
+    'col-span-1 row-span-1 sm:col-span-2 sm:row-span-1',
+    'col-span-1 row-span-1 sm:col-span-1 sm:row-span-1',
 ];
 
-export default function Gallery() {
+export default function Gallery({ galleryImages = [] }) {
+    const tiles = galleryImages.map((tile, index) => ({
+        ...tile,
+        span: SPAN_PATTERN[index % SPAN_PATTERN.length],
+    }));
+
     return (
         <section className="bg-brand-surface py-28">
             <div className="mx-auto max-w-7xl px-6">
@@ -70,9 +46,9 @@ export default function Gallery() {
 
                 <ScrollScale range={[0.82, 1]} className="mt-16">
                     <div className="grid grid-cols-2 gap-5 sm:grid-cols-4 sm:[grid-auto-rows:12rem] sm:[grid-auto-flow:dense]">
-                        {GALLERY_TILES.map((tile, index) => (
+                        {tiles.map((tile, index) => (
                             <motion.div
-                                key={tile.label}
+                                key={tile.id ?? tile.label}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true, amount: 0.2 }}

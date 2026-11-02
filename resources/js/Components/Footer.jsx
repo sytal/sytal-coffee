@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiInstagram, FiFacebook, FiTwitter, FiMapPin, FiPhone, FiClock } from 'react-icons/fi';
@@ -24,14 +24,19 @@ const fadeUp = {
 };
 
 function NewsletterForm() {
-    const [email, setEmail] = useState('');
+    const { data, setData, post, reset, processing } = useForm({ email: '' });
     const [submitted, setSubmitted] = useState(false);
 
     function handleSubmit(e) {
         e.preventDefault();
-        if (!email) return;
-        setSubmitted(true);
-        setEmail('');
+        if (!data.email) return;
+        post('/newsletter', {
+            preserveScroll: true,
+            onSuccess: () => {
+                setSubmitted(true);
+                reset();
+            },
+        });
     }
 
     return (
@@ -39,14 +44,15 @@ function NewsletterForm() {
             <input
                 type="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={data.email}
+                onChange={(e) => setData('email', e.target.value)}
                 placeholder="Where the first bite goes"
                 className="w-full flex-1 rounded-sm border border-brand-border bg-brand-background px-4 py-2.5 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/70 focus:border-brand-gold focus:outline-none"
             />
             <button
                 type="submit"
-                className="shrink-0 rounded-sm border border-brand-gold px-5 py-2.5 text-sm uppercase tracking-wider text-brand-gold transition hover:bg-brand-gold hover:text-brand-background"
+                disabled={processing}
+                className="shrink-0 rounded-sm border border-brand-gold px-5 py-2.5 text-sm uppercase tracking-wider text-brand-gold transition hover:bg-brand-gold hover:text-brand-background disabled:opacity-60"
             >
                 {submitted ? 'Subscribed' : 'Subscribe'}
             </button>

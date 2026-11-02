@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login() {
     const { data, setData, post, processing, errors } = useForm({
@@ -14,12 +14,14 @@ export default function Login() {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-brand-background px-6 font-sans text-brand-foreground">
-            <Head title="Admin Login" />
+            <Head title="Sign In — Crunches Cafe" />
             <div className="w-full max-w-sm rounded-sm border border-brand-border bg-brand-surface p-8">
-                <h1 className="mb-1 font-display text-2xl text-brand-foreground">
-                    Crunches <span className="text-brand-gold">Admin</span>
-                </h1>
-                <p className="mb-6 text-sm text-brand-foregroundMuted">Sign in to manage the cafe.</p>
+                <Link href="/" className="mb-1 inline-block font-display text-2xl text-brand-foreground">
+                    Crunches <span className="text-brand-gold">Cafe</span>
+                </Link>
+                <p className="mb-6 text-sm text-brand-foregroundMuted">
+                    Sign in to place an order, check your order history, or manage the cafe.
+                </p>
 
                 <form onSubmit={submit} className="flex flex-col gap-4">
                     <div>
@@ -66,6 +68,13 @@ export default function Login() {
                         {processing ? 'Signing in...' : 'Sign in'}
                     </button>
                 </form>
+
+                <p className="mt-5 text-center text-xs text-brand-foregroundMuted">
+                    New here?{' '}
+                    <Link href="/register" className="text-brand-gold hover:underline">
+                        Create an account
+                    </Link>
+                </p>
             </div>
         </div>
     );

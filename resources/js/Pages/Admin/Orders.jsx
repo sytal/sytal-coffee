@@ -1,0 +1,230 @@
+import { Head, router } from '@inertiajs/react';
+import { useState } from 'react';
+import AdminLayout from '@/Layouts/AdminLayout';
+import SlideOver from '@/Components/Admin/SlideOver';
+import StatusBadge from '@/Components/Admin/StatusBadge';
+import { LuEye, LuSearch } from 'react-icons/lu';
+
+const STATUSES = ['All', 'Pending', 'Preparing', 'Out for Delivery', 'Completed', 'Cancelled'];
+
+export default function Orders({ orders = [] }) {
+    const [status, setStatus] = useState('All');
+    const [query, setQuery] = useState('');
+    const [viewing, setViewing] = useState(null);
+
+    const rows = orders.filter((o) => {
+        const matchesStatus = status === 'All' || o.status === status;
+        const name = o.user?.name ?? '';
+        const matchesQuery = name.toLowerCase().includes(query.toLowerCase()) || String(o.id).includes(query);
+        return matchesStatus && matchesQuery;
+    });
+
+    function updateStatus(order, newStatus) {
+        router.patch(`/admin/orders/${order.id}/status`, { status: newStatus }, { preserveScroll: true });
+        if (viewing?.id === order.id) {
+            setViewing({ ...viewing, status: newStatus });
+        }
+    }
+
+    return (
+        <AdminLayout title="Orders">
+            <Head title="Admin — Orders" />
+
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative">
+                    <LuSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-foregroundMuted" />
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search by customer or order #..."
+                        className="w-64 rounded-sm border border-brand-border bg-brand-surface py-2 pl-9 pr-3 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold"
+                    />
+                </div>
+
+                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+                    {STATUSES.map((s) => (
+                        <button
+                            key={s}
+                            type="button"
+                            onClick={() => setStatus(s)}
+                            className={`shrink-0 rounded-full border px-4 py-1.5 text-xs uppercase tracking-wider transition ${
+                                status === s
+                                    ? 'border-brand-gold bg-brand-gold text-brand-background'
+                                    : 'border-brand-border text-brand-foregroundMuted hover:border-brand-gold hover:text-brand-gold'
+                            }`}
+                        >
+                            {s}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Mobile: stacked cards */}
+            <div className="mt-6 flex flex-col gap-3 sm:hidden">
+                {rows.map((o) => (
+                    <div key={o.id} className="rounded-sm border border-brand-border bg-brand-surface p-4">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                                <p className="truncate text-brand-foreground">
+                                    #{o.id} &middot; {o.user?.name ?? 'Guest'}
+                                </p>
+                                <p className="truncate text-xs text-brand-foregroundMuted">{o.user?.email}</p>
+                                <p className="truncate text-xs text-brand-foregroundMuted">{o.delivery_address}</p>
+                            </div>
+                            <StatusBadge status={o.status} />
+                        </div>
+                        <div className="mt-3 flex items-center justify-between text-sm text-brand-foregroundMuted">
+                            <span>{o.items?.length ?? 0} items</span>
+                            <span className="text-brand-gold">Rs. {Number(o.total).toLocaleString()}</span>
+                        </div>
+                        <div className="mt-3 flex justify-end">
+                            <button
+                                type="button"
+                                onClick={() => setViewing(o)}
+                                className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                aria-label={`View order ${o.id}`}
+                            >
+                                <LuEye className="h-3.5 w-3.5" />
+                            </button>
+                        </div>
+                    </div>
+                ))}
+                {rows.length === 0 && (
+                    <p className="rounded-sm border border-brand-border bg-brand-surface p-8 text-center text-sm text-brand-foregroundMuted">
+                        No orders match this filter.
+                    </p>
+                )}
+            </div>
+
+            {/* Tablet+: table */}
+            <div className="mt-6 hidden overflow-x-auto rounded-sm border border-brand-border bg-brand-surface sm:block">
+                <table className="w-full text-left text-sm">
+                    <thead>
+                        <tr className="border-b border-brand-border text-xs uppercase tracking-wider text-brand-foregroundMuted">
+                            <th className="p-4 font-normal">Order</th>
+                            <th className="p-4 font-normal">Customer</th>
+                            <th className="p-4 font-normal">Address</th>
+                            <th className="p-4 font-normal">Items</th>
+                            <th className="p-4 font-normal">Total</th>
+                            <th className="p-4 font-normal">Status</th>
+                            <th className="p-4 font-normal text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows.map((o) => (
+                            <tr key={o.id} className="border-b border-brand-border/60 last:border-0">
+                                <td className="p-4 text-brand-foreground">#{o.id}</td>
+                                <td className="p-4 text-brand-foregroundMuted">
+                                    <div>{o.user?.name ?? 'Guest'}</div>
+                                    <div className="text-xs">{o.user?.email}</div>
+                                </td>
+                                <td className="max-w-[200px] truncate p-4 text-brand-foregroundMuted">
+                                    {o.delivery_address}
+                                </td>
+                                <td className="p-4 text-brand-foregroundMuted">{o.items?.length ?? 0}</td>
+                                <td className="p-4 text-brand-gold">Rs. {Number(o.total).toLocaleString()}</td>
+                                <td className="p-4">
+                                    <select
+                                        value={o.status}
+                                        onChange={(e) => updateStatus(o, e.target.value)}
+                                        className="rounded-sm border border-brand-border bg-brand-background px-2 py-1 text-xs text-brand-foreground outline-none focus:border-brand-gold"
+                                    >
+                                        {STATUSES.filter((s) => s !== 'All').map((s) => (
+                                            <option key={s} value={s}>
+                                                {s}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </td>
+                                <td className="p-4">
+                                    <div className="flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewing(o)}
+                                            className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                            aria-label={`View order ${o.id}`}
+                                        >
+                                            <LuEye className="h-3.5 w-3.5" />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                {rows.length === 0 && (
+                    <p className="p-8 text-center text-sm text-brand-foregroundMuted">No orders match this filter.</p>
+                )}
+            </div>
+
+            <SlideOver open={Boolean(viewing)} onClose={() => setViewing(null)} title={`Order #${viewing?.id ?? ''}`}>
+                {viewing && (
+                    <div className="flex flex-col gap-5 text-sm">
+                        <div>
+                            <p className="text-xs uppercase tracking-wider text-brand-foregroundMuted">Customer</p>
+                            <p className="mt-1 text-brand-foreground">{viewing.user?.name ?? 'Guest'}</p>
+                            <p className="text-brand-foregroundMuted">{viewing.user?.email}</p>
+                            <p className="text-brand-foregroundMuted">{viewing.phone}</p>
+                        </div>
+
+                        <div>
+                            <p className="text-xs uppercase tracking-wider text-brand-foregroundMuted">
+                                Delivery Address
+                            </p>
+                            <p className="mt-1 text-brand-foreground">{viewing.delivery_address}</p>
+                        </div>
+
+                        {viewing.notes && (
+                            <div>
+                                <p className="text-xs uppercase tracking-wider text-brand-foregroundMuted">Notes</p>
+                                <p className="mt-1 text-brand-foreground">{viewing.notes}</p>
+                            </div>
+                        )}
+
+                        <div>
+                            <p className="mb-2 text-xs uppercase tracking-wider text-brand-foregroundMuted">Items</p>
+                            <ul className="flex flex-col gap-2">
+                                {(viewing.items ?? []).map((item) => (
+                                    <li
+                                        key={item.id}
+                                        className="flex items-center justify-between rounded-sm border border-brand-border p-3"
+                                    >
+                                        <span className="text-brand-foreground">
+                                            {item.quantity} &times; {item.name}
+                                        </span>
+                                        <span className="text-brand-foregroundMuted">
+                                            Rs. {(item.price * item.quantity).toLocaleString()}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="flex items-center justify-between border-t border-brand-border pt-4">
+                            <span className="text-brand-foregroundMuted">Total</span>
+                            <span className="font-display text-lg text-brand-gold">
+                                Rs. {Number(viewing.total).toLocaleString()}
+                            </span>
+                        </div>
+
+                        <div>
+                            <p className="mb-2 text-xs uppercase tracking-wider text-brand-foregroundMuted">Status</p>
+                            <select
+                                value={viewing.status}
+                                onChange={(e) => updateStatus(viewing, e.target.value)}
+                                className="w-full rounded-sm border border-brand-border bg-brand-background px-3 py-2 text-sm text-brand-foreground outline-none focus:border-brand-gold"
+                            >
+                                {STATUSES.filter((s) => s !== 'All').map((s) => (
+                                    <option key={s} value={s}>
+                                        {s}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                )}
+            </SlideOver>
+        </AdminLayout>
+    );
+}

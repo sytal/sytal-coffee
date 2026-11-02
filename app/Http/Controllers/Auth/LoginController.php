@@ -30,7 +30,10 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/admin');
+        $user = Auth::user();
+        $fallback = $user->hasRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_MANAGER]) ? '/admin' : '/';
+
+        return redirect()->intended($fallback);
     }
 
     public function destroy(Request $request)

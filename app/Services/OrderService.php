@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
+
+class OrderService
+{
+    /**
+     * Create an order + its line items in one transaction. Prices are looked
+     * up server-side from the current menu items — never trusting a price
+     * the client might send — so the total can't be tampered with.
+     */
+    public function create(User $user, array $data): Order
+    {
+        return DB::transaction(function () use ($user, $data) {
+            $order = Order::create([
+                'user_id' => $user->id,
+                'delivery_address' => $data['delivery_address'],
+                'phone' => $data['phone'],
+                'notes' => $data['notes'] ?? null,
+                'status' => Order::STATUS_PENDING,
+                'total' => 0,
+            ]);
+
+            $menuItems = MenuItem::query()
+                ->whereIn('id', collect($data['items'])->pluck('menu_item_id'))
+                ->get()
+                ->keyBy('id');
+
+            $total = 0;
+
+            foreach ($data['items'] as $line) {
+                $menuItem = $menuItems->get($line['menu_item_id']);
+                if (! $menuItem) {
+                    continue;
+                }
+
+                $unitPrice = $menuItem->numericPrice();
+                $quantity = (int) $line['quantity'];
+
+                $order->items()->create([
+                    'menu_item_id' => $menuItem->id,
+                    'name' => $menuItem->name,
+                    'price' => $unitPrice,
+                    'quantity' => $quantity,
+                ]);
+
+                $total += $unitPrice * $quantity;
+            }
+
+            $order->update(['total' => $total]);
+
+            return $order->fresh('items');
+        });
+    }
+
+    public function forUser(User $user): Collection
+    {
+        return Order::query()
+            ->where('user_id', $user->id)
+            ->with('items')
+            ->latest()
+            ->get();
+    }
+
+    public function all(): Collection
+    {
+        return Order::query()
+            ->with(['items', 'user:id,name,email'])
+            ->latest()
+            ->get();
+    }
+
+    public function updateStatus(Order $order, string $status): Order
+    {
+        $order->update(['status' => $status]);
+
+        return $order;
+    }
+}

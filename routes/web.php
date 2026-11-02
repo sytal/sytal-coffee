@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Requests\StoreContactMessageRequest;
 use App\Http\Requests\StoreMenuItemRequest;
 use App\Http\Requests\StoreReservationRequest;
@@ -10,11 +12,13 @@ use App\Http\Requests\UpdateMenuItemRequest;
 use App\Models\ContactMessage;
 use App\Models\GalleryImage;
 use App\Models\MenuItem;
+use App\Models\Order;
 use App\Models\Reservation;
 use App\Services\ContactMessageService;
 use App\Services\GalleryImageService;
 use App\Services\MenuItemService;
 use App\Services\NewsletterService;
+use App\Services\OrderService;
 use App\Services\ReservationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +47,16 @@ Route::post('/newsletter', function (SubscribeNewsletterRequest $request, Newsle
 Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store']);
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+Route::get('/register', [RegisterController::class, 'create'])->name('register');
+Route::post('/register', [RegisterController::class, 'store']);
+
+// Placing an order requires a signed-in customer; browsing the public menu
+// above does not. Any guest hitting these gets bounced to /login and, once
+// signed in, redirect()->intended() below sends them right back here.
+Route::middleware('auth')->group(function () {
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/my-orders', [OrderController::class, 'mine'])->name('orders.mine');
+});
 
 // Role-gated admin panel, wired to the real backend services/models below.
 Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(function () {
@@ -52,6 +66,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
                 'menuItems' => MenuItem::count(),
                 'reservationsToday' => Reservation::whereDate('date', now()->toDateString())->count(),
                 'unreadMessages' => ContactMessage::where('status', 'New')->count(),
+                'ordersToday' => Order::whereDate('created_at', now()->toDateString())->count(),
             ],
             'recentReservations' => $reservationService->latest()->take(5)->values(),
             'recentMessages' => $contactMessageService->latest()->take(5)->values(),
@@ -157,4 +172,20 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
 
         return back()->with('success', 'Image deleted!');
     })->name('admin.gallery.destroy');
+
+    Route::get('/orders', function (OrderService $orderService) {
+        return Inertia::render('Admin/Orders', [
+            'orders' => $orderService->all(),
+        ]);
+    })->name('admin.orders');
+
+    Route::patch('/orders/{order}/status', function (Request $request, Order $order, OrderService $orderService) {
+        $request->validate([
+            'status' => ['required', 'in:Pending,Preparing,Out for Delivery,Completed,Cancelled'],
+        ]);
+
+        $orderService->updateStatus($order, $request->input('status'));
+
+        return back()->with('success', 'Order updated!');
+    })->name('admin.orders.status');
 });

@@ -1,7 +1,7 @@
-import { Link } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LuMenu, LuX } from 'react-icons/lu';
+import { LuMenu, LuX, LuUser, LuLogOut, LuReceipt } from 'react-icons/lu';
 import useSmoothScroll from '@/lib/useSmoothScroll';
 import { playUiSound } from '@/lib/uiSound';
 import SoundToggle from '@/Components/SoundToggle';
@@ -36,6 +36,13 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState('home');
     const scrollToSection = useSmoothScroll();
+    const { auth } = usePage().props;
+    const user = auth?.user;
+
+    function handleLogout() {
+        playUiSound('click');
+        router.post('/logout');
+    }
 
     useEffect(() => {
         let ticking = false;
@@ -120,6 +127,43 @@ export default function Navbar() {
                 <div className="hidden items-center gap-4 md:flex">
                     <LiveStatusBadge />
                     <SoundToggle />
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <Link
+                                href="/my-orders"
+                                className="flex items-center gap-1.5 text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
+                            >
+                                <LuReceipt className="h-4 w-4" />
+                                My Orders
+                            </Link>
+                            {user.role && ['admin', 'manager'].includes(user.role) && (
+                                <Link
+                                    href="/admin"
+                                    className="text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
+                                >
+                                    Admin
+                                </Link>
+                            )}
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                aria-label="Log out"
+                                className="flex items-center gap-1.5 rounded-full border border-brand-border px-4 py-1.5 text-xs uppercase tracking-wider text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                            >
+                                <LuLogOut className="h-3.5 w-3.5" />
+                                {user.name?.split(' ')[0] ?? 'Sign Out'}
+                            </button>
+                        </div>
+                    ) : (
+                        <Link
+                            href="/login"
+                            onClick={() => playUiSound('click')}
+                            className="flex items-center gap-1.5 rounded-full border border-brand-gold/60 px-4 py-1.5 text-xs uppercase tracking-wider text-brand-gold transition hover:bg-brand-gold hover:text-brand-background"
+                        >
+                            <LuUser className="h-3.5 w-3.5" />
+                            Sign In
+                        </Link>
+                    )}
                 </div>
 
                 <button
@@ -162,6 +206,43 @@ export default function Navbar() {
                         <motion.div variants={linkVariants} className="flex items-center justify-between pt-2">
                             <LiveStatusBadge />
                             <SoundToggle />
+                        </motion.div>
+                        <motion.div variants={linkVariants} className="flex flex-col gap-3 border-t border-brand-border/60 pt-4">
+                            {user ? (
+                                <>
+                                    <Link
+                                        href="/my-orders"
+                                        className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
+                                    >
+                                        <LuReceipt className="h-4 w-4" />
+                                        My Orders
+                                    </Link>
+                                    {user.role && ['admin', 'manager'].includes(user.role) && (
+                                        <Link
+                                            href="/admin"
+                                            className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
+                                        >
+                                            Admin Panel
+                                        </Link>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={handleLogout}
+                                        className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
+                                    >
+                                        <LuLogOut className="h-4 w-4" />
+                                        Sign Out
+                                    </button>
+                                </>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-gold"
+                                >
+                                    <LuUser className="h-4 w-4" />
+                                    Sign In
+                                </Link>
+                            )}
                         </motion.div>
                     </motion.nav>
                 )}

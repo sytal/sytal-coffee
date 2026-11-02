@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuExpand, LuRotateCcw } from 'react-icons/lu';
+import { LuExpand, LuRotateCcw, LuPlus } from 'react-icons/lu';
 
 /**
  * Reusable 3D flip card used by the Menu grid. Click anywhere on the card
@@ -10,7 +10,7 @@ import { LuExpand, LuRotateCcw } from 'react-icons/lu';
  *
  * `size` controls image aspect ratio / text scale: 'featured' | 'regular'.
  */
-export default function FlipCard({ item, index, size = 'regular', onZoom }) {
+export default function FlipCard({ item, index, size = 'regular', onZoom, onAddToOrder }) {
     const [flipped, setFlipped] = useState(false);
     const [shimmerKey, setShimmerKey] = useState(0);
 
@@ -105,13 +105,29 @@ export default function FlipCard({ item, index, size = 'regular', onZoom }) {
                         >
                             {item.name}
                         </h3>
-                        <span
-                            className={`mt-1 inline-block font-display text-brand-gold ${
-                                isFeatured ? 'text-lg' : 'text-sm'
-                            }`}
-                        >
-                            {item.price}
-                        </span>
+                        <div className="mt-1 flex items-center justify-between gap-2">
+                            <span
+                                className={`inline-block font-display text-brand-gold ${
+                                    isFeatured ? 'text-lg' : 'text-sm'
+                                }`}
+                            >
+                                {item.price}
+                            </span>
+                            {onAddToOrder && (
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onAddToOrder(item);
+                                    }}
+                                    aria-label={`Add ${item.name} to your order`}
+                                    className="flex items-center gap-1 rounded-full bg-brand-gold/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-gold"
+                                >
+                                    <LuPlus className="h-3 w-3" />
+                                    Add
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -143,11 +159,22 @@ export default function FlipCard({ item, index, size = 'regular', onZoom }) {
                         ))}
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between">
+                    <div className="mt-3 flex items-center justify-between gap-2">
                         <span className="font-display text-brand-gold">{item.price}</span>
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-brand-foregroundMuted">
-                            Tap to flip back
-                        </span>
+                        {onAddToOrder && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onAddToOrder(item);
+                                }}
+                                aria-label={`Add ${item.name} to your order`}
+                                className="flex items-center gap-1 rounded-full bg-brand-gold/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-gold"
+                            >
+                                <LuPlus className="h-3 w-3" />
+                                Add
+                            </button>
+                        )}
                     </div>
                 </div>
             </motion.div>

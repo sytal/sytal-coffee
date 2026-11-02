@@ -120,11 +120,11 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                         e.stopPropagation();
                                         onAddToOrder(item);
                                     }}
-                                    aria-label={`Add ${item.name} to your order`}
+                                    aria-label={`Add ${item.name} to your tray`}
                                     className="flex items-center gap-1 rounded-full bg-brand-gold/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-gold"
                                 >
                                     <LuPlus className="h-3 w-3" />
-                                    Add
+                                    Add to Tray
                                 </button>
                             )}
                         </div>
@@ -168,11 +168,11 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                     e.stopPropagation();
                                     onAddToOrder(item);
                                 }}
-                                aria-label={`Add ${item.name} to your order`}
+                                aria-label={`Add ${item.name} to your tray`}
                                 className="flex items-center gap-1 rounded-full bg-brand-gold/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-gold"
                             >
                                 <LuPlus className="h-3 w-3" />
-                                Add
+                                Add to Tray
                             </button>
                         )}
                     </div>

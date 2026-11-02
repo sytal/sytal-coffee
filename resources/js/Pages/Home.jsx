@@ -26,14 +26,6 @@ export default function Home({ menuItems = [], menuCategories = [], galleryImage
                 <CraveBreak />
             </ScrollScaleSection>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
-            <div id="menu">
-                <Menu menuItems={menuItems} menuCategories={menuCategories} />
-            </div>
-            <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
-            <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
-                <Gallery galleryImages={galleryImages} />
-            </Suspense>
-            <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="about">
                 <ScrollScaleSection>
                     <Suspense fallback={<div className="h-screen bg-brand-background" />}>
@@ -41,7 +33,15 @@ export default function Home({ menuItems = [], menuCategories = [], galleryImage
                     </Suspense>
                 </ScrollScaleSection>
             </div>
+            <SectionDivider fromClass="from-brand-background" toClass="to-brand-background" />
+            <div id="menu">
+                <Menu menuItems={menuItems} menuCategories={menuCategories} />
+            </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
+            <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
+                <Gallery galleryImages={galleryImages} />
+            </Suspense>
+            <SectionDivider fromClass="from-brand-surface" toClass="to-brand-surface" />
             <div id="reservations">
                 <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
                     <Reservations />

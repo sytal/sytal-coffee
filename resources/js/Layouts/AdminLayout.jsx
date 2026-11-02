@@ -11,11 +11,13 @@ import {
     LuBell,
     LuSearch,
     LuLogOut,
+    LuReceipt,
 } from 'react-icons/lu';
 
 const NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin', icon: LuLayoutDashboard },
     { label: 'Menu Items', href: '/admin/menu', icon: LuUtensils },
+    { label: 'Orders', href: '/admin/orders', icon: LuReceipt },
     { label: 'Reservations', href: '/admin/reservations', icon: LuCalendarCheck },
     { label: 'Messages', href: '/admin/messages', icon: LuMessageSquare },
     { label: 'Gallery', href: '/admin/gallery', icon: LuImage },

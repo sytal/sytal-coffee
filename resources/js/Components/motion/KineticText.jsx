@@ -33,24 +33,32 @@ export default function KineticText({
         >
             {lines.map((line, li) => (
                 <span key={li} className="block" aria-hidden="true">
-                    {line.split(' ').map((word) => {
+                    {line.split(' ').map((word, wi) => {
                         const k = wordIndex++;
                         return (
-                            <span
-                                key={k}
-                                className="inline-block overflow-hidden align-bottom"
-                                style={{ paddingBottom: '0.12em', marginBottom: '-0.12em' }}
-                            >
-                                <motion.span
-                                    className="inline-block"
-                                    variants={{
-                                        hidden: { y: '115%', rotate: 2 },
-                                        show: { y: '0%', rotate: 0 },
-                                    }}
-                                    transition={{ duration, ease: EASE }}
+                            // The leading space (for every word but the first) is a plain
+                            // text node *between* the inline-block word spans below, not
+                            // inside one of them — a trailing space placed inside an
+                            // inline-block gets trimmed by the browser as "end of line"
+                            // whitespace, which was collapsing every heading down to
+                            // "WordWordWord" with no visible gaps.
+                            <span key={k}>
+                                {wi > 0 && ' '}
+                                <span
+                                    className="inline-block overflow-hidden align-bottom"
+                                    style={{ paddingBottom: '0.12em', marginBottom: '-0.12em' }}
                                 >
-                                    {word}{' '}
-                                </motion.span>
+                                    <motion.span
+                                        className="inline-block"
+                                        variants={{
+                                            hidden: { y: '115%', rotate: 2 },
+                                            show: { y: '0%', rotate: 0 },
+                                        }}
+                                        transition={{ duration, ease: EASE }}
+                                    >
+                                        {word}
+                                    </motion.span>
+                                </span>
                             </span>
                         );
                     })}

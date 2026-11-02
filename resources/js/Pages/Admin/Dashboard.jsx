@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import StatCard from '@/Components/Admin/StatCard';
 import StatusBadge from '@/Components/Admin/StatusBadge';
-import { LuUtensils, LuCalendarCheck, LuMessageSquare, LuUsers } from 'react-icons/lu';
+import { LuUtensils, LuCalendarCheck, LuMessageSquare, LuReceipt } from 'react-icons/lu';
 
 export default function Dashboard({ stats, recentReservations, recentMessages }) {
     const RECENT_RESERVATIONS = recentReservations ?? [];
@@ -16,7 +16,7 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
                 <StatCard icon={LuUtensils} label="Menu Items" value={stats?.menuItems ?? 0} />
                 <StatCard icon={LuCalendarCheck} label="Reservations Today" value={stats?.reservationsToday ?? 0} />
                 <StatCard icon={LuMessageSquare} label="Unread Messages" value={stats?.unreadMessages ?? 0} trendUp={false} />
-                <StatCard icon={LuUsers} label="Monthly Visitors" value="—" />
+                <StatCard icon={LuReceipt} label="Orders Today" value={stats?.ordersToday ?? 0} />
             </div>
 
             <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-5">

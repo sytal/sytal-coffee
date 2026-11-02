@@ -6,6 +6,9 @@ const STYLES = {
     read: 'border-brand-border text-brand-foregroundMuted',
     active: 'border-brand-success/40 text-brand-success',
     draft: 'border-brand-border text-brand-foregroundMuted',
+    preparing: 'border-brand-gold/40 text-brand-gold',
+    'out for delivery': 'border-brand-gold/40 text-brand-gold',
+    completed: 'border-brand-success/40 text-brand-success',
 };
 
 export default function StatusBadge({ status }) {

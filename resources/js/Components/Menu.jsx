@@ -12,6 +12,8 @@ import {
 import SteamWisps from '@/Components/motion/SteamWisps';
 import ImageZoomModal from '@/Components/motion/ImageZoomModal';
 import FlipCard from '@/Components/motion/FlipCard';
+import { useCart } from '@/lib/CartContext';
+import { playUiSound } from '@/lib/uiSound';
 
 const CATEGORY_ICONS = {
     'Loaded Fries': LuFlame,
@@ -30,6 +32,12 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
     const [query, setQuery] = useState('');
     const [zoomImage, setZoomImage] = useState(null);
     const [showAll, setShowAll] = useState(false);
+    const { addItem } = useCart();
+
+    const handleAddToOrder = (item) => {
+        playUiSound('click');
+        addItem(item);
+    };
 
     useEffect(() => {
         if (!activeCategory && menuCategories.length > 0) {
@@ -71,10 +79,10 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
                     transition={{ duration: 0.6 }}
                     className="mx-auto max-w-2xl text-center"
                 >
-                    <p className="relative mb-3 inline-block font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
+                    <span className="relative mb-3 inline-block font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
                         <SteamWisps count={3} className="absolute -top-8 left-1/2 h-10 w-10 -translate-x-1/2" />
                         The Tasting Journey
-                    </p>
+                    </span>
                     <h2 className="font-display text-4xl text-brand-foreground sm:text-5xl">
                         Crafted to Order
                     </h2>
@@ -199,6 +207,7 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
                                                 onZoom={() =>
                                                     setZoomImage({ src: item.image, alt: item.name, caption: item.name })
                                                 }
+                                                onAddToOrder={handleAddToOrder}
                                             />
                                         ))}
                                     </div>
@@ -216,6 +225,7 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
                                                 onZoom={() =>
                                                     setZoomImage({ src: item.image, alt: item.name, caption: item.name })
                                                 }
+                                                onAddToOrder={handleAddToOrder}
                                             />
                                         ))}
                                     </div>

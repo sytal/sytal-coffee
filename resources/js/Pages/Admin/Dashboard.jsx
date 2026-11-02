@@ -41,7 +41,7 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
                                 {RECENT_RESERVATIONS.map((r) => (
                                     <tr key={r.id} className="border-b border-brand-border/60 last:border-0">
                                         <td className="py-3 pr-4 text-brand-foreground">{r.name}</td>
-                                        <td className="py-3 pr-4 text-brand-foregroundMuted">{r.guests}</td>
+                                        <td className="py-3 pr-4 text-brand-foregroundMuted">{r.party_size}</td>
                                         <td className="py-3 pr-4 text-brand-foregroundMuted">
                                             {r.date} &middot; {r.time}
                                         </td>

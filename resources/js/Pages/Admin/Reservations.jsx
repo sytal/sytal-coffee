@@ -38,13 +38,13 @@ export default function Reservations({ reservations = [] }) {
                     />
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
                     {STATUSES.map((s) => (
                         <button
                             key={s}
                             type="button"
                             onClick={() => setStatus(s)}
-                            className={`rounded-full border px-4 py-1.5 text-xs uppercase tracking-wider transition ${
+                            className={`shrink-0 rounded-full border px-4 py-1.5 text-xs uppercase tracking-wider transition ${
                                 status === s
                                     ? 'border-brand-gold bg-brand-gold text-brand-background'
                                     : 'border-brand-border text-brand-foregroundMuted hover:border-brand-gold hover:text-brand-gold'
@@ -76,7 +76,7 @@ export default function Reservations({ reservations = [] }) {
                                     <div>{r.email}</div>
                                     <div className="text-xs">{r.phone}</div>
                                 </td>
-                                <td className="p-4 text-brand-foregroundMuted">{r.guests} guests</td>
+                                <td className="p-4 text-brand-foregroundMuted">{r.party_size} guests</td>
                                 <td className="p-4 text-brand-foregroundMuted">
                                     {r.date} &middot; {r.time}
                                 </td>

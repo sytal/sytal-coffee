@@ -9,7 +9,46 @@
         <!-- Favicon -->
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="alternate icon" href="/favicon.ico" sizes="any">
-        <meta name="theme-color" content="#0c0b09">
+        @php($activeTheme = app(\App\Services\ThemeService::class)->active())
+        @php($darkColors = $activeTheme['preset']['dark'])
+        @php($lightColors = $activeTheme['preset']['light'])
+        @php($mode = $activeTheme['mode'])
+        <meta name="theme-color" content="{{ $mode === 'light' ? $lightColors['background'] : $darkColors['background'] }}">
+
+        {{-- Active color theme + light/dark mode (Admin > Appearance), injected before
+             any paint so there's no flash of the wrong palette. Tailwind's brand.*
+             classes resolve these CSS variables at runtime — see
+             resources/js/config/colors.js. If the owner hasn't forced a mode
+             ("auto", the default), we fall back to the visitor's OS preference via
+             prefers-color-scheme; otherwise the forced mode always wins. --}}
+        <style>
+            @if ($mode === 'dark')
+                :root {
+                    @foreach ($darkColors as $name => $hex)
+                        --brand-{{ $name }}: {{ $hex }};
+                    @endforeach
+                }
+            @elseif ($mode === 'light')
+                :root {
+                    @foreach ($lightColors as $name => $hex)
+                        --brand-{{ $name }}: {{ $hex }};
+                    @endforeach
+                }
+            @else
+                :root {
+                    @foreach ($darkColors as $name => $hex)
+                        --brand-{{ $name }}: {{ $hex }};
+                    @endforeach
+                }
+                @media (prefers-color-scheme: light) {
+                    :root {
+                        @foreach ($lightColors as $name => $hex)
+                            --brand-{{ $name }}: {{ $hex }};
+                        @endforeach
+                    }
+                }
+            @endif
+        </style>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

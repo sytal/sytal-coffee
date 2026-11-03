@@ -1,26 +1,28 @@
 /**
- * Single source of truth for Crunches Cafe's color palette.
- * Every component should reference these tokens (via Tailwind classes below
- * or by importing this file) instead of hardcoding hex/rgb values.
- *
- * Palette: dark storefront base with the vibrant orange from Crunches'
- * actual logo (black background, orange script "Crunches Cafe" wordmark).
+ * Single source of truth for Crunches Cafe's color palette, at the
+ * Tailwind-config level. The *values* below are the "classic_gold"
+ * fallback (used if the DB-driven theme hasn't loaded yet, e.g. during a
+ * Tailwind build) — but at runtime every brand.* color resolves through a
+ * CSS variable (--brand-*) injected server-side in app.blade.php from the
+ * active theme preset in the database (see App\Services\ThemeService).
+ * This is what lets the owner switch themes from Admin > Appearance
+ * without touching any component code.
  */
 export const colors = {
-    background: '#0c0b09',
-    surface: '#17140f',
-    surfaceAlt: '#1f1b15',
-    border: '#37332a',
+    background: 'var(--brand-background, #0c0b09)',
+    surface: 'var(--brand-surface, #17140f)',
+    surfaceAlt: 'var(--brand-surfaceAlt, #1f1b15)',
+    border: 'var(--brand-border, #37332a)',
 
-    foreground: '#f5f1e8',
-    foregroundMuted: '#b9b2a2',
+    foreground: 'var(--brand-foreground, #f5f1e8)',
+    foregroundMuted: 'var(--brand-foregroundMuted, #b9b2a2)',
 
-    gold: '#f4691f',
-    goldLight: '#ff9248',
-    goldDark: '#c44c13',
+    gold: 'var(--brand-gold, #f4691f)',
+    goldLight: 'var(--brand-goldLight, #ff9248)',
+    goldDark: 'var(--brand-goldDark, #c44c13)',
 
-    success: '#5fae70',
-    danger: '#d6462f',
+    success: 'var(--brand-success, #5fae70)',
+    danger: 'var(--brand-danger, #d6462f)',
 };
 
 export default colors;

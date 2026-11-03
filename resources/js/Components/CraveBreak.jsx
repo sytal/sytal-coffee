@@ -3,15 +3,23 @@ import SteamWisps from '@/Components/motion/SteamWisps';
 import useSmoothScroll from '@/lib/useSmoothScroll';
 import { playUiSound } from '@/lib/uiSound';
 
-const CRAVE_ITEMS = [
+const DEFAULT_ITEMS = [
     { image: '/images/fire-from-wok.jpg', word: 'Sizzling', steam: true },
     { image: '/images/menu/lobster-roll.jpg', word: 'Loaded', steam: false },
     { image: '/images/menu/cake.jpg', word: 'Molten', steam: false },
     { image: '/images/chef-preparing-the-plates.jpg', word: 'Fresh Off the Grill', steam: true },
 ];
 
-export default function CraveBreak() {
+export default function CraveBreak({
+    eyebrow = 'Before You Order',
+    heading = 'Still deciding?',
+    items,
+}) {
     const scrollToSection = useSmoothScroll();
+    const craveItems = (items && items.length ? items : DEFAULT_ITEMS).map((item, i) => ({
+        steam: i % 2 === 0,
+        ...item,
+    }));
 
     return (
         <section className="relative overflow-hidden bg-brand-surface py-16 sm:py-20">
@@ -24,17 +32,17 @@ export default function CraveBreak() {
                     className="mx-auto max-w-xl text-center"
                 >
                     <p className="mb-2 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
-                        Before You Order
+                        {eyebrow}
                     </p>
                     <h2 className="font-display text-3xl text-brand-foreground sm:text-4xl">
-                        Still deciding?
+                        {heading}
                     </h2>
                 </motion.div>
 
                 <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-                    {CRAVE_ITEMS.map((item, index) => (
+                    {craveItems.map((item, index) => (
                         <motion.div
-                            key={item.word}
+                            key={`${item.word}-${index}`}
                             initial={{ opacity: 0, y: 24 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.2 }}

@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             MenuItemSeeder::class,
             GalleryImageSeeder::class,
+            ContentBlockSeeder::class,
         ]);
     }
 }

@@ -9,7 +9,7 @@ const STATS = [
     { label: 'Days Open Weekly', value: '7' },
 ];
 
-const PARAGRAPHS = [
+const DEFAULT_PARAGRAPHS = [
     `Crunches started on Gulberg Thana Road with one idea: Faisalabad
     deserved a late-night spot that didn't cut corners on flavor. No
     fuss, no pretense — just loaded fries, stacked burgers, and a
@@ -30,7 +30,14 @@ const fadeUp = {
     viewport: { once: true },
 };
 
-export default function About() {
+export default function About({
+    eyebrow = 'Our Story',
+    heading = 'Built on Late Nights & Loaded Plates',
+    quote = "No fuss, no pretense — just a kitchen that doesn't slow down after dark.",
+    body,
+    image = '/images/about.jpg',
+}) {
+    const paragraphs = body ? body.split('\n\n') : DEFAULT_PARAGRAPHS;
     return (
         <section className="relative bg-brand-background py-24 sm:py-32">
             <div aria-hidden className="bg-noise pointer-events-none absolute inset-0" />
@@ -41,24 +48,26 @@ export default function About() {
                         transition={{ duration: 0.7 }}
                         className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold"
                     >
-                        Our Story
+                        {eyebrow}
                     </motion.p>
 
                     <KineticText
                         as="h2"
-                        text="Built on Late Nights & Loaded Plates"
+                        text={heading}
                         className="font-display text-4xl text-brand-foreground sm:text-5xl"
                         stagger={0.1}
                         duration={0.9}
                     />
 
-                    <motion.p
-                        {...fadeUp}
-                        transition={{ duration: 0.7 }}
-                        className="mt-6 leading-relaxed text-brand-foregroundMuted"
-                    >
-                        {PARAGRAPHS[0]}
-                    </motion.p>
+                    {paragraphs[0] && (
+                        <motion.p
+                            {...fadeUp}
+                            transition={{ duration: 0.7 }}
+                            className="mt-6 leading-relaxed text-brand-foregroundMuted"
+                        >
+                            {paragraphs[0]}
+                        </motion.p>
+                    )}
 
                     <motion.blockquote
                         initial={{ opacity: 0, y: 24 }}
@@ -67,33 +76,19 @@ export default function About() {
                         transition={{ duration: 0.7 }}
                         className="my-10 border-l-2 border-brand-gold py-1 pl-6 font-display text-xl italic text-brand-foreground sm:text-2xl"
                     >
-                        &ldquo;No fuss, no pretense &mdash; just a kitchen that doesn&rsquo;t
-                        slow down after dark.&rdquo;
+                        &ldquo;{quote}&rdquo;
                     </motion.blockquote>
 
-                    <motion.p
-                        {...fadeUp}
-                        transition={{ duration: 0.7 }}
-                        className="mt-4 leading-relaxed text-brand-foregroundMuted"
-                    >
-                        {PARAGRAPHS[1]}
-                    </motion.p>
-
-                    <motion.p
-                        {...fadeUp}
-                        transition={{ duration: 0.7 }}
-                        className="mt-4 leading-relaxed text-brand-foregroundMuted"
-                    >
-                        {PARAGRAPHS[2]}
-                    </motion.p>
-
-                    <motion.p
-                        {...fadeUp}
-                        transition={{ duration: 0.7 }}
-                        className="mt-4 leading-relaxed text-brand-foregroundMuted"
-                    >
-                        {PARAGRAPHS[3]}
-                    </motion.p>
+                    {paragraphs.slice(1).map((paragraph, i) => (
+                        <motion.p
+                            key={i}
+                            {...fadeUp}
+                            transition={{ duration: 0.7 }}
+                            className="mt-4 leading-relaxed text-brand-foregroundMuted"
+                        >
+                            {paragraph}
+                        </motion.p>
+                    ))}
 
                     <motion.div
                         initial={{ opacity: 0, y: 16 }}
@@ -124,7 +119,7 @@ export default function About() {
                     className="relative aspect-[4/5] overflow-hidden rounded-sm border border-brand-border lg:sticky lg:top-24"
                 >
                     <img
-                        src="/images/about.jpg"
+                        src={image}
                         alt="Inside Crunches Cafe"
                         loading="lazy"
                         decoding="async"

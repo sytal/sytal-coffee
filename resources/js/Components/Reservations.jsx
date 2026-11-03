@@ -30,7 +30,14 @@ const EMPTY_FORM = {
 
 const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
-export default function Reservations() {
+export default function Reservations({
+    eyebrow = 'Save Your Seat',
+    heading = 'Reserve a Table',
+    intro = "Claim your table before the kitchen runs out of today's cravings. We hold reservations for fifteen minutes past the booked time.",
+    image = '/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg',
+    panelEyebrow = 'Reserved for the Hungry',
+    panelHeading = 'A table worth craving.',
+}) {
     const { data: form, setData, post, errors, processing, reset } = useForm(EMPTY_FORM);
     const [submitted, setSubmitted] = useState(false);
 
@@ -78,18 +85,17 @@ export default function Reservations() {
                     className="mb-12 text-center"
                 >
                     <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
-                        Save Your Seat
+                        {eyebrow}
                     </p>
                     <KineticText
                         as="h2"
-                        text="Reserve a Table"
+                        text={heading}
                         className="font-display text-4xl text-brand-foreground sm:text-5xl"
                         stagger={0.1}
                         duration={0.9}
                     />
                     <p className="mx-auto mt-4 max-w-xl leading-relaxed text-brand-foregroundMuted">
-                        Claim your table before the kitchen runs out of today&rsquo;s cravings. We
-                        hold reservations for fifteen minutes past the booked time.
+                        {intro}
                     </p>
                 </motion.div>
 
@@ -109,7 +115,7 @@ export default function Reservations() {
                             style={{ background: panelGlow }}
                         />
                         <img
-                            src="/images/fancy-salmon-dish-with-wine-glasses-in-background.jpg"
+                            src={image}
                             alt="A table set for reservations at Crunches Cafe"
                             loading="lazy"
                             decoding="async"
@@ -118,10 +124,10 @@ export default function Reservations() {
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-background/85 via-brand-background/10 to-transparent" />
                         <div className="relative flex h-full flex-col justify-end p-8">
                             <p className="font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
-                                Reserved for the Hungry
+                                {panelEyebrow}
                             </p>
                             <p className="mt-3 font-display text-2xl text-brand-foreground">
-                                A table worth craving.
+                                {panelHeading}
                             </p>
                         </div>
                     </motion.div>

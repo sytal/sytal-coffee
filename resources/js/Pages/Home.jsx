@@ -14,22 +14,44 @@ const About = lazy(() => import('@/Components/About'));
 const Reservations = lazy(() => import('@/Components/Reservations'));
 const Contact = lazy(() => import('@/Components/Contact'));
 
-export default function Home({ menuItems = [], menuCategories = [], galleryImages = [] }) {
+export default function Home({ menuItems = [], menuCategories = [], galleryImages = [], contentBlocks = {} }) {
+    const hero = contentBlocks.hero?.fields ?? {};
+    const about = contentBlocks.about?.fields ?? {};
+    const craveBreak = contentBlocks.crave_break?.fields ?? {};
+    const reservationsBanner = contentBlocks.reservations_banner?.fields ?? {};
+
     return (
         <SiteLayout>
             <Head title="Crunches Cafe — Fast Food & Hangout Spot in Faisalabad" />
             <div id="home">
-                <Hero />
+                <Hero
+                    eyebrow={hero.eyebrow}
+                    title={hero.title}
+                    subtitle={hero.subtitle}
+                    ctaLabel={hero.cta_label}
+                    secondaryLabel={hero.secondary_label}
+                    images={hero.images}
+                />
             </div>
             <SectionDivider fromClass="from-brand-background" toClass="to-brand-surface" />
             <ScrollScaleSection>
-                <CraveBreak />
+                <CraveBreak
+                    eyebrow={craveBreak.eyebrow}
+                    heading={craveBreak.heading}
+                    items={craveBreak.items}
+                />
             </ScrollScaleSection>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />
             <div id="about">
                 <ScrollScaleSection>
                     <Suspense fallback={<div className="h-screen bg-brand-background" />}>
-                        <About />
+                        <About
+                            eyebrow={about.eyebrow}
+                            heading={about.heading}
+                            quote={about.quote}
+                            body={about.body}
+                            image={about.image}
+                        />
                     </Suspense>
                 </ScrollScaleSection>
             </div>
@@ -44,7 +66,14 @@ export default function Home({ menuItems = [], menuCategories = [], galleryImage
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-surface" />
             <div id="reservations">
                 <Suspense fallback={<div className="h-screen bg-brand-surface" />}>
-                    <Reservations />
+                    <Reservations
+                        eyebrow={reservationsBanner.eyebrow}
+                        heading={reservationsBanner.heading}
+                        intro={reservationsBanner.intro}
+                        image={reservationsBanner.image}
+                        panelEyebrow={reservationsBanner.panel_eyebrow}
+                        panelHeading={reservationsBanner.panel_heading}
+                    />
                 </Suspense>
             </div>
             <SectionDivider fromClass="from-brand-surface" toClass="to-brand-background" />

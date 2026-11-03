@@ -45,7 +45,7 @@ export default function Hero({
 
     const [imageIndex, setImageIndex] = useState(0);
     const [timeOfDay] = useState(() => getTimeOfDay());
-    const displayEyebrow = eyebrow ?? `${timeOfDay.label} · Fast Food Cafe, Faisalabad`;
+    const displayEyebrow = eyebrow ? eyebrow : `${timeOfDay.label} · Fast Food Cafe, Faisalabad`;
 
     useEffect(() => {
         if (reduce || images.length <= 1) return;

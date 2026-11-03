@@ -12,7 +12,10 @@ class ThemeController extends Controller
     {
     }
 
-    /** Public, unauthenticated — the active theme's palette, for the Flutter app. */
+    /** Public, unauthenticated — the active theme's palette (both dark and
+     *  light variants) plus the owner's forced mode ("dark"|"light"|"auto"),
+     *  for the Flutter app. When mode is "auto" the app should fall back to
+     *  the device's own light/dark preference. */
     public function show(): JsonResponse
     {
         $active = $this->themes->active();
@@ -21,7 +24,9 @@ class ThemeController extends Controller
             'data' => [
                 'key' => $active['key'],
                 'name' => $active['preset']['name'],
-                'colors' => $active['preset']['colors'],
+                'mode' => $active['mode'],
+                'dark' => $active['preset']['dark'],
+                'light' => $active['preset']['light'],
             ],
         ]);
     }

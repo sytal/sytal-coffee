@@ -1,10 +1,17 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { LuCheck } from 'react-icons/lu';
+import { LuCheck, LuSun, LuMoon, LuMonitor } from 'react-icons/lu';
 
-export default function Appearance({ presets = {}, active }) {
+const MODES = [
+    { key: 'dark', label: 'Dark', icon: LuMoon },
+    { key: 'light', label: 'Light', icon: LuSun },
+    { key: 'auto', label: 'Auto (match visitor’s device)', icon: LuMonitor },
+];
+
+export default function Appearance({ presets = {}, active, mode: initialMode }) {
     const [current, setCurrent] = useState(active);
+    const [mode, setMode] = useState(initialMode ?? 'auto');
     const [saving, setSaving] = useState(null);
 
     function choose(key) {
@@ -16,17 +23,58 @@ export default function Appearance({ presets = {}, active }) {
         });
     }
 
+    function chooseMode(key) {
+        setSaving(`mode:${key}`);
+        router.patch('/admin/appearance', { mode: key }, {
+            preserveScroll: true,
+            onSuccess: () => setMode(key),
+            onFinish: () => setSaving(null),
+        });
+    }
+
     return (
         <AdminLayout title="Appearance">
             <Head title="Admin — Appearance" />
             <p className="mb-6 max-w-2xl text-sm text-brand-foregroundMuted">
-                Pick a color theme for the website. The whole site switches to the new colors the
-                next time a page loads.
+                Pick a color theme for the website, and whether it should always show in Dark
+                mode, always in Light mode, or automatically match whatever the visitor's own
+                phone or computer prefers. Changes apply the next time a page loads.
             </p>
 
+            <div className="mb-10">
+                <h3 className="mb-3 font-display text-base text-brand-foreground">Light / Dark Mode</h3>
+                <div className="flex flex-wrap gap-3">
+                    {MODES.map(({ key, label, icon: Icon }) => {
+                        const isActive = mode === key;
+                        return (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => chooseMode(key)}
+                                disabled={saving !== null}
+                                className={`flex items-center gap-2 rounded-sm border px-4 py-2.5 text-sm transition ${
+                                    isActive
+                                        ? 'border-brand-gold bg-brand-gold text-brand-background'
+                                        : 'border-brand-border text-brand-foregroundMuted hover:border-brand-gold hover:text-brand-gold'
+                                }`}
+                            >
+                                <Icon className="h-4 w-4" />
+                                {label}
+                                {saving === `mode:${key}` && <span className="ml-1 text-xs">Saving...</span>}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <h3 className="mb-3 font-display text-base text-brand-foreground">Color Theme</h3>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {Object.entries(presets).map(([key, preset]) => {
                     const isActive = current === key;
+                    // Preview using whichever variant is currently relevant —
+                    // the dark one, except when the owner has forced Light mode.
+                    const previewColors = mode === 'light' ? preset.light : preset.dark;
+
                     return (
                         <button
                             key={key}
@@ -38,7 +86,7 @@ export default function Appearance({ presets = {}, active }) {
                                     ? 'border-brand-gold ring-1 ring-brand-gold'
                                     : 'border-brand-border hover:border-brand-gold/60'
                             }`}
-                            style={{ backgroundColor: preset.colors.surface }}
+                            style={{ backgroundColor: previewColors.surface }}
                         >
                             {isActive && (
                                 <span className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-brand-gold text-brand-background">
@@ -46,25 +94,34 @@ export default function Appearance({ presets = {}, active }) {
                                 </span>
                             )}
 
+                            <div className="mb-3 flex gap-1.5">
+                                {['background', 'surface', 'gold', 'goldLight', 'foreground'].map((token) => (
+                                    <span
+                                        key={`dark-${token}`}
+                                        className="h-7 w-7 rounded-full border border-white/10"
+                                        style={{ backgroundColor: preset.dark[token] }}
+                                    />
+                                ))}
+                            </div>
                             <div className="mb-4 flex gap-1.5">
                                 {['background', 'surface', 'gold', 'goldLight', 'foreground'].map((token) => (
                                     <span
-                                        key={token}
-                                        className="h-8 w-8 rounded-full border border-white/10"
-                                        style={{ backgroundColor: preset.colors[token] }}
+                                        key={`light-${token}`}
+                                        className="h-7 w-7 rounded-full border border-black/10"
+                                        style={{ backgroundColor: preset.light[token] }}
                                     />
                                 ))}
                             </div>
 
-                            <h3 className="font-display text-lg" style={{ color: preset.colors.foreground }}>
+                            <h3 className="font-display text-lg" style={{ color: previewColors.foreground }}>
                                 {preset.name}
                             </h3>
-                            <p className="mt-1 text-xs leading-relaxed" style={{ color: preset.colors.foregroundMuted }}>
+                            <p className="mt-1 text-xs leading-relaxed" style={{ color: previewColors.foregroundMuted }}>
                                 {preset.description}
                             </p>
 
                             {saving === key && (
-                                <p className="mt-3 text-xs uppercase tracking-wider" style={{ color: preset.colors.gold }}>
+                                <p className="mt-3 text-xs uppercase tracking-wider" style={{ color: previewColors.gold }}>
                                     Saving...
                                 </p>
                             )}

@@ -214,20 +214,35 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
         return back()->with('success', 'Order updated!');
     })->name('admin.content.order');
 
-    // Appearance — pick one of the premium color-theme presets; it becomes
-    // the website's (and, via the API, the app's) active color combination.
+    // Appearance — pick one of the premium color-theme presets (each with a
+    // dark and light variant) plus a dark/light/auto mode; together they
+    // become the website's (and, via the API, the app's) active color
+    // combination. "Auto" mode (the default until the owner forces one)
+    // falls back to the visitor's own OS/device preference.
     Route::get('/appearance', function (ThemeService $themeService) {
+        $active = $themeService->active();
+
         return Inertia::render('Admin/Appearance', [
             'presets' => $themeService::presets(),
-            'active' => $themeService->active()['key'],
+            'active' => $active['key'],
+            'mode' => $active['mode'],
         ]);
     })->name('admin.appearance');
 
     Route::patch('/appearance', function (Request $request, ThemeService $themeService) {
-        $request->validate(['theme' => ['required', 'string']]);
-        $themeService->setActive($request->input('theme'));
+        $request->validate([
+            'theme' => ['nullable', 'string'],
+            'mode' => ['nullable', 'string', 'in:'.implode(',', ThemeService::MODES)],
+        ]);
 
-        return back()->with('success', 'Theme updated!');
+        if ($request->filled('theme')) {
+            $themeService->setActive($request->input('theme'));
+        }
+        if ($request->filled('mode')) {
+            $themeService->setMode($request->input('mode'));
+        }
+
+        return back()->with('success', 'Appearance updated!');
     })->name('admin.appearance.update');
 
     Route::get('/orders', function (OrderService $orderService) {

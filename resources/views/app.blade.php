@@ -9,7 +9,19 @@
         <!-- Favicon -->
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="alternate icon" href="/favicon.ico" sizes="any">
-        <meta name="theme-color" content="#0c0b09">
+        @php($activeTheme = app(\App\Services\ThemeService::class)->active())
+        <meta name="theme-color" content="{{ $activeTheme['preset']['colors']['background'] }}">
+
+        {{-- Active color theme (Admin > Appearance), injected before any paint so there's
+             no flash of the wrong palette. Tailwind's brand.* classes resolve these
+             CSS variables at runtime — see resources/js/config/colors.js. --}}
+        <style>
+            :root {
+                @foreach ($activeTheme['preset']['colors'] as $name => $hex)
+                    --brand-{{ $name }}: {{ $hex }};
+                @endforeach
+            }
+        </style>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

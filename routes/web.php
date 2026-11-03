@@ -15,11 +15,13 @@ use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Services\ContactMessageService;
+use App\Services\ContentBlockService;
 use App\Services\GalleryImageService;
 use App\Services\MenuItemService;
 use App\Services\NewsletterService;
 use App\Services\OrderService;
 use App\Services\ReservationService;
+use App\Services\ThemeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -172,6 +174,61 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
 
         return back()->with('success', 'Image deleted!');
     })->name('admin.gallery.destroy');
+
+    // Website Content — section-by-section text/images for the public homepage.
+    // Icons are deliberately NOT editable here (owner constraint); only text
+    // and images, per section, ordered via sort_order.
+    Route::get('/content', function (ContentBlockService $contentBlockService) {
+        return Inertia::render('Admin/Content', [
+            'blocks' => $contentBlockService->all(),
+        ]);
+    })->name('admin.content');
+
+    Route::post('/content/{sectionKey}', function (Request $request, string $sectionKey, ContentBlockService $contentBlockService) {
+        $fields = $request->input('fields', []);
+        if (!is_array($fields)) {
+            $fields = [];
+        }
+
+        // Any image_* files sent (e.g. image, images[0], items[0][image]) get
+        // stored under storage/app/public/content and swapped in as paths,
+        // same upload pattern used by Admin/Gallery and Admin/MenuItems.
+        foreach ($request->allFiles() as $key => $file) {
+            if (!str_starts_with($key, 'upload_')) {
+                continue;
+            }
+            $path = '/storage/'.$file->store('content', 'public');
+            $target = substr($key, strlen('upload_'));
+            data_set($fields, $target, $path);
+        }
+
+        $contentBlockService->updateFields($sectionKey, $fields);
+
+        return back()->with('success', 'Section updated!');
+    })->name('admin.content.update');
+
+    Route::patch('/content/{sectionKey}/order', function (Request $request, string $sectionKey, ContentBlockService $contentBlockService) {
+        $request->validate(['sort_order' => ['required', 'integer', 'min:0']]);
+        $contentBlockService->updateSortOrder($sectionKey, (int) $request->input('sort_order'));
+
+        return back()->with('success', 'Order updated!');
+    })->name('admin.content.order');
+
+    // Appearance — pick one of the premium color-theme presets; it becomes
+    // the website's (and, via the API, the app's) active color combination.
+    Route::get('/appearance', function (ThemeService $themeService) {
+        return Inertia::render('Admin/Appearance', [
+            'presets' => $themeService::presets(),
+            'active' => $themeService->active()['key'],
+        ]);
+    })->name('admin.appearance');
+
+    Route::patch('/appearance', function (Request $request, ThemeService $themeService) {
+        $request->validate(['theme' => ['required', 'string']]);
+        $themeService->setActive($request->input('theme'));
+
+        return back()->with('success', 'Theme updated!');
+    })->name('admin.appearance.update');
 
     Route::get('/orders', function (OrderService $orderService) {
         return Inertia::render('Admin/Orders', [

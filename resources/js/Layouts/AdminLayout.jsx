@@ -12,6 +12,8 @@ import {
     LuSearch,
     LuLogOut,
     LuReceipt,
+    LuFileText,
+    LuPalette,
 } from 'react-icons/lu';
 
 const NAV_ITEMS = [
@@ -21,6 +23,8 @@ const NAV_ITEMS = [
     { label: 'Reservations', href: '/admin/reservations', icon: LuCalendarCheck },
     { label: 'Messages', href: '/admin/messages', icon: LuMessageSquare },
     { label: 'Gallery', href: '/admin/gallery', icon: LuImage },
+    { label: 'Website Content', href: '/admin/content', icon: LuFileText },
+    { label: 'Appearance', href: '/admin/appearance', icon: LuPalette },
 ];
 
 export default function AdminLayout({ title, children }) {

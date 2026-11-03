@@ -12,7 +12,7 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
         <AdminLayout title="Dashboard">
             <Head title="Admin — Dashboard" />
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
                 <StatCard icon={LuUtensils} label="Menu Items" value={stats?.menuItems ?? 0} />
                 <StatCard icon={LuCalendarCheck} label="Reservations Today" value={stats?.reservationsToday ?? 0} />
                 <StatCard icon={LuMessageSquare} label="Unread Messages" value={stats?.unreadMessages ?? 0} trendUp={false} />

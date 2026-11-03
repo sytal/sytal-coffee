@@ -49,7 +49,7 @@ export default function AuthScreen({ initialMode }) {
     const isLogin = mode === 'login';
 
     const loginForm = useForm({ email: '', password: '', remember: false });
-    const registerForm = useForm({ name: '', email: '', phone: '', password: '' });
+    const registerForm = useForm({ name: '', email: '', phone: '03', password: '' });
 
     function submitLogin(e) {
         e.preventDefault();
@@ -214,7 +214,7 @@ export default function AuthScreen({ initialMode }) {
                             animate="animate"
                             exit="exit"
                             transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                            className={`absolute inset-y-0 flex w-1/2 items-center ${formSide === 'right' ? 'right-0 justify-start pl-24' : 'left-0 justify-end pr-24'}`}
+                            className={`absolute inset-y-0 flex w-1/2 items-center ${formSide === 'right' ? 'right-0 justify-start pl-40' : 'left-0 justify-end pr-24'}`}
                         >
                             <div className="w-full max-w-[19rem]">
                                 <AnimatePresence mode="wait">
@@ -250,6 +250,7 @@ function LoginFormPanel({ form, onSubmit, onSwitch, idPrefix = 'login' }) {
                     label="Email"
                     icon={LuMail}
                     type="email"
+                    placeholder="you@example.com"
                     value={data.email}
                     onChange={(e) => setData('email', e.target.value)}
                     error={errors.email}
@@ -260,6 +261,7 @@ function LoginFormPanel({ form, onSubmit, onSwitch, idPrefix = 'login' }) {
                     label="Password"
                     icon={LuLock}
                     type="password"
+                    placeholder="Your password"
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
                     error={errors.password}
@@ -304,6 +306,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                     label="Name"
                     icon={LuUser}
                     type="text"
+                    placeholder="Your full name"
                     value={data.name}
                     onChange={(e) => setData('name', e.target.value)}
                     error={errors.name}
@@ -314,6 +317,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                     label="Email"
                     icon={LuMail}
                     type="email"
+                    placeholder="you@example.com"
                     value={data.email}
                     onChange={(e) => setData('email', e.target.value)}
                     error={errors.email}
@@ -321,10 +325,16 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                 <FloatingField
                     id={`${idPrefix}-phone`}
                     label="Phone"
-                    icon={LuPhone}
+                    prefix="03"
                     type="tel"
-                    value={data.phone}
-                    onChange={(e) => setData('phone', e.target.value)}
+                    inputMode="numeric"
+                    placeholder="XX XXXXXXX"
+                    maxLength={9}
+                    value={data.phone.replace(/^03/, '')}
+                    onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+                        setData('phone', `03${digits}`);
+                    }}
                     error={errors.phone}
                 />
                 <FloatingField
@@ -332,6 +342,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                     label="Password"
                     icon={LuLock}
                     type="password"
+                    placeholder="At least 8 characters"
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
                     error={errors.password}

@@ -73,6 +73,37 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
         ]);
     })->name('admin.dashboard');
 
+    // Feeds the notification bell dropdown: unread contact messages +
+    // pending orders, newest first. Kept deliberately small (count-bounded)
+    // since it's polled every 15s.
+    Route::get('/notifications', function () {
+        $messages = ContactMessage::where('status', 'New')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(fn ($m) => [
+                'type' => 'message',
+                'id' => $m->id,
+                'title' => 'New message from '.$m->name,
+                'subtitle' => $m->message,
+                'href' => '/admin/messages',
+            ]);
+
+        $orders = Order::where('status', 'Pending')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(fn ($o) => [
+                'type' => 'order',
+                'id' => $o->id,
+                'title' => 'New order #'.$o->id,
+                'subtitle' => 'Rs. '.number_format($o->total).' — '.($o->delivery_address ?? ''),
+                'href' => '/admin/orders',
+            ]);
+
+        return response()->json($messages->concat($orders)->sortByDesc('id')->values());
+    })->name('admin.notifications');
+
     Route::get('/menu', function (MenuItemService $menuItemService) {
         return Inertia::render('Admin/MenuItems', [
             'menuItems' => $menuItemService->search(null, null),

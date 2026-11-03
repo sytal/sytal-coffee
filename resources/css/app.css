@@ -9,6 +9,20 @@ html {
     scroll-padding-top: 5rem;
 }
 
+/* Chrome/Edge paint autofilled inputs with their own light background and
+   black text, ignoring our dark theme — this huge inset box-shadow repaints
+   the field's background in our color before the text layer, and the
+   -webkit-text-fill-color override (autofill ignores plain `color`) keeps
+   the text themed too. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #17140f inset;
+    -webkit-text-fill-color: #f5f1e8;
+    caret-color: #f5f1e8;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
 @layer utilities {
     /* Subtle paper-grain overlay for dark sections — keep opacity very low (3-5%). */
     .bg-noise {

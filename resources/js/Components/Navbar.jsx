@@ -101,7 +101,7 @@ export default function Navbar() {
                     Crunches <span className="text-brand-gold">Cafe</span>
                 </Link>
 
-                <nav className="hidden items-center gap-8 md:flex">
+                <nav className="hidden items-center gap-5 lg:gap-8 md:flex">
                     {NAV_LINKS.map((link) => {
                         const active = activeSection === link.href.slice(1);
                         return (
@@ -109,7 +109,7 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 onClick={(e) => handleNavClick(e, link.href)}
-                                className={`relative py-1 text-sm uppercase tracking-wider transition hover:text-brand-gold ${
+                                className={`relative whitespace-nowrap py-1 text-sm uppercase tracking-wider transition hover:text-brand-gold ${
                                     active ? 'text-brand-gold' : 'text-brand-foregroundMuted'
                                 }`}
                             >
@@ -124,22 +124,22 @@ export default function Navbar() {
                     })}
                 </nav>
 
-                <div className="hidden items-center gap-4 md:flex">
-                    <LiveStatusBadge />
+                <div className="hidden items-center gap-3 md:flex">
+                    <LiveStatusBadge className="hidden lg:inline-flex" />
                     <SoundToggle />
                     {user ? (
                         <div className="flex items-center gap-3">
                             <Link
                                 href="/my-orders"
-                                className="flex items-center gap-1.5 text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
+                                className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
                             >
-                                <LuReceipt className="h-4 w-4" />
+                                <LuReceipt className="h-4 w-4 shrink-0" />
                                 My Orders
                             </Link>
                             {user.role && ['admin', 'manager'].includes(user.role) && (
                                 <Link
                                     href="/admin"
-                                    className="text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
+                                    className="shrink-0 whitespace-nowrap text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
                                 >
                                     Admin
                                 </Link>
@@ -148,9 +148,9 @@ export default function Navbar() {
                                 type="button"
                                 onClick={handleLogout}
                                 aria-label="Log out"
-                                className="flex items-center gap-1.5 rounded-full border border-brand-border px-4 py-1.5 text-xs uppercase tracking-wider text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-brand-border px-4 py-1.5 text-xs uppercase tracking-wider text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
                             >
-                                <LuLogOut className="h-3.5 w-3.5" />
+                                <LuLogOut className="h-3.5 w-3.5 shrink-0" />
                                 {user.name?.split(' ')[0] ?? 'Sign Out'}
                             </button>
                         </div>
@@ -158,9 +158,9 @@ export default function Navbar() {
                         <Link
                             href="/login"
                             onClick={() => playUiSound('click')}
-                            className="flex items-center gap-1.5 rounded-full border border-brand-gold/60 px-4 py-1.5 text-xs uppercase tracking-wider text-brand-gold transition hover:bg-brand-gold hover:text-brand-background"
+                            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-brand-gold/60 px-4 py-1.5 text-xs uppercase tracking-wider text-brand-gold transition hover:bg-brand-gold hover:text-brand-background"
                         >
-                            <LuUser className="h-3.5 w-3.5" />
+                            <LuUser className="h-3.5 w-3.5 shrink-0" />
                             Sign In
                         </Link>
                     )}

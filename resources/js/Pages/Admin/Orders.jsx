@@ -101,7 +101,7 @@ export default function Orders({ orders = [] }) {
                     />
                 </div>
 
-                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+                <div className="scrollbar-hide flex gap-2 overflow-x-auto scroll-smooth">
                     {STATUSES.map((s) => (
                         <button
                             key={s}

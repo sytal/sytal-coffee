@@ -11,7 +11,7 @@ export default function LiveStatusBadge({ className = '' }) {
 
     return (
         <div
-            className={`inline-flex items-center gap-2 rounded-full border border-brand-border/60 bg-brand-surface/60 px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] ${className}`}
+            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-brand-border/60 bg-brand-surface/60 px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] ${className}`}
         >
             <span className="relative flex h-2 w-2">
                 <span

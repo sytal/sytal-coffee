@@ -19,6 +19,9 @@ export default function FloatingField({
     className = '',
     children,
     id,
+    // Fixed, non-editable text shown inside the field before the input
+    // (e.g. "+92" on a phone field) — not part of the editable value.
+    prefix,
     // Retained for backward compatibility with existing callers — the new
     // always-above label makes this distinction unnecessary, but we don't
     // want it leaking through ...props onto the underlying DOM element.
@@ -26,6 +29,7 @@ export default function FloatingField({
     ...props
 }) {
     const fieldId = id ?? `field-${label?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const leftPad = prefix ? 'pl-[4.5rem]' : Icon ? 'pl-11' : 'pl-4';
 
     return (
         <div>
@@ -36,14 +40,20 @@ export default function FloatingField({
                 {label}
             </label>
             <div className="relative">
-                {Icon && (
+                {Icon && !prefix && (
                     <Icon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-foregroundMuted" />
+                )}
+                {prefix && (
+                    <span className="pointer-events-none absolute left-4 top-1/2 flex -translate-y-1/2 items-center gap-2 text-brand-foreground">
+                        {Icon && <Icon className="h-4 w-4 text-brand-foregroundMuted" />}
+                        <span className="border-r border-brand-border pr-2 text-sm">{prefix}</span>
+                    </span>
                 )}
                 <Tag
                     id={fieldId}
                     className={`peer w-full rounded-sm border border-brand-border bg-brand-surface py-3 pr-10 text-brand-foreground outline-none transition placeholder:text-brand-foregroundMuted/50 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/40 ${
                         error ? 'border-brand-danger' : ''
-                    } ${Icon ? 'pl-11' : 'pl-4'} ${className}`}
+                    } ${leftPad} ${className}`}
                     {...props}
                 >
                     {children}

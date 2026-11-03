@@ -1,5 +1,7 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
     LuLayoutDashboard,
     LuUtensils,
@@ -13,6 +15,10 @@ import {
     LuLogOut,
     LuReceipt,
 } from 'react-icons/lu';
+import ToastHost from '@/Components/Admin/ToastHost';
+import { showToast } from '@/lib/toast';
+
+const NOTIF_POLL_MS = 15000;
 
 const NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin', icon: LuLayoutDashboard },
@@ -25,12 +31,49 @@ const NAV_ITEMS = [
 
 export default function AdminLayout({ title, children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [notifOpen, setNotifOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-    const user = usePage().props.auth?.user;
+    const { auth, flash } = usePage().props;
+    const user = auth?.user;
+    const seenFlashRef = useRef(null);
 
     function logout() {
         router.post('/logout');
     }
+
+    // Flash messages set via back()->with('success'/'error', ...) on any
+    // admin PATCH/POST (status updates, deletes, etc.) now arrive as shared
+    // Inertia props — surface them as a toast instead of silently vanishing.
+    useEffect(() => {
+        const message = flash?.success ?? flash?.error;
+        if (message && message !== seenFlashRef.current) {
+            seenFlashRef.current = message;
+            showToast(message, flash?.error ? 'error' : 'success');
+        }
+    }, [flash]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        async function poll() {
+            try {
+                const { data } = await axios.get('/admin/notifications');
+                if (!cancelled) setNotifications(data);
+            } catch {
+                // Best-effort — notifications are a convenience, not critical.
+            }
+        }
+
+        poll();
+        const timer = setInterval(poll, NOTIF_POLL_MS);
+        return () => {
+            cancelled = true;
+            clearInterval(timer);
+        };
+    }, []);
+
+    const unreadCount = notifications.length;
 
     function isActive(href) {
         if (href === '/admin') return currentPath === '/admin';
@@ -133,19 +176,86 @@ export default function AdminLayout({ title, children }) {
                                 className="w-56 rounded-sm border border-brand-border bg-brand-background py-2 pl-9 pr-3 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold"
                             />
                         </div>
-                        <button
-                            type="button"
-                            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
-                            aria-label="Notifications"
-                        >
-                            <LuBell className="h-4 w-4" />
-                            <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-brand-danger" />
-                        </button>
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setNotifOpen((v) => !v)}
+                                className="relative flex h-9 w-9 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                aria-label="Notifications"
+                            >
+                                <LuBell className="h-4 w-4" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute right-1 top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-brand-danger text-[9px] font-semibold text-white">
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {notifOpen && (
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setNotifOpen(false)}
+                                            aria-hidden
+                                        />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -8 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -8 }}
+                                            className="absolute right-0 top-12 z-50 w-80 max-w-[90vw] overflow-hidden rounded-sm border border-brand-border bg-brand-surface shadow-xl"
+                                        >
+                                            <div className="border-b border-brand-border px-4 py-3 text-xs uppercase tracking-wider text-brand-foregroundMuted">
+                                                Notifications
+                                            </div>
+                                            <div className="max-h-80 overflow-y-auto">
+                                                {notifications.length === 0 && (
+                                                    <p className="p-4 text-center text-sm text-brand-foregroundMuted">
+                                                        You're all caught up.
+                                                    </p>
+                                                )}
+                                                {notifications.map((n) => (
+                                                    <Link
+                                                        key={`${n.type}-${n.id}`}
+                                                        href={n.href}
+                                                        onClick={() => setNotifOpen(false)}
+                                                        className="block border-b border-brand-border/60 px-4 py-3 text-sm transition last:border-0 hover:bg-brand-surfaceAlt"
+                                                    >
+                                                        <p className="text-brand-foreground">{n.title}</p>
+                                                        <p className="mt-0.5 truncate text-xs text-brand-foregroundMuted">
+                                                            {n.subtitle}
+                                                        </p>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </header>
 
+                <AnimatePresence>
+                    {unreadCount > 0 && (
+                        <motion.button
+                            type="button"
+                            onClick={() => setNotifOpen(true)}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="flex w-full items-center justify-center gap-2 overflow-hidden border-b border-brand-gold bg-brand-gold/10 px-6 py-2.5 text-sm text-brand-gold transition hover:bg-brand-gold/20"
+                        >
+                            <LuBell className="h-4 w-4" />
+                            {unreadCount} new notification{unreadCount === 1 ? '' : 's'} — click to view
+                        </motion.button>
+                    )}
+                </AnimatePresence>
+
                 <main className="flex-1 overflow-x-hidden p-6">{children}</main>
             </div>
+
+            <ToastHost />
         </div>
     );
 }

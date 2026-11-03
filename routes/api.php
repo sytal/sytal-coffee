@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ContactMessageController;
+use App\Http\Controllers\Api\V1\ContentBlockController;
 use App\Http\Controllers\Api\V1\GalleryImageController;
 use App\Http\Controllers\Api\V1\MenuItemController;
 use App\Http\Controllers\Api\V1\NewsletterController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ReservationController;
+use App\Http\Controllers\Api\V1\ThemeController;
 use Illuminate\Support\Facades\Route;
 
 // Public API — used by the Flutter app (and anything else) to browse the
@@ -16,6 +18,11 @@ Route::prefix('v1')->group(function (): void {
     Route::get('/menu-items', [MenuItemController::class, 'index']);
     Route::get('/menu-categories', [MenuItemController::class, 'categories']);
     Route::get('/gallery', [GalleryImageController::class, 'index']);
+
+    // Website content/theme — Admin > Website Content and Admin > Appearance
+    // write these; the Flutter app reads them instead of hardcoding copy/colors.
+    Route::get('/content-blocks', [ContentBlockController::class, 'index']);
+    Route::get('/theme', [ThemeController::class, 'show']);
 
     Route::middleware('throttle:api')->group(function (): void {
         Route::post('/reservations', [ReservationController::class, 'store']);

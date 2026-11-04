@@ -1,6 +1,6 @@
-export const OPEN_DAYS = [2, 3, 4, 5, 6, 0]; // Tue(2)–Sun(0), closed Monday(1)
-export const OPEN_HOUR = 8;
-export const CLOSE_HOUR = 23; // 11pm
+// Matches the stated hours in Footer.jsx/Contact.jsx: "Daily, 1pm–1am".
+export const OPEN_HOUR = 13; // 1pm
+export const CLOSE_HOUR = 25; // 1am next day, expressed as 24+1 for the hour math below
 
 export function getTimeOfDay(date = new Date()) {
     const hour = date.getHours();
@@ -12,10 +12,11 @@ export function getTimeOfDay(date = new Date()) {
 }
 
 export function getOpenStatus(date = new Date()) {
-    const day = date.getDay();
-    const hour = date.getHours() + date.getMinutes() / 60;
-    const isOpenDay = OPEN_DAYS.includes(day);
-    const isOpen = isOpenDay && hour >= OPEN_HOUR && hour < CLOSE_HOUR;
+    // Normalize hours after midnight (0–1am) onto the same 24+ scale as
+    // CLOSE_HOUR=25, so "open until 1am" doesn't wrap around to "closed".
+    let hour = date.getHours() + date.getMinutes() / 60;
+    if (hour < OPEN_HOUR) hour += 24;
+    const isOpen = hour >= OPEN_HOUR && hour < CLOSE_HOUR;
 
     return {
         isOpen,
@@ -26,7 +27,8 @@ export function getOpenStatus(date = new Date()) {
 }
 
 function formatHour(hour24) {
-    const period = hour24 >= 12 ? 'PM' : 'AM';
-    const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+    const normalized = hour24 % 24; // CLOSE_HOUR=25 means "1am"
+    const period = normalized >= 12 ? 'PM' : 'AM';
+    const hour12 = normalized % 12 === 0 ? 12 : normalized % 12;
     return `${hour12}:00 ${period}`;
 }

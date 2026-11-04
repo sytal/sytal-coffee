@@ -28,6 +28,11 @@ use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index']);
 
+// The homepage "View Menu" link is a same-page scroll anchor (#menu), not a
+// real route — any direct hit on /menu, bookmark, or shared link 404'd.
+// Redirect it to that anchor so it actually works standalone.
+Route::get('/menu', fn () => redirect('/#menu'));
+
 Route::post('/reservations', function (StoreReservationRequest $request, ReservationService $reservationService) {
     $reservationService->create($request->validated());
 
@@ -335,7 +340,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
 
     Route::patch('/appearance', function (Request $request, ThemeService $themeService) {
         $request->validate([
-            'theme' => ['nullable', 'string'],
+            'theme' => ['nullable', 'string', 'in:'.implode(',', array_keys(ThemeService::presets()))],
             'mode' => ['nullable', 'string', 'in:'.implode(',', ThemeService::MODES)],
         ]);
 

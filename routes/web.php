@@ -79,9 +79,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
     // pending orders, newest first. Kept deliberately small (count-bounded)
     // since it's polled every 15s.
     Route::get('/notifications', function () {
+        $readMessageIds = \App\Models\NotificationRead::where('type', 'message')->pluck('ref_id');
+        $readOrderIds = \App\Models\NotificationRead::where('type', 'order')->pluck('ref_id');
+
         $messages = ContactMessage::where('status', 'New')
+            ->whereNotIn('id', $readMessageIds)
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get()
             ->map(fn ($m) => [
                 'type' => 'message',
@@ -92,8 +96,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
             ]);
 
         $orders = Order::where('status', 'Pending')
+            ->whereNotIn('id', $readOrderIds)
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get()
             ->map(fn ($o) => [
                 'type' => 'order',
@@ -105,6 +110,43 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
 
         return response()->json($messages->concat($orders)->sortByDesc('id')->values());
     })->name('admin.notifications');
+
+    Route::post('/notifications/read', function (Request $request) {
+        $request->validate([
+            'type' => ['required', 'in:message,order'],
+            'id' => ['required', 'integer'],
+        ]);
+
+        \App\Models\NotificationRead::updateOrCreate(
+            ['type' => $request->input('type'), 'ref_id' => $request->input('id')],
+            ['read_at' => now()]
+        );
+
+        return response()->noContent();
+    })->name('admin.notifications.read');
+
+    Route::post('/notifications/read-all', function () {
+        $readMessageIds = \App\Models\NotificationRead::where('type', 'message')->pluck('ref_id');
+        $readOrderIds = \App\Models\NotificationRead::where('type', 'order')->pluck('ref_id');
+
+        $rows = ContactMessage::where('status', 'New')->whereNotIn('id', $readMessageIds)
+            ->pluck('id')
+            ->map(fn ($id) => ['type' => 'message', 'ref_id' => $id, 'read_at' => now()])
+            ->concat(
+                Order::where('status', 'Pending')->whereNotIn('id', $readOrderIds)
+                    ->pluck('id')
+                    ->map(fn ($id) => ['type' => 'order', 'ref_id' => $id, 'read_at' => now()])
+            );
+
+        foreach ($rows as $row) {
+            \App\Models\NotificationRead::updateOrCreate(
+                ['type' => $row['type'], 'ref_id' => $row['ref_id']],
+                ['read_at' => $row['read_at']]
+            );
+        }
+
+        return response()->noContent();
+    })->name('admin.notifications.read-all');
 
     Route::get('/menu', function (MenuItemService $menuItemService) {
         return Inertia::render('Admin/MenuItems', [

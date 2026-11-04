@@ -79,6 +79,24 @@ export default function AdminLayout({ title, children }) {
 
     const unreadCount = notifications.length;
 
+    async function markRead(n) {
+        setNotifications((list) => list.filter((x) => !(x.type === n.type && x.id === n.id)));
+        try {
+            await axios.post('/admin/notifications/read', { type: n.type, id: n.id });
+        } catch {
+            // Best-effort — next poll will resync the real state.
+        }
+    }
+
+    async function markAllRead() {
+        setNotifications([]);
+        try {
+            await axios.post('/admin/notifications/read-all');
+        } catch {
+            // Best-effort — next poll will resync the real state.
+        }
+    }
+
     function isActive(href) {
         if (href === '/admin') return currentPath === '/admin';
         return currentPath.startsWith(href);
@@ -209,27 +227,50 @@ export default function AdminLayout({ title, children }) {
                                             exit={{ opacity: 0, y: -8 }}
                                             className="absolute right-0 top-12 z-50 w-80 max-w-[90vw] overflow-hidden rounded-sm border border-brand-border bg-brand-surface shadow-xl"
                                         >
-                                            <div className="border-b border-brand-border px-4 py-3 text-xs uppercase tracking-wider text-brand-foregroundMuted">
-                                                Notifications
+                                            <div className="flex items-center justify-between border-b border-brand-border px-4 py-3">
+                                                <span className="text-xs uppercase tracking-wider text-brand-foregroundMuted">
+                                                    Notifications
+                                                </span>
+                                                {notifications.length > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={markAllRead}
+                                                        className="text-xs text-brand-gold hover:underline"
+                                                    >
+                                                        Mark all read
+                                                    </button>
+                                                )}
                                             </div>
-                                            <div className="max-h-80 overflow-y-auto">
+                                            <div className="scrollbar-hide max-h-80 overflow-y-auto">
                                                 {notifications.length === 0 && (
                                                     <p className="p-4 text-center text-sm text-brand-foregroundMuted">
                                                         You're all caught up.
                                                     </p>
                                                 )}
                                                 {notifications.map((n) => (
-                                                    <Link
+                                                    <div
                                                         key={`${n.type}-${n.id}`}
-                                                        href={n.href}
-                                                        onClick={() => setNotifOpen(false)}
-                                                        className="block border-b border-brand-border/60 px-4 py-3 text-sm transition last:border-0 hover:bg-brand-surfaceAlt"
+                                                        className="flex items-start gap-2 border-b border-brand-border/60 px-4 py-3 text-sm transition last:border-0 hover:bg-brand-surfaceAlt"
                                                     >
-                                                        <p className="text-brand-foreground">{n.title}</p>
-                                                        <p className="mt-0.5 truncate text-xs text-brand-foregroundMuted">
-                                                            {n.subtitle}
-                                                        </p>
-                                                    </Link>
+                                                        <Link
+                                                            href={n.href}
+                                                            onClick={() => setNotifOpen(false)}
+                                                            className="min-w-0 flex-1"
+                                                        >
+                                                            <p className="text-brand-foreground">{n.title}</p>
+                                                            <p className="mt-0.5 truncate text-xs text-brand-foregroundMuted">
+                                                                {n.subtitle}
+                                                            </p>
+                                                        </Link>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => markRead(n)}
+                                                            className="shrink-0 text-xs text-brand-foregroundMuted hover:text-brand-gold"
+                                                            aria-label="Mark as read"
+                                                        >
+                                                            Read
+                                                        </button>
+                                                    </div>
                                                 ))}
                                             </div>
                                         </motion.div>

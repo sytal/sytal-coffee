@@ -192,22 +192,22 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                 </div>
             ) : (
             <>
-            <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="relative">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <div className="relative w-full sm:w-56">
                         <LuSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-foregroundMuted" />
                         <input
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search menu items..."
-                            className="w-56 rounded-sm border border-brand-border bg-brand-surface py-2 pl-9 pr-3 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold"
+                            className="w-full rounded-sm border border-brand-border bg-brand-surface py-2 pl-9 pr-3 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold"
                         />
                     </div>
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="rounded-sm border border-brand-border bg-brand-surface px-3 py-2 text-sm text-brand-foreground outline-none focus:border-brand-gold"
+                        className="w-full rounded-sm border border-brand-border bg-brand-surface px-3 py-2 text-sm text-brand-foreground outline-none focus:border-brand-gold sm:w-auto"
                     >
                         <option>All</option>
                         {categoryNames.map((c) => (
@@ -219,7 +219,7 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                 <button
                     type="button"
                     onClick={openAdd}
-                    className="flex items-center justify-center gap-2 rounded-sm bg-brand-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight"
+                    className="flex w-full items-center justify-center gap-2 rounded-sm bg-brand-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight sm:w-auto"
                 >
                     <LuPlus className="h-4 w-4" />
                     Add Item

@@ -14,20 +14,40 @@ export default function Appearance({ presets = {}, active, mode: initialMode }) 
     const [mode, setMode] = useState(initialMode ?? 'auto');
     const [saving, setSaving] = useState(null);
 
+    // Inertia's router.patch only swaps the page component — it never
+    // re-runs the Blade <style> block that injects --brand-* vars, so
+    // without this the new theme wouldn't show until a real page reload.
+    // Writing the vars straight onto :root makes the switch instant.
+    function applyCssVars(themeKey, modeKey) {
+        const preset = presets[themeKey];
+        if (!preset) return;
+        const resolvedMode = modeKey === 'auto'
+            ? (window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+            : modeKey;
+        const colors = preset[resolvedMode] ?? preset.dark;
+        Object.entries(colors).forEach(([name, hex]) => {
+            document.documentElement.style.setProperty(`--brand-${name}`, hex);
+        });
+    }
+
     function choose(key) {
         setSaving(key);
+        setCurrent(key);
+        applyCssVars(key, mode);
         router.patch('/admin/appearance', { theme: key }, {
             preserveScroll: true,
-            onSuccess: () => setCurrent(key),
+            preserveState: true,
             onFinish: () => setSaving(null),
         });
     }
 
     function chooseMode(key) {
         setSaving(`mode:${key}`);
+        setMode(key);
+        applyCssVars(current, key);
         router.patch('/admin/appearance', { mode: key }, {
             preserveScroll: true,
-            onSuccess: () => setMode(key),
+            preserveState: true,
             onFinish: () => setSaving(null),
         });
     }

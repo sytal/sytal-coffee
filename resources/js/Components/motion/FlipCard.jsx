@@ -24,7 +24,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
     return (
         <div
             className={`group relative [perspective:1600px] ${
-                isFeatured ? 'h-[26rem] sm:h-[28rem]' : 'h-72 sm:h-80'
+                isFeatured ? 'h-[26rem] sm:h-[28rem]' : 'h-64 sm:h-72'
             }`}
         >
             <motion.div
@@ -144,22 +144,24 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                         <LuRotateCcw className="mt-1 h-4 w-4 shrink-0 text-brand-foregroundMuted" />
                     </div>
 
-                    <p className="mt-3 flex-1 overflow-y-auto text-sm leading-relaxed text-brand-foregroundMuted">
+                    <p className="mt-3 overflow-y-auto text-sm leading-relaxed text-brand-foregroundMuted">
                         {item.description}
                     </p>
 
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                        {item.tags?.map((tag) => (
-                            <span
-                                key={tag}
-                                className="rounded-full border border-brand-gold/40 bg-brand-background/50 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-brand-gold"
-                            >
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
+                    {item.tags?.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                            {item.tags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="rounded-full border border-brand-gold/40 bg-brand-background/50 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-brand-gold"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                    )}
 
-                    <div className="mt-3 flex items-center justify-between gap-2">
+                    <div className="mt-auto flex items-center justify-between gap-2 pt-3">
                         <span className="font-display text-brand-gold">{item.price}</span>
                         {onAddToOrder && (
                             <button

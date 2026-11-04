@@ -19,7 +19,7 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
                 <StatCard icon={LuReceipt} label="Orders Today" value={stats?.ordersToday ?? 0} />
             </div>
 
-            <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-5">
+            <div className="mt-5 grid grid-cols-1 items-start gap-5 lg:grid-cols-5">
                 <div className="rounded-sm border border-brand-border bg-brand-surface p-5 lg:col-span-3">
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="font-display text-lg text-brand-foreground">Recent Reservations</h2>
@@ -52,6 +52,11 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
                                 ))}
                             </tbody>
                         </table>
+                        {RECENT_RESERVATIONS.length === 0 && (
+                            <p className="py-6 text-center text-sm text-brand-foregroundMuted">
+                                No reservations yet.
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -72,6 +77,9 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
                                 <p className="mt-1 truncate text-sm text-brand-foregroundMuted">{m.message}</p>
                             </div>
                         ))}
+                        {RECENT_MESSAGES.length === 0 && (
+                            <p className="py-6 text-center text-sm text-brand-foregroundMuted">No messages yet.</p>
+                        )}
                     </div>
                 </div>
             </div>

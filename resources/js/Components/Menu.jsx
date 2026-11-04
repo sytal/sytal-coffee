@@ -7,6 +7,8 @@ import {
     LuBeef,
     LuCupSoda,
     LuCakeSlice,
+    LuIceCreamCone,
+    LuUtensilsCrossed,
     LuChevronDown,
 } from 'react-icons/lu';
 import SteamWisps from '@/Components/motion/SteamWisps';
@@ -20,6 +22,7 @@ const CATEGORY_ICONS = {
     Burgers: LuBeef,
     'Shakes & Drinks': LuCupSoda,
     Desserts: LuCakeSlice,
+    'Ice Cream': LuIceCreamCone,
 };
 
 const FEATURED_COUNT = 3;
@@ -134,7 +137,7 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
                 >
                     <div className="scrollbar-hide flex justify-start gap-4 overflow-x-auto px-1 py-1 sm:justify-center">
                         {menuCategories.map((category) => {
-                            const Icon = CATEGORY_ICONS[category];
+                            const Icon = CATEGORY_ICONS[category] ?? LuUtensilsCrossed;
                             const isActive = !isSearching && category === activeCategory;
                             return (
                                 <button

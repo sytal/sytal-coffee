@@ -244,4 +244,17 @@ class ThemeService
 
         ThemeSetting::updateOrCreate(['key' => self::MODE_SETTING_KEY], ['value' => $mode]);
     }
+
+    /**
+     * "#f4691f" -> "244 105 31" — the "R G B" channel-triplet format
+     * resources/js/config/colors.js expects, so Tailwind's bg-brand-gold/40
+     * style opacity modifiers can inject an alpha value into the color.
+     */
+    public static function hexToRgbTriplet(string $hex): string
+    {
+        $hex = ltrim($hex, '#');
+        [$r, $g, $b] = array_map(fn ($c) => hexdec($c), str_split($hex, 2));
+
+        return "{$r} {$g} {$b}";
+    }
 }

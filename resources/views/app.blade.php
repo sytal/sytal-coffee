@@ -25,25 +25,25 @@
             @if ($mode === 'dark')
                 :root {
                     @foreach ($darkColors as $name => $hex)
-                        --brand-{{ $name }}: {{ $hex }};
+                        --brand-{{ $name }}-rgb: {{ \App\Services\ThemeService::hexToRgbTriplet($hex) }};
                     @endforeach
                 }
             @elseif ($mode === 'light')
                 :root {
                     @foreach ($lightColors as $name => $hex)
-                        --brand-{{ $name }}: {{ $hex }};
+                        --brand-{{ $name }}-rgb: {{ \App\Services\ThemeService::hexToRgbTriplet($hex) }};
                     @endforeach
                 }
             @else
                 :root {
                     @foreach ($darkColors as $name => $hex)
-                        --brand-{{ $name }}: {{ $hex }};
+                        --brand-{{ $name }}-rgb: {{ \App\Services\ThemeService::hexToRgbTriplet($hex) }};
                     @endforeach
                 }
                 @media (prefers-color-scheme: light) {
                     :root {
                         @foreach ($lightColors as $name => $hex)
-                            --brand-{{ $name }}: {{ $hex }};
+                            --brand-{{ $name }}-rgb: {{ \App\Services\ThemeService::hexToRgbTriplet($hex) }};
                         @endforeach
                     }
                 }

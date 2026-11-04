@@ -3,6 +3,14 @@ import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { LuCheck, LuSun, LuMoon, LuMonitor } from 'react-icons/lu';
 
+function hexToRgbTriplet(hex) {
+    const n = hex.replace('#', '');
+    const r = parseInt(n.slice(0, 2), 16);
+    const g = parseInt(n.slice(2, 4), 16);
+    const b = parseInt(n.slice(4, 6), 16);
+    return `${r} ${g} ${b}`;
+}
+
 const MODES = [
     { key: 'dark', label: 'Dark', icon: LuMoon },
     { key: 'light', label: 'Light', icon: LuSun },
@@ -26,7 +34,7 @@ export default function Appearance({ presets = {}, active, mode: initialMode }) 
             : modeKey;
         const colors = preset[resolvedMode] ?? preset.dark;
         Object.entries(colors).forEach(([name, hex]) => {
-            document.documentElement.style.setProperty(`--brand-${name}`, hex);
+            document.documentElement.style.setProperty(`--brand-${name}-rgb`, hexToRgbTriplet(hex));
         });
     }
 

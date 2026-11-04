@@ -12,15 +12,15 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
         <AdminLayout title="Dashboard">
             <Head title="Admin — Dashboard" />
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                 <StatCard icon={LuUtensils} label="Menu Items" value={stats?.menuItems ?? 0} />
                 <StatCard icon={LuCalendarCheck} label="Reservations Today" value={stats?.reservationsToday ?? 0} />
                 <StatCard icon={LuMessageSquare} label="Unread Messages" value={stats?.unreadMessages ?? 0} trendUp={false} />
                 <StatCard icon={LuReceipt} label="Orders Today" value={stats?.ordersToday ?? 0} />
             </div>
 
-            <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-5">
-                <div className="rounded-sm border border-brand-border bg-brand-surface p-6 lg:col-span-3">
+            <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-5">
+                <div className="rounded-sm border border-brand-border bg-brand-surface p-5 lg:col-span-3">
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="font-display text-lg text-brand-foreground">Recent Reservations</h2>
                         <a href="/admin/reservations" className="text-xs uppercase tracking-wider text-brand-gold">
@@ -55,7 +55,7 @@ export default function Dashboard({ stats, recentReservations, recentMessages })
                     </div>
                 </div>
 
-                <div className="rounded-sm border border-brand-border bg-brand-surface p-6 lg:col-span-2">
+                <div className="rounded-sm border border-brand-border bg-brand-surface p-5 lg:col-span-2">
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="font-display text-lg text-brand-foreground">Recent Messages</h2>
                         <a href="/admin/messages" className="text-xs uppercase tracking-wider text-brand-gold">

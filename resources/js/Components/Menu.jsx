@@ -1,29 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    LuSearch,
-    LuX,
-    LuFlame,
-    LuBeef,
-    LuCupSoda,
-    LuCakeSlice,
-    LuIceCreamCone,
-    LuUtensilsCrossed,
-    LuChevronDown,
-} from 'react-icons/lu';
+import { LuSearch, LuX, LuChevronDown } from 'react-icons/lu';
 import SteamWisps from '@/Components/motion/SteamWisps';
 import ImageZoomModal from '@/Components/motion/ImageZoomModal';
 import FlipCard from '@/Components/motion/FlipCard';
 import { useCart } from '@/lib/CartContext';
 import { playUiSound } from '@/lib/uiSound';
-
-const CATEGORY_ICONS = {
-    'Loaded Fries': LuFlame,
-    Burgers: LuBeef,
-    'Shakes & Drinks': LuCupSoda,
-    Desserts: LuCakeSlice,
-    'Ice Cream': LuIceCreamCone,
-};
 
 const FEATURED_COUNT = 3;
 const GRID_ROW_CAP = 5;
@@ -137,7 +119,6 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
                 >
                     <div className="scrollbar-hide flex justify-start gap-4 overflow-x-auto px-1 py-1 sm:justify-center">
                         {menuCategories.map((category) => {
-                            const Icon = CATEGORY_ICONS[category] ?? LuUtensilsCrossed;
                             const isActive = !isSearching && category === activeCategory;
                             return (
                                 <button
@@ -147,28 +128,13 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
                                         setQuery('');
                                         setActiveCategory(category);
                                     }}
-                                    className={`flex shrink-0 flex-col items-center gap-2.5 rounded-2xl px-5 py-4 transition-all duration-300 ${
+                                    className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${
                                         isActive
-                                            ? 'bg-brand-gold shadow-lg shadow-brand-gold/20'
-                                            : 'hover:bg-brand-surface'
+                                            ? 'border-transparent bg-brand-gold text-brand-background shadow-lg shadow-brand-gold/20'
+                                            : 'border-brand-border text-brand-foregroundMuted hover:border-brand-gold hover:text-brand-gold'
                                     }`}
                                 >
-                                    <span
-                                        className={`flex h-12 w-12 items-center justify-center rounded-full border transition-colors ${
-                                            isActive
-                                                ? 'border-transparent bg-brand-background text-brand-gold'
-                                                : 'border-brand-border bg-brand-surface text-brand-foregroundMuted'
-                                        }`}
-                                    >
-                                        {Icon && <Icon className="h-5 w-5" />}
-                                    </span>
-                                    <span
-                                        className={`text-xs font-semibold uppercase tracking-wider ${
-                                            isActive ? 'text-brand-background' : 'text-brand-foregroundMuted'
-                                        }`}
-                                    >
-                                        {category}
-                                    </span>
+                                    {category}
                                 </button>
                             );
                         })}

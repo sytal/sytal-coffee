@@ -19,7 +19,7 @@ class UpdateMenuItemRequest extends FormRequest
             'description' => ['sometimes', 'required', 'string', 'max:500'],
             'price' => ['sometimes', 'required', 'string', 'max:30'],
             'image' => ['nullable', 'image', 'max:4096'],
-            'tags' => ['nullable', 'array'],
+            'tags' => ['nullable', 'array', 'max:4'],
             'tags.*' => ['string', 'max:40'],
             'is_available' => ['sometimes', 'boolean'],
         ];

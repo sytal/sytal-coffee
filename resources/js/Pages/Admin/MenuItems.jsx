@@ -6,7 +6,9 @@ import FloatingField from '@/Components/FloatingField';
 import { LuPlus, LuPencil, LuTrash2, LuSearch } from 'react-icons/lu';
 import { Zoomable } from '@/Components/Admin/ImageLightbox';
 
-export default function MenuItems({ menuItems = [], categories = [] }) {
+const MAX_TAGS = 4;
+
+export default function MenuItems({ menuItems = [], categories = [], availableTags = [] }) {
     const [tab, setTab] = useState('items'); // 'items' | 'categories'
     const [query, setQuery] = useState('');
     const [category, setCategory] = useState('All');
@@ -14,6 +16,8 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
     const [editingItem, setEditingItem] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [tagQuery, setTagQuery] = useState('');
 
     const [catPanelOpen, setCatPanelOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
@@ -31,13 +35,25 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
     function openAdd() {
         setEditingItem(null);
         setImagePreview(null);
+        setSelectedTags([]);
+        setTagQuery('');
         setPanelOpen(true);
     }
 
     function openEdit(item) {
         setEditingItem(item);
         setImagePreview(item.image ?? null);
+        setSelectedTags(item.tags ?? []);
+        setTagQuery('');
         setPanelOpen(true);
+    }
+
+    function toggleTag(tag) {
+        setSelectedTags((current) => {
+            if (current.includes(tag)) return current.filter((t) => t !== tag);
+            if (current.length >= MAX_TAGS) return current;
+            return [...current, tag];
+        });
     }
 
     function handleImageChange(e) {
@@ -56,6 +72,8 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
         if (imageFile instanceof File && imageFile.size === 0) {
             formData.delete('image');
         }
+
+        selectedTags.forEach((tag) => formData.append('tags[]', tag));
 
         setSubmitting(true);
         const onDone = () => {
@@ -387,6 +405,59 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                             />
                         )}
                     </div>
+
+                    <div>
+                        <label className="mb-1.5 block text-xs uppercase tracking-wider text-brand-foregroundMuted">
+                            Tags (up to {MAX_TAGS})
+                        </label>
+                        {selectedTags.length > 0 && (
+                            <div className="mb-2 flex flex-wrap gap-1.5">
+                                {selectedTags.map((tag) => (
+                                    <button
+                                        key={tag}
+                                        type="button"
+                                        onClick={() => toggleTag(tag)}
+                                        className="rounded-full border border-brand-gold bg-brand-gold/10 px-3 py-1 text-xs text-brand-gold"
+                                    >
+                                        {tag} &times;
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                        <input
+                            type="text"
+                            value={tagQuery}
+                            onChange={(e) => setTagQuery(e.target.value)}
+                            placeholder={selectedTags.length >= MAX_TAGS ? 'Max tags selected' : 'Search tags...'}
+                            disabled={selectedTags.length >= MAX_TAGS}
+                            className="w-full rounded-sm border border-brand-border bg-brand-surface px-3 py-2 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold disabled:opacity-50"
+                        />
+                        {tagQuery && selectedTags.length < MAX_TAGS && (
+                            <div className="mt-2 max-h-36 overflow-y-auto rounded-sm border border-brand-border">
+                                {availableTags
+                                    .filter(
+                                        (t) =>
+                                            t.toLowerCase().includes(tagQuery.toLowerCase()) &&
+                                            !selectedTags.includes(t)
+                                    )
+                                    .slice(0, 8)
+                                    .map((t) => (
+                                        <button
+                                            key={t}
+                                            type="button"
+                                            onClick={() => {
+                                                toggleTag(t);
+                                                setTagQuery('');
+                                            }}
+                                            className="block w-full px-3 py-2 text-left text-sm text-brand-foreground transition hover:bg-brand-surfaceAlt"
+                                        >
+                                            {t}
+                                        </button>
+                                    ))}
+                            </div>
+                        )}
+                    </div>
+
                     <button
                         type="submit"
                         disabled={submitting}

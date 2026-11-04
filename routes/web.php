@@ -157,6 +157,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
         return Inertia::render('Admin/MenuItems', [
             'menuItems' => $menuItemService->search(null, null),
             'categories' => \App\Models\MenuCategory::orderBy('sort_order')->get(['id', 'name']),
+            'availableTags' => \App\Models\MenuTag::orderBy('name')->pluck('name'),
         ]);
     })->name('admin.menu');
 

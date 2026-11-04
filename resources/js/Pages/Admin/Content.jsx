@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { LuArrowUp, LuArrowDown, LuUpload, LuSave } from 'react-icons/lu';
+import { Zoomable } from '@/Components/Admin/ImageLightbox';
 
 /**
  * One editable card per homepage section (hero, about, crave break,
@@ -29,7 +30,7 @@ function ImageField({ label, value, onChange }) {
             <div className="flex items-center gap-3">
                 <div className="h-16 w-24 shrink-0 overflow-hidden rounded-sm border border-brand-border bg-brand-surfaceAlt">
                     {preview && (
-                        <img src={preview} alt={label} className="h-full w-full object-cover" />
+                        <Zoomable src={preview} alt={label} className="h-full w-full object-cover" />
                     )}
                 </div>
                 <button

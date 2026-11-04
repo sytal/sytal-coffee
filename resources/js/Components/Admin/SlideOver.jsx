@@ -11,7 +11,7 @@ export default function SlideOver({ open, onClose, title, children }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 z-50 bg-black/60"
+                        className="fixed inset-0 z-50 bg-black/90"
                     />
                     <motion.div
                         initial={{ x: '100%' }}

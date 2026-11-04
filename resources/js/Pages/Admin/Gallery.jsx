@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { LuUpload, LuTrash2, LuEye } from 'react-icons/lu';
+import { Zoomable } from '@/Components/Admin/ImageLightbox';
 
 export default function Gallery({ images = [] }) {
     const fileInputRef = useRef(null);
@@ -62,7 +63,7 @@ export default function Gallery({ images = [] }) {
                         key={img.id}
                         className="group relative aspect-square overflow-hidden rounded-sm border border-brand-border"
                     >
-                        <img
+                        <Zoomable
                             src={img.image}
                             alt={img.label}
                             loading="lazy"

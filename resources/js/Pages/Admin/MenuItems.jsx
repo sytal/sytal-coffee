@@ -4,6 +4,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import SlideOver from '@/Components/Admin/SlideOver';
 import FloatingField from '@/Components/FloatingField';
 import { LuPlus, LuPencil, LuTrash2, LuSearch } from 'react-icons/lu';
+import { Zoomable } from '@/Components/Admin/ImageLightbox';
 
 export default function MenuItems({ menuItems = [], categories = [] }) {
     const [tab, setTab] = useState('items'); // 'items' | 'categories'
@@ -231,7 +232,7 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                 {items.slice(0, 40).map((item) => (
                     <div key={item.id} className="rounded-sm border border-brand-border bg-brand-surface p-4">
                         <div className="flex items-start gap-3">
-                            <img
+                            <Zoomable
                                 src={item.image}
                                 alt={item.name}
                                 loading="lazy"
@@ -285,7 +286,7 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                         {items.slice(0, 40).map((item) => (
                             <tr key={item.id} className="border-b border-brand-border/60 last:border-0">
                                 <td className="flex items-center gap-3 p-4">
-                                    <img
+                                    <Zoomable
                                         src={item.image}
                                         alt={item.name}
                                         loading="lazy"
@@ -379,7 +380,7 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                             onChange={handleImageChange}
                         />
                         {imagePreview && (
-                            <img
+                            <Zoomable
                                 src={imagePreview}
                                 alt="Preview"
                                 className="mt-3 h-32 w-full rounded-sm border border-brand-border object-cover"

@@ -18,6 +18,7 @@ import {
     LuPalette,
 } from 'react-icons/lu';
 import ToastHost from '@/Components/Admin/ToastHost';
+import { LightboxProvider } from '@/Components/Admin/ImageLightbox';
 import { showToast } from '@/lib/toast';
 
 const NOTIF_POLL_MS = 15000;
@@ -103,6 +104,7 @@ export default function AdminLayout({ title, children }) {
     }
 
     return (
+        <LightboxProvider>
         <div className="flex min-h-screen bg-brand-background font-sans text-brand-foreground">
             {/* Sidebar */}
             <aside
@@ -302,5 +304,6 @@ export default function AdminLayout({ title, children }) {
 
             <ToastHost />
         </div>
+        </LightboxProvider>
     );
 }

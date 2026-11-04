@@ -71,9 +71,6 @@ export default function Appearance({ presets = {}, active, mode: initialMode }) 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {Object.entries(presets).map(([key, preset]) => {
                     const isActive = current === key;
-                    // Preview using whichever variant is currently relevant —
-                    // the dark one, except when the owner has forced Light mode.
-                    const previewColors = mode === 'light' ? preset.light : preset.dark;
 
                     return (
                         <button
@@ -81,12 +78,11 @@ export default function Appearance({ presets = {}, active, mode: initialMode }) 
                             type="button"
                             onClick={() => choose(key)}
                             disabled={saving !== null}
-                            className={`group relative overflow-hidden rounded-sm border p-5 text-left transition ${
+                            className={`group relative overflow-hidden rounded-sm border bg-brand-surface p-5 text-left transition ${
                                 isActive
                                     ? 'border-brand-gold ring-1 ring-brand-gold'
                                     : 'border-brand-border hover:border-brand-gold/60'
                             }`}
-                            style={{ backgroundColor: previewColors.surface }}
                         >
                             {isActive && (
                                 <span className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-brand-gold text-brand-background">
@@ -94,6 +90,9 @@ export default function Appearance({ presets = {}, active, mode: initialMode }) 
                                 </span>
                             )}
 
+                            <p className="mb-1.5 text-[10px] uppercase tracking-wider text-brand-foregroundMuted">
+                                Dark
+                            </p>
                             <div className="mb-3 flex gap-1.5">
                                 {['background', 'surface', 'gold', 'goldLight', 'foreground'].map((token) => (
                                     <span
@@ -103,6 +102,9 @@ export default function Appearance({ presets = {}, active, mode: initialMode }) 
                                     />
                                 ))}
                             </div>
+                            <p className="mb-1.5 text-[10px] uppercase tracking-wider text-brand-foregroundMuted">
+                                Light
+                            </p>
                             <div className="mb-4 flex gap-1.5">
                                 {['background', 'surface', 'gold', 'goldLight', 'foreground'].map((token) => (
                                     <span
@@ -113,17 +115,13 @@ export default function Appearance({ presets = {}, active, mode: initialMode }) 
                                 ))}
                             </div>
 
-                            <h3 className="font-display text-lg" style={{ color: previewColors.foreground }}>
-                                {preset.name}
-                            </h3>
-                            <p className="mt-1 text-xs leading-relaxed" style={{ color: previewColors.foregroundMuted }}>
+                            <h3 className="font-display text-lg text-brand-foreground">{preset.name}</h3>
+                            <p className="mt-1 text-xs leading-relaxed text-brand-foregroundMuted">
                                 {preset.description}
                             </p>
 
                             {saving === key && (
-                                <p className="mt-3 text-xs uppercase tracking-wider" style={{ color: previewColors.gold }}>
-                                    Saving...
-                                </p>
+                                <p className="mt-3 text-xs uppercase tracking-wider text-brand-gold">Saving...</p>
                             )}
                         </button>
                     );

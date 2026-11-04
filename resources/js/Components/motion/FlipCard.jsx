@@ -24,7 +24,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
     return (
         <div
             className={`group relative [perspective:1600px] ${
-                isFeatured ? 'h-[26rem] sm:h-[28rem]' : 'h-64 sm:h-72'
+                isFeatured ? 'h-[26rem] sm:h-[28rem]' : 'h-56 sm:h-64'
             }`}
         >
             <motion.div
@@ -121,7 +121,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                         onAddToOrder(item);
                                     }}
                                     aria-label={`Add ${item.name} to your tray`}
-                                    className="flex items-center gap-1 rounded-full bg-brand-gold/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-gold"
+                                    className="flex shrink-0 items-center gap-1 rounded-full bg-brand-gold px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background shadow-sm transition hover:bg-brand-goldLight"
                                 >
                                     <LuPlus className="h-3 w-3" />
                                     Add to Tray
@@ -161,7 +161,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                         </div>
                     )}
 
-                    <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+                    <div className="mt-4 flex items-center justify-between gap-2">
                         <span className="font-display text-brand-gold">{item.price}</span>
                         {onAddToOrder && (
                             <button
@@ -171,7 +171,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                     onAddToOrder(item);
                                 }}
                                 aria-label={`Add ${item.name} to your tray`}
-                                className="flex items-center gap-1 rounded-full bg-brand-gold/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-gold"
+                                className="flex shrink-0 items-center gap-1 rounded-full bg-brand-gold px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background shadow-sm transition hover:bg-brand-goldLight"
                             >
                                 <LuPlus className="h-3 w-3" />
                                 Add to Tray

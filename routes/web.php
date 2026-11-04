@@ -109,9 +109,40 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
     Route::get('/menu', function (MenuItemService $menuItemService) {
         return Inertia::render('Admin/MenuItems', [
             'menuItems' => $menuItemService->search(null, null),
-            'categories' => $menuItemService->categories(),
+            'categories' => \App\Models\MenuCategory::orderBy('sort_order')->get(['id', 'name']),
         ]);
     })->name('admin.menu');
+
+    Route::post('/categories', function (Request $request) {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:60', 'unique:menu_categories,name'],
+        ]);
+        $data['sort_order'] = \App\Models\MenuCategory::max('sort_order') + 1;
+        \App\Models\MenuCategory::create($data);
+
+        return back()->with('success', 'Category added!');
+    })->name('admin.categories.store');
+
+    Route::put('/categories/{menuCategory}', function (Request $request, \App\Models\MenuCategory $menuCategory) {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:60', 'unique:menu_categories,name,'.$menuCategory->id],
+        ]);
+        $oldName = $menuCategory->name;
+        $menuCategory->update($data);
+        // Keep existing menu items pointed at the renamed category.
+        MenuItem::where('category', $oldName)->update(['category' => $data['name']]);
+
+        return back()->with('success', 'Category updated!');
+    })->name('admin.categories.update');
+
+    Route::delete('/categories/{menuCategory}', function (\App\Models\MenuCategory $menuCategory) {
+        if (MenuItem::where('category', $menuCategory->name)->exists()) {
+            return back()->with('error', 'Move or delete items in this category first.');
+        }
+        $menuCategory->delete();
+
+        return back()->with('success', 'Category deleted!');
+    })->name('admin.categories.destroy');
 
     Route::post('/menu', function (StoreMenuItemRequest $request, MenuItemService $menuItemService) {
         $data = $request->validated();

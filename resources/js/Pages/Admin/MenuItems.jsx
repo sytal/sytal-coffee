@@ -6,11 +6,20 @@ import FloatingField from '@/Components/FloatingField';
 import { LuPlus, LuPencil, LuTrash2, LuSearch } from 'react-icons/lu';
 
 export default function MenuItems({ menuItems = [], categories = [] }) {
+    const [tab, setTab] = useState('items'); // 'items' | 'categories'
     const [query, setQuery] = useState('');
     const [category, setCategory] = useState('All');
     const [panelOpen, setPanelOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const [catPanelOpen, setCatPanelOpen] = useState(false);
+    const [editingCategory, setEditingCategory] = useState(null);
+    const [catSubmitting, setCatSubmitting] = useState(false);
+
+    const categoryNames = categories.map((c) => c.name);
+    const categoryIds = Object.fromEntries(categories.map((c) => [c.name, c.id]));
 
     const items = menuItems.filter((item) => {
         const matchesCategory = category === 'All' || item.category === category;
@@ -20,26 +29,25 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
 
     function openAdd() {
         setEditingItem(null);
+        setImagePreview(null);
         setPanelOpen(true);
     }
 
     function openEdit(item) {
         setEditingItem(item);
+        setImagePreview(item.image ?? null);
         setPanelOpen(true);
+    }
+
+    function handleImageChange(e) {
+        const file = e.target.files?.[0];
+        setImagePreview(file ? URL.createObjectURL(file) : editingItem?.image ?? null);
     }
 
     function handleSubmit(e) {
         e.preventDefault();
         const formEl = e.target;
         const formData = new FormData(formEl);
-
-        const tags = (formData.get('tags') || '')
-            .toString()
-            .split(',')
-            .map((t) => t.trim())
-            .filter(Boolean);
-        formData.delete('tags');
-        tags.forEach((tag) => formData.append('tags[]', tag));
 
         // Drop the file field entirely if nothing was chosen so validation
         // treats it as absent rather than an empty file.
@@ -75,11 +83,116 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
         router.delete(`/admin/menu/${item.id}`);
     }
 
+    function openAddCategory() {
+        setEditingCategory(null);
+        setCatPanelOpen(true);
+    }
+
+    function openEditCategory(name) {
+        setEditingCategory(name);
+        setCatPanelOpen(true);
+    }
+
+    function handleCategorySubmit(e) {
+        e.preventDefault();
+        const name = new FormData(e.target).get('name');
+        setCatSubmitting(true);
+        const onDone = () => {
+            setCatSubmitting(false);
+            setCatPanelOpen(false);
+        };
+
+        if (editingCategory) {
+            const id = categoryIds[editingCategory];
+            router.put(`/admin/categories/${id}`, { name }, { onSuccess: onDone, onError: () => setCatSubmitting(false) });
+        } else {
+            router.post('/admin/categories', { name }, { onSuccess: onDone, onError: () => setCatSubmitting(false) });
+        }
+    }
+
+    function handleDeleteCategory(name) {
+        if (!window.confirm(`Delete category "${name}"?`)) return;
+        router.delete(`/admin/categories/${categoryIds[name]}`);
+    }
+
     return (
         <AdminLayout title="Menu Items">
             <Head title="Admin — Menu Items" />
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex gap-2 border-b border-brand-border">
+                <button
+                    type="button"
+                    onClick={() => setTab('items')}
+                    className={`px-4 py-2.5 text-sm uppercase tracking-wider transition ${
+                        tab === 'items'
+                            ? 'border-b-2 border-brand-gold text-brand-gold'
+                            : 'text-brand-foregroundMuted hover:text-brand-foreground'
+                    }`}
+                >
+                    Items
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setTab('categories')}
+                    className={`px-4 py-2.5 text-sm uppercase tracking-wider transition ${
+                        tab === 'categories'
+                            ? 'border-b-2 border-brand-gold text-brand-gold'
+                            : 'text-brand-foregroundMuted hover:text-brand-foreground'
+                    }`}
+                >
+                    Categories
+                </button>
+            </div>
+
+            {tab === 'categories' ? (
+                <div className="mt-6">
+                    <div className="flex justify-end">
+                        <button
+                            type="button"
+                            onClick={openAddCategory}
+                            className="flex items-center justify-center gap-2 rounded-sm bg-brand-gold px-5 py-2.5 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight"
+                        >
+                            <LuPlus className="h-4 w-4" />
+                            Add Category
+                        </button>
+                    </div>
+                    <div className="mt-4 flex flex-col gap-2">
+                        {categories.map((c) => (
+                            <div
+                                key={c.id}
+                                className="flex items-center justify-between rounded-sm border border-brand-border bg-brand-surface px-4 py-3"
+                            >
+                                <span className="text-brand-foreground">{c.name}</span>
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => openEditCategory(c.name)}
+                                        className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                        aria-label={`Edit ${c.name}`}
+                                    >
+                                        <LuPencil className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteCategory(c.name)}
+                                        className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
+                                        aria-label={`Delete ${c.name}`}
+                                    >
+                                        <LuTrash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        {categories.length === 0 && (
+                            <p className="rounded-sm border border-brand-border bg-brand-surface p-8 text-center text-sm text-brand-foregroundMuted">
+                                No categories yet.
+                            </p>
+                        )}
+                    </div>
+                </div>
+            ) : (
+            <>
+            <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative">
                         <LuSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-foregroundMuted" />
@@ -97,7 +210,7 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                         className="rounded-sm border border-brand-border bg-brand-surface px-3 py-2 text-sm text-brand-foreground outline-none focus:border-brand-gold"
                     >
                         <option>All</option>
-                        {categories.map((c) => (
+                        {categoryNames.map((c) => (
                             <option key={c}>{c}</option>
                         ))}
                     </select>
@@ -148,18 +261,6 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                                 </button>
                             </div>
                         </div>
-                        {item.tags?.length > 0 && (
-                            <div className="mt-3 flex flex-wrap gap-1">
-                                {item.tags.slice(0, 4).map((tag) => (
-                                    <span
-                                        key={tag}
-                                        className="rounded-full border border-brand-border px-2 py-0.5 text-[10px] text-brand-foregroundMuted"
-                                    >
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 ))}
                 {items.length === 0 && (
@@ -177,7 +278,6 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                             <th className="p-4 font-normal">Item</th>
                             <th className="p-4 font-normal">Category</th>
                             <th className="p-4 font-normal">Price</th>
-                            <th className="p-4 font-normal">Tags</th>
                             <th className="p-4 font-normal text-right">Actions</th>
                         </tr>
                     </thead>
@@ -195,18 +295,6 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                                 </td>
                                 <td className="p-4 text-brand-foregroundMuted">{item.category}</td>
                                 <td className="p-4 text-brand-gold">{item.price}</td>
-                                <td className="p-4">
-                                    <div className="flex flex-wrap gap-1">
-                                        {item.tags?.slice(0, 2).map((tag) => (
-                                            <span
-                                                key={tag}
-                                                className="rounded-full border border-brand-border px-2 py-0.5 text-[10px] text-brand-foregroundMuted"
-                                            >
-                                                {tag}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </td>
                                 <td className="p-4">
                                     <div className="flex justify-end gap-2">
                                         <button
@@ -242,7 +330,14 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                 title={editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
             >
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    <FloatingField label="Item name" name="name" defaultValue={editingItem?.name} type="text" required />
+                    <FloatingField
+                        label="Item name"
+                        name="name"
+                        defaultValue={editingItem?.name}
+                        type="text"
+                        placeholder="e.g. Loaded Cheese Fries"
+                        required
+                    />
                     <FloatingField
                         label="Description"
                         name="description"
@@ -250,35 +345,79 @@ export default function MenuItems({ menuItems = [], categories = [] }) {
                         rows={3}
                         defaultValue={editingItem?.description}
                         className="resize-none"
+                        placeholder="Short description shown to customers"
                         required
                     />
                     <div className="grid grid-cols-2 gap-4">
-                        <FloatingField label="Price" name="price" defaultValue={editingItem?.price} type="text" required />
+                        <FloatingField
+                            label="Price"
+                            name="price"
+                            defaultValue={editingItem?.price}
+                            type="text"
+                            placeholder="e.g. Rs. 450"
+                            required
+                        />
                         <FloatingField
                             label="Category"
                             name="category"
                             as="select"
                             alwaysFloated
-                            defaultValue={editingItem?.category ?? categories[0]}
+                            defaultValue={editingItem?.category ?? categoryNames[0]}
                         >
-                            {categories.map((c) => (
+                            {categoryNames.map((c) => (
                                 <option key={c}>{c}</option>
                             ))}
                         </FloatingField>
                     </div>
-                    <FloatingField
-                        label="Tags (comma separated)"
-                        name="tags"
-                        defaultValue={editingItem?.tags?.join(', ')}
-                        type="text"
-                    />
-                    <FloatingField label="Image" name="image" type="file" accept="image/*" alwaysFloated />
+                    <div>
+                        <FloatingField
+                            label="Image"
+                            name="image"
+                            type="file"
+                            accept="image/*"
+                            alwaysFloated
+                            onChange={handleImageChange}
+                        />
+                        {imagePreview && (
+                            <img
+                                src={imagePreview}
+                                alt="Preview"
+                                className="mt-3 h-32 w-full rounded-sm border border-brand-border object-cover"
+                            />
+                        )}
+                    </div>
                     <button
                         type="submit"
                         disabled={submitting}
                         className="w-full rounded-sm bg-brand-gold px-6 py-3 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight disabled:opacity-60"
                     >
                         {editingItem ? 'Save Changes' : 'Add Item'}
+                    </button>
+                </form>
+            </SlideOver>
+            </>
+            )}
+
+            <SlideOver
+                open={catPanelOpen}
+                onClose={() => setCatPanelOpen(false)}
+                title={editingCategory ? 'Edit Category' : 'Add Category'}
+            >
+                <form onSubmit={handleCategorySubmit} className="space-y-5">
+                    <FloatingField
+                        label="Category name"
+                        name="name"
+                        defaultValue={editingCategory ?? ''}
+                        type="text"
+                        placeholder="e.g. Loaded Fries"
+                        required
+                    />
+                    <button
+                        type="submit"
+                        disabled={catSubmitting}
+                        className="w-full rounded-sm bg-brand-gold px-6 py-3 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight disabled:opacity-60"
+                    >
+                        {editingCategory ? 'Save Changes' : 'Add Category'}
                     </button>
                 </form>
             </SlideOver>

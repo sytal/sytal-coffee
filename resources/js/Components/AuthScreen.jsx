@@ -217,13 +217,11 @@ export default function AuthScreen({ initialMode }) {
                             className={`absolute inset-y-0 flex w-1/2 items-center ${formSide === 'right' ? 'right-0 justify-start pl-40' : 'left-0 justify-end pr-24'}`}
                         >
                             <div className="w-full max-w-[19rem]">
-                                <AnimatePresence mode="wait">
-                                    {isLogin ? (
-                                        <LoginFormPanel key="login-d" idPrefix="login-d" form={loginForm} onSubmit={submitLogin} onSwitch={() => switchTo('register')} />
-                                    ) : (
-                                        <RegisterFormPanel key="register-d" idPrefix="register-d" form={registerForm} onSubmit={submitRegister} onSwitch={() => switchTo('login')} />
-                                    )}
-                                </AnimatePresence>
+                                {isLogin ? (
+                                    <LoginFormPanel idPrefix="login-d" form={loginForm} onSubmit={submitLogin} onSwitch={() => switchTo('register')} />
+                                ) : (
+                                    <RegisterFormPanel idPrefix="register-d" form={registerForm} onSubmit={submitRegister} onSwitch={() => switchTo('login')} />
+                                )}
                             </div>
                         </motion.div>
                     </AnimatePresence>

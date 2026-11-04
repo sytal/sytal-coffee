@@ -96,7 +96,7 @@ export default function Navbar() {
                     : 'border-transparent bg-transparent backdrop-blur-0'
             }`}
         >
-            <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+            <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5">
                 <Link href="/" className="font-display text-xl tracking-wide text-brand-foreground">
                     Crunches <span className="text-brand-gold">Cafe</span>
                 </Link>
@@ -124,7 +124,7 @@ export default function Navbar() {
                     })}
                 </nav>
 
-                <div className="hidden items-center gap-3 md:flex">
+                <div className="hidden items-center gap-4 md:flex">
                     <LiveStatusBadge className="hidden lg:inline-flex" />
                     <SoundToggle />
                     {user ? (

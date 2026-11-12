@@ -40,14 +40,14 @@ function NewsletterForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-3 sm:flex-row">
+        <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
             <input
                 type="email"
                 required
                 value={data.email}
                 onChange={(e) => setData('email', e.target.value)}
                 placeholder="Where the first bite goes"
-                className="w-full flex-1 rounded-sm border border-brand-border bg-brand-background px-4 py-2.5 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/70 focus:border-brand-gold focus:outline-none"
+                className="w-full min-w-0 flex-1 rounded-sm border border-brand-border bg-brand-background px-4 py-2.5 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/70 focus:border-brand-gold focus:outline-none"
             />
             <button
                 type="submit"

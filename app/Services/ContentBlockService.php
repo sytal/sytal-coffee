@@ -136,10 +136,44 @@ class ContentBlockService
         $block = ContentBlock::firstOrNew(['section_key' => $sectionKey]);
         $block->label = $block->label ?? $default['label'];
         $block->sort_order = $block->sort_order ?? $default['sort_order'];
-        $block->fields = array_merge($default['fields'] ?? [], $block->fields ?? [], $fields);
+        $previous = array_merge($default['fields'] ?? [], $block->fields ?? []);
+        $block->fields = array_merge($previous, $fields);
         $block->save();
 
+        // Remove uploaded images that this save replaced, so swapping a
+        // section photo doesn't leave orphan files in public/uploads.
+        $stillUsed = static::uploadPaths($block->fields);
+        foreach (array_diff(static::uploadPaths($previous), $stillUsed) as $orphan) {
+            \App\Support\UploadedImage::delete($orphan);
+        }
+
         return $block;
+    }
+
+    /** @return array<int, string> every "/uploads/..." string inside a (nested) fields array */
+    private static function uploadPaths(array $fields): array
+    {
+        $paths = [];
+        array_walk_recursive($fields, function ($value) use (&$paths) {
+            if (is_string($value) && str_starts_with($value, '/uploads/')) {
+                $paths[] = $value;
+            }
+        });
+
+        return array_values(array_unique($paths));
+    }
+
+    /**
+     * Save the full section order in one go (1-based), so a single "move"
+     * click can't half-apply when two separate requests race each other.
+     *
+     * @param  array<int, string>  $sectionKeys
+     */
+    public function reorder(array $sectionKeys): void
+    {
+        foreach (array_values($sectionKeys) as $i => $key) {
+            $this->updateSortOrder($key, $i + 1);
+        }
     }
 
     public function updateSortOrder(string $sectionKey, int $sortOrder): void

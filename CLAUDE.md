@@ -13,7 +13,8 @@ Laravel 13 + Inertia.js + React restaurant website. Single app, no separate fron
 - Design source material: `../maison-noir-main` (Next.js structure/UX reference) and `../restaurantly-main` (static HTML visual reference) — port and polish, don't copy verbatim.
 
 ## Commands
-- Dev: `php artisan serve --port=8011` + `npm run dev` (ports 8000/5173 may be occupied by other local WAMP services — check before assuming default ports)
+- Dev: `PHP_INI_SCAN_DIR=":$PWD/php" php artisan serve --port=8011` + `npm run dev` (the scan dir loads `php/uploads.ini`, which raises PHP's 2 MB upload limit so 4 MB admin images work; on FPM hosts `public/.user.ini` does the same; ports 8000/5173 may be occupied by other local WAMP services — check before assuming default ports)
+- Admin uploads are saved straight into `public/uploads/` (the `uploads` disk) — no `storage:link` needed
 - Migrate: `php artisan migrate`
 - Build: `npm run build`
 

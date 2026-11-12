@@ -45,7 +45,7 @@ const SOCIAL_LINKS = [
 const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
 export default function Contact() {
-    const { data: form, setData, post, errors, processing, reset } = useForm(EMPTY_FORM);
+    const { data: form, setData, post, errors, processing, reset, clearErrors } = useForm(EMPTY_FORM);
     const [submitted, setSubmitted] = useState(false);
 
     const infoRef = useRef(null);
@@ -62,7 +62,11 @@ export default function Contact() {
         glowY.set(((e.clientY - rect.top) / rect.height) * 100);
     };
 
-    const update = (field) => (e) => setData(field, e.target.value);
+    // Clear a field's error as soon as the visitor edits it.
+    const update = (field) => (e) => {
+        setData(field, e.target.value);
+        clearErrors(field);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();

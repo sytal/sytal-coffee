@@ -16,11 +16,11 @@ class StoreReservationRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => ['required', 'string', 'max:30', new \App\Rules\PhoneNumber],
             'date' => ['required', 'date', 'after_or_equal:today'],
             'time' => ['required', 'date_format:H:i'],
             'party_size' => ['required', 'integer', 'min:1', 'max:20'],
-            'requests' => ['nullable', 'string', 'max:1000'],
+            'requests' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

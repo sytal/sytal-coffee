@@ -33,7 +33,7 @@ class AdminMenuItemTest extends TestCase
 
     public function test_admin_can_create_a_menu_item_with_an_uploaded_image(): void
     {
-        \Illuminate\Support\Facades\Storage::fake('public');
+        \Illuminate\Support\Facades\Storage::fake('uploads');
 
         $response = $this->post('/admin/menu', [
             'name' => 'Image Burger',
@@ -46,7 +46,7 @@ class AdminMenuItemTest extends TestCase
         $response->assertRedirect();
         $item = MenuItem::where('name', 'Image Burger')->firstOrFail();
         $this->assertNotNull($item->image);
-        \Illuminate\Support\Facades\Storage::disk('public')->assertExists(str_replace('/storage/', '', $item->image));
+        \Illuminate\Support\Facades\Storage::disk('uploads')->assertExists(str_replace('/uploads/', '', $item->image));
     }
 
     public function test_admin_can_update_a_menu_item(): void

@@ -101,7 +101,7 @@ export default function Navbar() {
                     Crunches <span className="text-brand-gold">Cafe</span>
                 </Link>
 
-                <nav className="hidden items-center gap-5 lg:gap-8 md:flex">
+                <nav className="hidden items-center gap-8 xl:flex">
                     {NAV_LINKS.map((link) => {
                         const active = activeSection === link.href.slice(1);
                         return (
@@ -124,7 +124,7 @@ export default function Navbar() {
                     })}
                 </nav>
 
-                <div className="hidden items-center gap-4 md:flex">
+                <div className="hidden items-center gap-4 xl:flex">
                     <LiveStatusBadge className="hidden lg:inline-flex" />
                     <SoundToggle />
                     {user ? (
@@ -169,7 +169,7 @@ export default function Navbar() {
                 <button
                     type="button"
                     onClick={() => setOpen((v) => !v)}
-                    className="text-2xl text-brand-foreground md:hidden"
+                    className="-mr-2 flex h-11 w-11 items-center justify-center text-2xl text-brand-foreground xl:hidden"
                     aria-label="Toggle menu"
                     aria-expanded={open}
                 >
@@ -185,7 +185,7 @@ export default function Navbar() {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="flex flex-col gap-4 border-t border-brand-border/60 bg-brand-background/95 px-6 py-6 backdrop-blur md:hidden"
+                        className="flex max-h-[calc(100vh-5rem)] flex-col gap-1 overflow-y-auto border-t border-brand-border/60 bg-brand-background px-6 py-4 shadow-lg xl:hidden"
                     >
                         {NAV_LINKS.map((link) => {
                             const active = activeSection === link.href.slice(1);
@@ -194,7 +194,7 @@ export default function Navbar() {
                                     <a
                                         href={link.href}
                                         onClick={(e) => handleNavClick(e, link.href)}
-                                        className={`block text-sm uppercase tracking-wider transition hover:text-brand-gold ${
+                                        className={`block py-3 text-sm uppercase tracking-wider transition hover:text-brand-gold ${
                                             active ? 'text-brand-gold' : 'text-brand-foregroundMuted'
                                         }`}
                                     >
@@ -212,7 +212,7 @@ export default function Navbar() {
                                 <>
                                     <Link
                                         href="/my-orders"
-                                        className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
+                                        className="flex min-h-11 items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
                                     >
                                         <LuReceipt className="h-4 w-4" />
                                         My Orders
@@ -220,7 +220,7 @@ export default function Navbar() {
                                     {user.role && ['admin', 'manager'].includes(user.role) && (
                                         <Link
                                             href="/admin"
-                                            className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
+                                            className="flex min-h-11 items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
                                         >
                                             Admin Panel
                                         </Link>
@@ -228,7 +228,7 @@ export default function Navbar() {
                                     <button
                                         type="button"
                                         onClick={handleLogout}
-                                        className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
+                                        className="flex min-h-11 items-center gap-2 text-sm uppercase tracking-wider text-brand-foregroundMuted hover:text-brand-gold"
                                     >
                                         <LuLogOut className="h-4 w-4" />
                                         Sign Out
@@ -237,7 +237,7 @@ export default function Navbar() {
                             ) : (
                                 <Link
                                     href="/login"
-                                    className="flex items-center gap-2 text-sm uppercase tracking-wider text-brand-gold"
+                                    className="flex min-h-11 items-center gap-2 text-sm uppercase tracking-wider text-brand-gold"
                                 >
                                     <LuUser className="h-4 w-4" />
                                     Sign In

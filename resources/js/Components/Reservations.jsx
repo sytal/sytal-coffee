@@ -30,6 +30,15 @@ const EMPTY_FORM = {
 
 const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
+// "2026-11-20" + "19:30" -> "Fri, 20 Nov 2026 at 7:30 PM"
+function formatBooking(date, time) {
+    const when = new Date(`${date}T${time || '00:00'}`);
+    if (Number.isNaN(when.getTime())) return `${date} at ${time}`;
+    const day = when.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    const clock = when.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return `${day} at ${clock}`;
+}
+
 export default function Reservations({
     eyebrow = 'Save Your Seat',
     heading = 'Reserve a Table',
@@ -38,7 +47,7 @@ export default function Reservations({
     panelEyebrow = 'Reserved for the Hungry',
     panelHeading = 'A table worth craving.',
 }) {
-    const { data: form, setData, post, errors, processing, reset } = useForm(EMPTY_FORM);
+    const { data: form, setData, post, errors, processing, reset, clearErrors } = useForm(EMPTY_FORM);
     const [submitted, setSubmitted] = useState(false);
 
     const panelRef = useRef(null);
@@ -56,7 +65,11 @@ export default function Reservations({
 
     const panelGlow = useMotionTemplate`radial-gradient(260px circle at ${springX}% ${springY}%, rgba(244, 105, 31, 0.22), transparent 70%)`;
 
-    const update = (field) => (e) => setData(field, e.target.value);
+    // Clear a field's error as soon as the visitor edits it.
+    const update = (field) => (e) => {
+        setData(field, e.target.value);
+        clearErrors(field);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -149,7 +162,7 @@ export default function Reservations({
                                 Thank you, {form.name.split(' ')[0] || 'friend'}. We&rsquo;ve
                                 saved your spot for {form.party_size}{' '}
                                 {Number(form.party_size) === 1 ? 'guest' : 'guests'} on{' '}
-                                {form.date} at {form.time}. Come hungry &mdash; a confirmation
+                                {formatBooking(form.date, form.time)}. Come hungry &mdash; a confirmation
                                 is on its way to your inbox.
                             </p>
                             <button
@@ -218,6 +231,7 @@ export default function Reservations({
                                     icon={LuCalendar}
                                     alwaysFloated
                                     type="date"
+                                    min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)}
                                     value={form.date}
                                     onChange={update('date')}
                                     error={errors.date}
@@ -241,6 +255,8 @@ export default function Reservations({
                                 rows={3}
                                 value={form.requests}
                                 onChange={update('requests')}
+                                maxLength={500}
+                                error={errors.requests}
                                 className="resize-none"
                             />
 

@@ -189,7 +189,7 @@ export default function Menu({ menuItems = [], menuCategories = [] }) {
                                             <FlipCard
                                                 key={item.id ?? item.name}
                                                 item={item}
-                                                index={index}
+                                                index={featuredItems.length + index}
                                                 size="regular"
                                                 onZoom={() =>
                                                     setZoomImage({ src: item.image, alt: item.name, caption: item.name })

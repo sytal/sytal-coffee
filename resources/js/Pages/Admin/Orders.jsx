@@ -7,6 +7,9 @@ import SlideOver from '@/Components/Admin/SlideOver';
 import StatusBadge from '@/Components/Admin/StatusBadge';
 import { LuEye, LuSearch, LuRefreshCw } from 'react-icons/lu';
 
+// Total pieces (2 × fries + 1 × burger = 3), not the number of lines.
+const itemCount = (o) => (o.items ?? []).reduce((sum, i) => sum + (Number(i.quantity) || 0), 0);
+
 const STATUSES = ['All', 'Pending', 'Preparing', 'Out for Delivery', 'Completed', 'Cancelled'];
 
 // No websocket broadcasting driver is configured for this app (no
@@ -16,7 +19,9 @@ const POLL_INTERVAL_MS = 12000;
 
 export default function Orders({ orders = [] }) {
     const [status, setStatus] = useState('All');
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState(() =>
+        typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('search') ?? ''
+    );
     const [viewing, setViewing] = useState(null);
     const [newCount, setNewCount] = useState(0);
     const latestIdRef = useRef(orders.reduce((max, o) => Math.max(max, o.id), 0));
@@ -57,8 +62,10 @@ export default function Orders({ orders = [] }) {
 
     const rows = orders.filter((o) => {
         const matchesStatus = status === 'All' || o.status === status;
-        const name = o.user?.name ?? '';
-        const matchesQuery = name.toLowerCase().includes(query.toLowerCase()) || String(o.id).includes(query);
+        // "#4", "4", a customer name, email or phone all work.
+        const q = query.trim().toLowerCase().replace(/^#/, '');
+        const haystack = [o.user?.name, o.user?.email, o.phone].filter(Boolean).join(' ').toLowerCase();
+        const matchesQuery = !q || haystack.includes(q) || String(o.id) === q;
         return matchesStatus && matchesQuery;
     });
 
@@ -101,7 +108,7 @@ export default function Orders({ orders = [] }) {
                     />
                 </div>
 
-                <div className="scrollbar-hide flex gap-2 overflow-x-auto scroll-smooth">
+                <div className="flex flex-wrap gap-2">
                     {STATUSES.map((s) => (
                         <button
                             key={s}
@@ -134,7 +141,7 @@ export default function Orders({ orders = [] }) {
                             <StatusBadge status={o.status} />
                         </div>
                         <div className="mt-3 flex items-center justify-between text-sm text-brand-foregroundMuted">
-                            <span>{o.items?.length ?? 0} items</span>
+                            <span>{itemCount(o)} items</span>
                             <span className="text-brand-gold">Rs. {Number(o.total).toLocaleString()}</span>
                         </div>
                         <div className="mt-3 flex justify-end">
@@ -181,7 +188,7 @@ export default function Orders({ orders = [] }) {
                                 <td className="max-w-[200px] truncate p-4 text-brand-foregroundMuted">
                                     {o.delivery_address}
                                 </td>
-                                <td className="p-4 text-brand-foregroundMuted">{o.items?.length ?? 0}</td>
+                                <td className="p-4 text-brand-foregroundMuted">{itemCount(o)}</td>
                                 <td className="p-4 text-brand-gold">Rs. {Number(o.total).toLocaleString()}</td>
                                 <td className="p-4">
                                     <select

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LuShoppingBag, LuX, LuMinus, LuPlus, LuTrash2, LuMapPin, LuCircleCheck } from 'react-icons/lu';
-import { useCart } from '@/lib/CartContext';
+import { rememberToReopenCart, useCart } from '@/lib/CartContext';
 import { playUiSound } from '@/lib/uiSound';
 
 const numericPrice = (label) => {
@@ -22,11 +22,22 @@ export default function OrderCart() {
     const isAuthenticated = Boolean(auth?.user);
 
     const [address, setAddress] = useState('');
-    const [phone, setPhone] = useState('');
+    const [phone, setPhone] = useState(auth?.user?.phone ?? '');
     const [notes, setNotes] = useState('');
     const [processing, setProcessing] = useState(false);
     const [success, setSuccess] = useState(null);
     const [errors, setErrors] = useState({});
+
+    // The "Order placed!" screen is for the order that was just sent. As
+    // soon as new dishes go in the tray (or the drawer is closed) show the
+    // checkout again, otherwise a second order was impossible without a reload.
+    useEffect(() => {
+        if (items.length > 0) setSuccess(null);
+    }, [items.length]);
+
+    useEffect(() => {
+        if (!open) setSuccess(null);
+    }, [open]);
 
     const total = items.reduce((sum, i) => sum + numericPrice(i.price) * i.quantity, 0);
 
@@ -52,7 +63,7 @@ export default function OrderCart() {
                     setSuccess('Order placed! We will start preparing it shortly.');
                     clear();
                     setAddress('');
-                    setPhone('');
+                    setPhone(auth?.user?.phone ?? '');
                     setNotes('');
                 },
                 onError: (errs) => setErrors(errs),
@@ -149,11 +160,11 @@ export default function OrderCart() {
                                                                     updateQuantity(item.menu_item_id, item.quantity - 1)
                                                                 }
                                                                 aria-label={`Decrease ${item.name} quantity`}
-                                                                className="flex h-6 w-6 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                                                className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
                                                             >
                                                                 <LuMinus className="h-3 w-3" />
                                                             </button>
-                                                            <span className="w-4 text-center text-sm text-brand-foreground">
+                                                            <span className="w-6 text-center text-sm text-brand-foreground">
                                                                 {item.quantity}
                                                             </span>
                                                             <button
@@ -162,7 +173,7 @@ export default function OrderCart() {
                                                                     updateQuantity(item.menu_item_id, item.quantity + 1)
                                                                 }
                                                                 aria-label={`Increase ${item.name} quantity`}
-                                                                className="flex h-6 w-6 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                                                className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
                                                             >
                                                                 <LuPlus className="h-3 w-3" />
                                                             </button>
@@ -172,7 +183,7 @@ export default function OrderCart() {
                                                         type="button"
                                                         onClick={() => removeItem(item.menu_item_id)}
                                                         aria-label={`Remove ${item.name}`}
-                                                        className="shrink-0 self-start text-brand-foregroundMuted transition hover:text-brand-danger"
+                                                        className="flex h-9 w-9 shrink-0 items-center justify-center self-start text-brand-foregroundMuted transition hover:text-brand-danger"
                                                     >
                                                         <LuTrash2 className="h-4 w-4" />
                                                     </button>
@@ -194,6 +205,7 @@ export default function OrderCart() {
                                                 </p>
                                                 <Link
                                                     href={`/login?redirect=${encodeURIComponent('/#menu')}`}
+                                                    onClick={rememberToReopenCart}
                                                     className="mt-3 inline-block rounded-full bg-brand-gold px-6 py-2 text-xs font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight"
                                                 >
                                                     Sign In to Order

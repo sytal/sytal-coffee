@@ -83,14 +83,14 @@ export default function Hero({
             </motion.div>
 
             {images.length > 1 && (
-                <div className="absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 gap-2 sm:bottom-28">
+                <div className="absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 gap-0 sm:bottom-28">
                     {images.map((src, i) => (
                         <button
                             key={src}
                             type="button"
                             onClick={() => setImageIndex(i)}
                             aria-label={`Show background ${i + 1}`}
-                            className="p-1"
+                            className="flex h-10 min-w-8 items-center justify-center px-1"
                         >
                             <span
                                 className={`block h-1.5 rounded-full transition-all duration-300 ${

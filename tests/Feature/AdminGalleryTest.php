@@ -20,7 +20,7 @@ class AdminGalleryTest extends TestCase
 
     public function test_admin_can_upload_a_gallery_image(): void
     {
-        Storage::fake('public');
+        Storage::fake('uploads');
 
         $response = $this->post('/admin/gallery', [
             'label' => 'New Terrace Shot',
@@ -29,7 +29,7 @@ class AdminGalleryTest extends TestCase
 
         $response->assertRedirect();
         $image = GalleryImage::where('label', 'New Terrace Shot')->firstOrFail();
-        Storage::disk('public')->assertExists(str_replace('/storage/', '', $image->image));
+        Storage::disk('uploads')->assertExists(str_replace('/uploads/', '', $image->image));
     }
 
     public function test_admin_can_delete_a_gallery_image(): void

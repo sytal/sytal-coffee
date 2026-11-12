@@ -7,6 +7,14 @@ import { LuTrash2, LuReply, LuMail } from 'react-icons/lu';
 export default function Messages({ messages = [] }) {
     const [activeId, setActiveId] = useState(messages[0]?.id ?? null);
     const active = messages.find((m) => m.id === activeId) ?? messages[0];
+    const [reply, setReply] = useState('');
+
+    // There's no outgoing mail server wired up, so replies open the admin's
+    // own email app, pre-addressed to the customer with the typed text.
+    function mailtoFor(message, body = '') {
+        const subject = encodeURIComponent('Re: your message to Crunches Cafe');
+        return `mailto:${message.email}?subject=${subject}${body ? `&body=${encodeURIComponent(body)}` : ''}`;
+    }
 
     function selectMessage(message) {
         setActiveId(message.id);
@@ -68,13 +76,13 @@ export default function Messages({ messages = [] }) {
                                     <p className="mt-0.5 text-sm text-brand-foregroundMuted">{active.phone}</p>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button
-                                        type="button"
+                                    <a
+                                        href={mailtoFor(active)}
                                         className="flex h-9 w-9 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
-                                        aria-label="Reply"
+                                        aria-label="Reply by email"
                                     >
                                         <LuReply className="h-4 w-4" />
-                                    </button>
+                                    </a>
                                     <button
                                         type="button"
                                         onClick={() => handleDelete(active)}
@@ -85,22 +93,29 @@ export default function Messages({ messages = [] }) {
                                     </button>
                                 </div>
                             </div>
-                            <p className="mt-6 leading-relaxed text-brand-foreground">{active.message}</p>
+                            <p className="mt-6 whitespace-pre-line break-words leading-relaxed text-brand-foreground [overflow-wrap:anywhere]">{active.message}</p>
 
                             <div className="mt-8 border-t border-brand-border pt-6">
                                 <textarea
                                     rows={4}
-                                    placeholder="Type a reply..."
+                                    value={reply}
+                                    onChange={(e) => setReply(e.target.value)}
+                                    placeholder="Type a reply. It opens in your email app, addressed to the customer."
                                     className="w-full resize-none rounded-sm border border-brand-border bg-brand-background p-4 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold"
                                 />
-                                <button
-                                    type="button"
-                                    className="mt-3 rounded-sm bg-brand-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight"
+                                <a
+                                    href={mailtoFor(active, reply)}
+                                    className="mt-3 inline-block rounded-sm bg-brand-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight"
                                 >
-                                    Send Reply
-                                </button>
+                                    Reply by Email
+                                </a>
                             </div>
                         </>
+                    )}
+                    {!active && (
+                        <p className="py-16 text-center text-sm text-brand-foregroundMuted">
+                            Messages from the website's contact form will show up here.
+                        </p>
                     )}
                 </div>
             </div>

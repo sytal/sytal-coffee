@@ -10,8 +10,16 @@ use Inertia\Response;
 
 class LoginController extends Controller
 {
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        // "?redirect=/#menu" (e.g. from the cart's "Sign In to Order")
+        // brings the visitor back after signing in. Only same-site paths
+        // are accepted, never full URLs (open-redirect protection).
+        $redirect = (string) $request->query('redirect', '');
+        if (str_starts_with($redirect, '/') && ! str_starts_with($redirect, '//')) {
+            $request->session()->put('url.intended', url($redirect));
+        }
+
         return Inertia::render('Auth/Login');
     }
 
@@ -31,9 +39,16 @@ class LoginController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        $fallback = $user->hasRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_MANAGER]) ? '/admin' : '/';
+        $isStaff = $user->hasRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_MANAGER]);
+        $fallback = $isStaff ? '/admin' : '/';
 
-        return redirect()->intended($fallback);
+        // Customers must not be bounced to an admin URL they tried earlier.
+        $intended = $request->session()->pull('url.intended');
+        if ($intended && ! $isStaff && str_contains(parse_url($intended, PHP_URL_PATH) ?? '', '/admin')) {
+            $intended = null;
+        }
+
+        return redirect($intended ?: $fallback);
     }
 
     public function destroy(Request $request)

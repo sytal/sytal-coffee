@@ -17,8 +17,17 @@ class GalleryImageService
         return GalleryImage::create($data);
     }
 
+    public function updateLabel(GalleryImage $image, string $label): GalleryImage
+    {
+        $image->update(['label' => $label]);
+
+        return $image;
+    }
+
     public function delete(GalleryImage $image): void
     {
+        $path = $image->image;
         $image->delete();
+        \App\Support\UploadedImage::delete($path);
     }
 }

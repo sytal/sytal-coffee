@@ -1,17 +1,56 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 /**
  * Site-wide "order cart" — lets a visitor add menu items anywhere (the Menu
  * grid today) and check out from one floating cart button regardless of
- * which section they're on. State lives in memory only (cleared on reload)
- * since there's no "saved cart" requirement; it's just enough to let someone
- * pick a few dishes and place one order in a single pass.
+ * which section they're on. The cart is kept in localStorage so it survives
+ * a page reload and the trip through /login (a guest's tray isn't lost when
+ * they sign in to order). Prices are re-computed server-side on checkout.
  */
 const CartContext = createContext(null);
+const STORAGE_KEY = 'crunches-cart-v1';
+const REOPEN_KEY = 'crunches-cart-reopen';
+
+function loadItems() {
+    try {
+        const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? '[]');
+        return Array.isArray(parsed) ? parsed.filter((i) => i && i.menu_item_id && i.quantity > 0) : [];
+    } catch {
+        return [];
+    }
+}
+
+/** Call before sending a guest to /login so the tray pops open again on return. */
+export function rememberToReopenCart() {
+    try {
+        window.sessionStorage.setItem(REOPEN_KEY, '1');
+    } catch {
+        // storage unavailable — the cart still survives via localStorage
+    }
+}
 
 export function CartProvider({ children }) {
-    const [items, setItems] = useState([]); // { menu_item_id, name, price, image, quantity }
+    const [items, setItems] = useState(() => (typeof window === 'undefined' ? [] : loadItems())); // { menu_item_id, name, price, image, quantity }
     const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        } catch {
+            // private mode / storage blocked: cart just won't persist
+        }
+    }, [items]);
+
+    useEffect(() => {
+        try {
+            if (window.sessionStorage.getItem(REOPEN_KEY)) {
+                window.sessionStorage.removeItem(REOPEN_KEY);
+                if (loadItems().length > 0) setOpen(true);
+            }
+        } catch {
+            // ignore
+        }
+    }, []);
 
     const addItem = useCallback((menuItem) => {
         setItems((prev) => {

@@ -16,7 +16,7 @@ export default function StatCard({ icon: Icon, label, value, trend, trendUp = tr
                         </span>
                     )}
                 </div>
-                <p className="truncate text-[10px] uppercase leading-tight tracking-wider text-brand-foregroundMuted">
+                <p className="text-[10px] uppercase leading-tight tracking-wider text-brand-foregroundMuted [overflow-wrap:anywhere]">
                     {label}
                 </p>
             </div>

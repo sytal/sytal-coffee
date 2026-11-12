@@ -7,10 +7,15 @@ import { LuPlus, LuPencil, LuTrash2, LuSearch } from 'react-icons/lu';
 import { Zoomable } from '@/Components/Admin/ImageLightbox';
 
 const MAX_TAGS = 4;
+const MAX_IMAGE_MB = 4;
+
+const firstError = (errors) => Object.values(errors ?? {})[0];
 
 export default function MenuItems({ menuItems = [], categories = [], availableTags = [] }) {
     const [tab, setTab] = useState('items'); // 'items' | 'categories'
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState(() =>
+        typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('search') ?? ''
+    );
     const [category, setCategory] = useState('All');
     const [panelOpen, setPanelOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
@@ -18,6 +23,8 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
     const [imagePreview, setImagePreview] = useState(null);
     const [selectedTags, setSelectedTags] = useState([]);
     const [tagQuery, setTagQuery] = useState('');
+    const [errors, setErrors] = useState({});
+    const [catErrors, setCatErrors] = useState({});
 
     const [catPanelOpen, setCatPanelOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
@@ -33,6 +40,7 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
     });
 
     function openAdd() {
+        setErrors({});
         setEditingItem(null);
         setImagePreview(null);
         setSelectedTags([]);
@@ -41,6 +49,7 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
     }
 
     function openEdit(item) {
+        setErrors({});
         setEditingItem(item);
         setImagePreview(item.image ?? null);
         setSelectedTags(item.tags ?? []);
@@ -56,8 +65,24 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
         });
     }
 
+    function addTypedTag() {
+        const tag = tagQuery.trim();
+        if (!tag) return;
+        const existing = availableTags.find((t) => t.toLowerCase() === tag.toLowerCase());
+        const name = (existing ?? tag).slice(0, 40);
+        if (!selectedTags.includes(name)) toggleTag(name);
+        setTagQuery('');
+    }
+
     function handleImageChange(e) {
         const file = e.target.files?.[0];
+        if (file && file.size > MAX_IMAGE_MB * 1024 * 1024) {
+            setErrors((prev) => ({ ...prev, image: `The image must be ${MAX_IMAGE_MB} MB or smaller.` }));
+            e.target.value = '';
+            setImagePreview(editingItem?.image ?? null);
+            return;
+        }
+        setErrors(({ image, ...rest }) => rest);
         setImagePreview(file ? URL.createObjectURL(file) : editingItem?.image ?? null);
     }
 
@@ -76,24 +101,21 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
         selectedTags.forEach((tag) => formData.append('tags[]', tag));
 
         setSubmitting(true);
-        const onDone = () => {
-            setSubmitting(false);
-            setPanelOpen(false);
+        setErrors({});
+        const options = {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => setPanelOpen(false),
+            // Keep the drawer open and show what the server rejected.
+            onError: (errs) => setErrors(errs),
+            onFinish: () => setSubmitting(false),
         };
 
         if (editingItem) {
             formData.append('_method', 'put');
-            router.post(`/admin/menu/${editingItem.id}`, formData, {
-                forceFormData: true,
-                onSuccess: onDone,
-                onError: () => setSubmitting(false),
-            });
+            router.post(`/admin/menu/${editingItem.id}`, formData, options);
         } else {
-            router.post('/admin/menu', formData, {
-                forceFormData: true,
-                onSuccess: onDone,
-                onError: () => setSubmitting(false),
-            });
+            router.post('/admin/menu', formData, options);
         }
     }
 
@@ -103,11 +125,13 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
     }
 
     function openAddCategory() {
+        setCatErrors({});
         setEditingCategory(null);
         setCatPanelOpen(true);
     }
 
     function openEditCategory(name) {
+        setCatErrors({});
         setEditingCategory(name);
         setCatPanelOpen(true);
     }
@@ -116,22 +140,24 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
         e.preventDefault();
         const name = new FormData(e.target).get('name');
         setCatSubmitting(true);
-        const onDone = () => {
-            setCatSubmitting(false);
-            setCatPanelOpen(false);
+        setCatErrors({});
+        const options = {
+            preserveScroll: true,
+            onSuccess: () => setCatPanelOpen(false),
+            onError: (errs) => setCatErrors(errs),
+            onFinish: () => setCatSubmitting(false),
         };
 
         if (editingCategory) {
-            const id = categoryIds[editingCategory];
-            router.put(`/admin/categories/${id}`, { name }, { onSuccess: onDone, onError: () => setCatSubmitting(false) });
+            router.put(`/admin/categories/${categoryIds[editingCategory]}`, { name }, options);
         } else {
-            router.post('/admin/categories', { name }, { onSuccess: onDone, onError: () => setCatSubmitting(false) });
+            router.post('/admin/categories', { name }, options);
         }
     }
 
     function handleDeleteCategory(name) {
         if (!window.confirm(`Delete category "${name}"?`)) return;
-        router.delete(`/admin/categories/${categoryIds[name]}`);
+        router.delete(`/admin/categories/${categoryIds[name]}`, { preserveScroll: true });
     }
 
     return (
@@ -348,8 +374,15 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                 onClose={() => setPanelOpen(false)}
                 title={editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
             >
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form key={editingItem?.id ?? 'new'} onSubmit={handleSubmit} className="space-y-5" noValidate>
+                    {Object.keys(errors).length > 0 && (
+                        <p className="rounded-sm border border-brand-danger/50 bg-brand-danger/10 px-3 py-2 text-sm text-brand-danger">
+                            {firstError(errors)}
+                        </p>
+                    )}
                     <FloatingField
+                        id="menu-item-name"
+                        error={errors.name}
                         label="Item name"
                         name="name"
                         defaultValue={editingItem?.name}
@@ -358,6 +391,9 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                         required
                     />
                     <FloatingField
+                        id="menu-item-description"
+                        error={errors.description}
+                        maxLength={500}
                         label="Description"
                         name="description"
                         as="textarea"
@@ -369,6 +405,9 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                     />
                     <div className="grid grid-cols-2 gap-4">
                         <FloatingField
+                            id="menu-item-price"
+                            error={errors.price}
+                            inputMode="decimal"
                             label="Price"
                             name="price"
                             defaultValue={editingItem?.price}
@@ -377,6 +416,8 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                             required
                         />
                         <FloatingField
+                            id="menu-item-category"
+                            error={errors.category}
                             label="Category"
                             name="category"
                             as="select"
@@ -390,6 +431,8 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                     </div>
                     <div>
                         <FloatingField
+                            id="menu-item-image"
+                            error={errors.image}
                             label="Image"
                             name="image"
                             type="file"
@@ -428,7 +471,14 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                             type="text"
                             value={tagQuery}
                             onChange={(e) => setTagQuery(e.target.value)}
-                            placeholder={selectedTags.length >= MAX_TAGS ? 'Max tags selected' : 'Search tags...'}
+                            onKeyDown={(e) => {
+                                // Enter adds the typed tag instead of submitting the whole form.
+                                if (e.key === 'Enter' || e.key === ',') {
+                                    e.preventDefault();
+                                    addTypedTag();
+                                }
+                            }}
+                            placeholder={selectedTags.length >= MAX_TAGS ? 'Max tags selected' : 'Search or type a tag, then press Enter'}
                             disabled={selectedTags.length >= MAX_TAGS}
                             className="w-full rounded-sm border border-brand-border bg-brand-surface px-3 py-2 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold disabled:opacity-50"
                         />
@@ -441,13 +491,21 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                                             !selectedTags.includes(t)
                                     )
                                     .slice(0, 8)
+                                    .concat(
+                                        availableTags.some((t) => t.toLowerCase() === tagQuery.trim().toLowerCase()) || !tagQuery.trim()
+                                            ? []
+                                            : [`+ Add "${tagQuery.trim()}"`]
+                                    )
                                     .map((t) => (
                                         <button
                                             key={t}
                                             type="button"
                                             onClick={() => {
-                                                toggleTag(t);
-                                                setTagQuery('');
+                                                if (t.startsWith('+ Add "')) addTypedTag();
+                                                else {
+                                                    toggleTag(t);
+                                                    setTagQuery('');
+                                                }
                                             }}
                                             className="block w-full px-3 py-2 text-left text-sm text-brand-foreground transition hover:bg-brand-surfaceAlt"
                                         >
@@ -475,8 +533,10 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                 onClose={() => setCatPanelOpen(false)}
                 title={editingCategory ? 'Edit Category' : 'Add Category'}
             >
-                <form onSubmit={handleCategorySubmit} className="space-y-5">
+                <form key={editingCategory ?? 'new-category'} onSubmit={handleCategorySubmit} className="space-y-5">
                     <FloatingField
+                        id="category-name"
+                        error={catErrors.name}
                         label="Category name"
                         name="name"
                         defaultValue={editingCategory ?? ''}

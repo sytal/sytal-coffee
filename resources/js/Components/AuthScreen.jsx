@@ -250,7 +250,7 @@ function LoginFormPanel({ form, onSubmit, onSwitch, idPrefix = 'login' }) {
                     type="email"
                     placeholder="you@example.com"
                     value={data.email}
-                    onChange={(e) => setData('email', e.target.value)}
+                    onChange={(e) => { setData('email', e.target.value); form.clearErrors('email'); }}
                     error={errors.email}
                     autoFocus
                 />
@@ -261,7 +261,7 @@ function LoginFormPanel({ form, onSubmit, onSwitch, idPrefix = 'login' }) {
                     type="password"
                     placeholder="Your password"
                     value={data.password}
-                    onChange={(e) => setData('password', e.target.value)}
+                    onChange={(e) => { setData('password', e.target.value); form.clearErrors('password'); }}
                     error={errors.password}
                 />
 
@@ -306,7 +306,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                     type="text"
                     placeholder="Your full name"
                     value={data.name}
-                    onChange={(e) => setData('name', e.target.value)}
+                    onChange={(e) => { setData('name', e.target.value); form.clearErrors('name'); }}
                     error={errors.name}
                     autoFocus
                 />
@@ -317,7 +317,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                     type="email"
                     placeholder="you@example.com"
                     value={data.email}
-                    onChange={(e) => setData('email', e.target.value)}
+                    onChange={(e) => { setData('email', e.target.value); form.clearErrors('email'); }}
                     error={errors.email}
                 />
                 <FloatingField
@@ -332,6 +332,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                     onChange={(e) => {
                         const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
                         setData('phone', `03${digits}`);
+                        form.clearErrors('phone');
                     }}
                     error={errors.phone}
                 />
@@ -342,7 +343,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
                     type="password"
                     placeholder="At least 8 characters"
                     value={data.password}
-                    onChange={(e) => setData('password', e.target.value)}
+                    onChange={(e) => { setData('password', e.target.value); form.clearErrors('password'); }}
                     error={errors.password}
                 />
 

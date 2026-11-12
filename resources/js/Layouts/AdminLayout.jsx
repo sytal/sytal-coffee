@@ -50,13 +50,25 @@ export default function AdminLayout({ title, children }) {
     // Flash messages set via back()->with('success'/'error', ...) on any
     // admin PATCH/POST (status updates, deletes, etc.) now arrive as shared
     // Inertia props — surface them as a toast instead of silently vanishing.
+    // Track the flash *object* of each visit (not its text), so the same
+    // message twice in a row (e.g. two deletes) still shows each time, and
+    // errors are never masked by an older success message.
     useEffect(() => {
-        const message = flash?.success ?? flash?.error;
-        if (message && message !== seenFlashRef.current) {
-            seenFlashRef.current = message;
-            showToast(message, flash?.error ? 'error' : 'success');
-        }
+        if (!flash || flash === seenFlashRef.current) return;
+        seenFlashRef.current = flash;
+        if (flash.error) showToast(flash.error, 'error');
+        else if (flash.success) showToast(flash.success, 'success');
     }, [flash]);
+
+    // Header search: an order number ("#12" or "12") opens Orders filtered
+    // to it; anything else searches the menu.
+    function handleGlobalSearch(e) {
+        e.preventDefault();
+        const q = new FormData(e.currentTarget).get('q')?.toString().trim();
+        if (!q) return;
+        const target = /^#?\d+$/.test(q) ? '/admin/orders' : '/admin/menu';
+        router.get(target, { search: q });
+    }
 
     useEffect(() => {
         let cancelled = false;
@@ -108,7 +120,7 @@ export default function AdminLayout({ title, children }) {
         <div className="flex min-h-screen bg-brand-background font-sans text-brand-foreground">
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform border-r border-brand-border bg-brand-surface transition-transform duration-300 lg:static lg:translate-x-0 ${
+                className={`fixed inset-y-0 left-0 z-40 w-64 shrink-0 transform border-r border-brand-border bg-brand-surface transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
                     sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
@@ -192,14 +204,16 @@ export default function AdminLayout({ title, children }) {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="relative hidden sm:block">
+                        <form onSubmit={handleGlobalSearch} role="search" className="relative hidden sm:block">
                             <LuSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-foregroundMuted" />
                             <input
-                                type="text"
-                                placeholder="Search..."
+                                type="search"
+                                name="q"
+                                aria-label="Search menu items or order number"
+                                placeholder="Search dishes or order #"
                                 className="w-56 rounded-sm border border-brand-border bg-brand-background py-2 pl-9 pr-3 text-sm text-brand-foreground placeholder:text-brand-foregroundMuted/60 outline-none focus:border-brand-gold"
                             />
-                        </div>
+                        </form>
                         <div className="relative">
                             <button
                                 type="button"

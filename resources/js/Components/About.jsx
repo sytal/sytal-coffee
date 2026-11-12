@@ -2,10 +2,11 @@ import { motion } from 'framer-motion';
 import CountUp from '@/Components/motion/CountUp';
 import KineticText from '@/Components/motion/KineticText';
 
-const STATS = [
+// "Menu Items" is the live count from the database, never a guess.
+const buildStats = (menuCount) => [
     { label: 'Google Rating', value: '4.2' },
     { label: 'Happy Reviews', value: '38+' },
-    { label: 'Menu Items', value: '30+' },
+    { label: 'Menu Items', value: String(menuCount ?? 0) },
     { label: 'Days Open Weekly', value: '7' },
 ];
 
@@ -36,7 +37,9 @@ export default function About({
     quote = "No fuss, no pretense — just a kitchen that doesn't slow down after dark.",
     body,
     image = '/images/about.jpg',
+    menuCount,
 }) {
+    const STATS = buildStats(menuCount);
     const paragraphs = body ? body.split('\n\n') : DEFAULT_PARAGRAPHS;
     return (
         <section className="relative bg-brand-background py-24 sm:py-32">

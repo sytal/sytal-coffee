@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { LuCircleCheck } from 'react-icons/lu';
 
 /**
@@ -28,7 +29,10 @@ export default function FloatingField({
     alwaysFloated: _alwaysFloated,
     ...props
 }) {
-    const fieldId = id ?? `field-${label?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    // useId() keeps ids unique when two forms on one page share a label
+    // (e.g. "Best number to reach you" in Reservations and Contact).
+    const autoId = useId().replace(/:/g, '');
+    const fieldId = id ?? `field-${label?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${autoId}`;
     const leftPad = prefix ? 'pl-[4.5rem]' : Icon ? 'pl-11' : 'pl-4';
 
     return (

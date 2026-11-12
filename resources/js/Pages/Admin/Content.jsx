@@ -27,8 +27,8 @@ function ImageField({ label, value, onChange }) {
             <label className="mb-1.5 block text-xs uppercase tracking-wider text-brand-foregroundMuted">
                 {label}
             </label>
-            <div className="flex items-center gap-3">
-                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-sm border border-brand-border bg-brand-surfaceAlt">
+            <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
+                <div className="h-20 w-full shrink-0 overflow-hidden sm:h-16 sm:w-24 rounded-sm border border-brand-border bg-brand-surfaceAlt">
                     {preview && (
                         <Zoomable src={preview} alt={label} className="h-full w-full object-cover" />
                     )}
@@ -36,9 +36,9 @@ function ImageField({ label, value, onChange }) {
                 <button
                     type="button"
                     onClick={() => inputRef.current?.click()}
-                    className="flex items-center gap-2 rounded-sm border border-brand-border px-3 py-2 text-xs uppercase tracking-wider text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                    className="flex min-h-10 items-center justify-center gap-2 rounded-sm border border-brand-border px-3 py-2 text-xs uppercase tracking-wider text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
                 >
-                    <LuUpload className="h-3.5 w-3.5" />
+                    <LuUpload className="h-3.5 w-3.5 shrink-0" />
                     Replace Image
                 </button>
                 <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
@@ -51,6 +51,7 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
     const [fields, setFields] = useState(block.fields);
     const [imageUploads, setImageUploads] = useState({}); // dotted-path -> File
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState(null);
 
     function setField(path, value) {
         setFields((prev) => {
@@ -75,9 +76,19 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
             formData.append(`upload_${path}`, file);
         });
 
+        setError(null);
         router.post(`/admin/content/${block.section_key}`, formData, {
             forceFormData: true,
             preserveScroll: true,
+            onSuccess: (page) => {
+                // Uploaded files are now stored server-side: forget them so the
+                // next Save doesn't upload them again, and pick up their new
+                // paths from the fresh props.
+                setImageUploads({});
+                const fresh = page.props.blocks?.find((b) => b.section_key === block.section_key);
+                if (fresh) setFields(fresh.fields);
+            },
+            onError: (errors) => setError(Object.values(errors)[0] ?? 'Could not save this section.'),
             onFinish: () => setSaving(false),
         });
     }
@@ -174,7 +185,8 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
                 )}
             </div>
 
-            <div className="mt-5 flex justify-end">
+            <div className="mt-5 flex flex-col items-end gap-2">
+                {error && <p className="text-sm text-brand-danger">{error}</p>}
                 <button
                     type="button"
                     disabled={saving}
@@ -229,12 +241,14 @@ export default function Content({ blocks = [] }) {
         [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
         setOrdered(next);
 
-        // Persist new sort_order for both swapped sections.
-        next.forEach((b, i) => {
-            if (b.section_key === block.section_key || b.section_key === ordered[swapIndex].section_key) {
-                router.patch(`/admin/content/${b.section_key}/order`, { sort_order: i }, { preserveScroll: true, preserveState: true });
-            }
-        });
+        // Persist the whole order in ONE request. Two parallel requests (one
+        // per swapped section) made Inertia cancel the first, so the new
+        // order never stuck after a reload.
+        router.patch(
+            '/admin/content-order',
+            { order: next.map((b) => b.section_key) },
+            { preserveScroll: true, preserveState: true, onError: () => setOrdered(ordered) }
+        );
     }
 
     return (

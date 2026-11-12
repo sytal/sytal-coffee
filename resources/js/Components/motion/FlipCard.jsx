@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuExpand, LuRotateCcw, LuPlus } from 'react-icons/lu';
+import { LuExpand, LuRotateCcw, LuPlus, LuUtensilsCrossed } from 'react-icons/lu';
 
 /**
  * Reusable 3D flip card used by the Menu grid. Click anywhere on the card
@@ -12,6 +12,8 @@ import { LuExpand, LuRotateCcw, LuPlus } from 'react-icons/lu';
  */
 export default function FlipCard({ item, index, size = 'regular', onZoom, onAddToOrder }) {
     const [flipped, setFlipped] = useState(false);
+    const [imageFailed, setImageFailed] = useState(false);
+    const hasImage = Boolean(item.image) && !imageFailed;
     const [shimmerKey, setShimmerKey] = useState(0);
 
     const handleFlip = () => {
@@ -44,14 +46,23 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
             >
                 {/* Front face */}
                 <div className="absolute inset-0 overflow-hidden rounded-2xl border border-brand-border/60 bg-brand-surface [backface-visibility:hidden]">
-                    <img
-                        src={item.image}
-                        alt={item.name}
-                        loading="lazy"
-                        decoding="async"
-                        draggable={false}
-                        className="absolute inset-0 h-full w-full object-cover"
-                    />
+                    {hasImage ? (
+                        <img
+                            src={item.image}
+                            alt={item.name}
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                            onError={() => setImageFailed(true)}
+                            className="absolute inset-0 h-full w-full object-cover"
+                        />
+                    ) : (
+                        // Dishes saved without a photo get a branded placeholder,
+                        // never a broken <img> showing its alt text.
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-brand-surfaceAlt to-brand-surface">
+                            <LuUtensilsCrossed className="h-12 w-12 text-brand-gold/40" aria-hidden />
+                        </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/45 to-transparent" />
 
                     {/* Shimmer sweep, replayed each time the card is clicked */}
@@ -71,7 +82,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                         </span>
                     )}
 
-                    {onZoom && (
+                    {onZoom && hasImage && (
                         <button
                             type="button"
                             onClick={(e) => {
@@ -79,7 +90,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                 onZoom();
                             }}
                             aria-label={`Zoom in on ${item.name}`}
-                            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-brand-foreground/30 bg-brand-background/60 text-brand-foreground backdrop-blur transition hover:border-brand-gold hover:text-brand-gold"
+                            className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full border border-brand-foreground/30 bg-brand-background/60 text-brand-foreground backdrop-blur transition hover:border-brand-gold hover:text-brand-gold"
                         >
                             <LuExpand className="h-4 w-4" />
                         </button>
@@ -91,7 +102,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                 {item.tags?.slice(0, 3).map((tag) => (
                                     <span
                                         key={tag}
-                                        className="rounded-full border border-brand-gold/40 bg-brand-background/50 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-brand-gold"
+                                        className="rounded-full border border-brand-gold/50 bg-brand-background/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-gold backdrop-blur-sm"
                                     >
                                         {tag}
                                     </span>
@@ -121,7 +132,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                         onAddToOrder(item);
                                     }}
                                     aria-label={`Add ${item.name} to your tray`}
-                                    className="flex shrink-0 items-center gap-1 rounded-full bg-brand-gold px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background shadow-sm transition hover:bg-brand-goldLight"
+                                    className="flex min-h-10 shrink-0 items-center gap-1 rounded-full bg-brand-gold px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-brand-background shadow-sm transition hover:bg-brand-goldLight"
                                 >
                                     <LuPlus className="h-3 w-3" />
                                     Add to Tray
@@ -153,7 +164,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                             {item.tags.map((tag) => (
                                 <span
                                     key={tag}
-                                    className="rounded-full border border-brand-gold/40 bg-brand-background/50 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-brand-gold"
+                                    className="rounded-full border border-brand-gold/50 bg-brand-background/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-gold backdrop-blur-sm"
                                 >
                                     {tag}
                                 </span>
@@ -171,7 +182,7 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                                     onAddToOrder(item);
                                 }}
                                 aria-label={`Add ${item.name} to your tray`}
-                                className="flex shrink-0 items-center gap-1 rounded-full bg-brand-gold px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-background shadow-sm transition hover:bg-brand-goldLight"
+                                className="flex min-h-10 shrink-0 items-center gap-1 rounded-full bg-brand-gold px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-brand-background shadow-sm transition hover:bg-brand-goldLight"
                             >
                                 <LuPlus className="h-3 w-3" />
                                 Add to Tray

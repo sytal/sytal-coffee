@@ -83,7 +83,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
     // Feeds the notification bell dropdown: unread contact messages +
     // pending orders, newest first. Kept deliberately small (count-bounded)
     // since it's polled every 15s.
-    Route::get('/notifications', function () {
+    Route::get('/notifications', function (Request $request) {
+        // This endpoint only feeds the bell dropdown; opened directly in a
+        // tab it would show raw JSON, so send people to the dashboard.
+        if (! $request->expectsJson() && ! $request->ajax()) {
+            return redirect('/admin');
+        }
+
         $readMessageIds = \App\Models\NotificationRead::where('type', 'message')->pluck('ref_id');
         $readOrderIds = \App\Models\NotificationRead::where('type', 'order')->pluck('ref_id');
 
@@ -154,6 +160,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
     })->name('admin.notifications.read-all');
 
     Route::get('/menu', function (MenuItemService $menuItemService) {
+        $menuItemService->syncLookups();
+
         return Inertia::render('Admin/MenuItems', [
             'menuItems' => $menuItemService->search(null, null),
             'categories' => \App\Models\MenuCategory::orderBy('sort_order')->get(['id', 'name']),
@@ -196,7 +204,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $data['image'] = '/storage/'.$request->file('image')->store('menu-items', 'public');
+            $data['image'] = '/uploads/'.$request->file('image')->store('menu-items', 'uploads');
         }
 
         $menuItemService->create($data);
@@ -208,7 +216,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $data['image'] = '/storage/'.$request->file('image')->store('menu-items', 'public');
+            $data['image'] = '/uploads/'.$request->file('image')->store('menu-items', 'uploads');
         }
 
         $menuItemService->update($menuItem, $data);
@@ -266,9 +274,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
         $request->validate([
             'image' => ['required', 'image', 'max:4096'],
             'label' => ['nullable', 'string', 'max:150'],
+        ], [
+            'image.uploaded' => 'The image could not be uploaded. Use a JPG or PNG under 4 MB.',
+            'image.max' => 'The image must be 4 MB or smaller.',
+            'image.image' => 'The file must be an image (JPG, PNG or WebP).',
         ]);
 
-        $path = '/storage/'.$request->file('image')->store('gallery', 'public');
+        $path = '/uploads/'.$request->file('image')->store('gallery', 'uploads');
 
         $galleryImageService->create([
             'image' => $path,
@@ -278,6 +290,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
 
         return back()->with('success', 'Image uploaded!');
     })->name('admin.gallery.store');
+
+    Route::patch('/gallery/{galleryImage}', function (Request $request, GalleryImage $galleryImage, GalleryImageService $galleryImageService) {
+        $data = $request->validate(['label' => ['required', 'string', 'max:150']]);
+        $galleryImageService->updateLabel($galleryImage, $data['label']);
+
+        return back()->with('success', 'Label updated!');
+    })->name('admin.gallery.update');
 
     Route::delete('/gallery/{galleryImage}', function (GalleryImage $galleryImage, GalleryImageService $galleryImageService) {
         $galleryImageService->delete($galleryImage);
@@ -295,19 +314,35 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
     })->name('admin.content');
 
     Route::post('/content/{sectionKey}', function (Request $request, string $sectionKey, ContentBlockService $contentBlockService) {
+        // The admin form sends `fields` as a JSON string inside multipart
+        // form data (so files can travel alongside it). Decode it — treating
+        // it as "not an array" silently dropped every text edit.
         $fields = $request->input('fields', []);
-        if (!is_array($fields)) {
-            $fields = [];
+        if (is_string($fields)) {
+            $fields = json_decode($fields, true);
+        }
+        if (! is_array($fields)) {
+            return back()->with('error', 'Could not read the section fields. Please try again.');
         }
 
+        $request->validate(
+            collect($request->allFiles())->keys()->filter(fn ($k) => str_starts_with($k, 'upload_'))
+                ->mapWithKeys(fn ($k) => [$k => ['image', 'max:4096']])->all(),
+            [
+                '*.uploaded' => 'An image could not be uploaded. Use a JPG or PNG under 4 MB.',
+                '*.max' => 'Images must be 4 MB or smaller.',
+                '*.image' => 'Uploads must be images (JPG, PNG or WebP).',
+            ]
+        );
+
         // Any image_* files sent (e.g. image, images[0], items[0][image]) get
-        // stored under storage/app/public/content and swapped in as paths,
+        // stored under public/uploads/content and swapped in as paths,
         // same upload pattern used by Admin/Gallery and Admin/MenuItems.
         foreach ($request->allFiles() as $key => $file) {
             if (!str_starts_with($key, 'upload_')) {
                 continue;
             }
-            $path = '/storage/'.$file->store('content', 'public');
+            $path = '/uploads/'.$file->store('content', 'uploads');
             $target = substr($key, strlen('upload_'));
             data_set($fields, $target, $path);
         }
@@ -316,6 +351,17 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(functi
 
         return back()->with('success', 'Section updated!');
     })->name('admin.content.update');
+
+    Route::patch('/content-order', function (Request $request, ContentBlockService $contentBlockService) {
+        $keys = array_keys(ContentBlockService::defaults());
+        $data = $request->validate([
+            'order' => ['required', 'array', 'size:'.count($keys)],
+            'order.*' => ['required', 'string', 'distinct', 'in:'.implode(',', $keys)],
+        ]);
+        $contentBlockService->reorder($data['order']);
+
+        return back()->with('success', 'Order updated!');
+    })->name('admin.content.reorder');
 
     Route::patch('/content/{sectionKey}/order', function (Request $request, string $sectionKey, ContentBlockService $contentBlockService) {
         $request->validate(['sort_order' => ['required', 'integer', 'min:0']]);

@@ -15,6 +15,7 @@ import {
 import KineticText from '@/Components/motion/KineticText';
 import FloatingField from '@/Components/FloatingField';
 import { playUiSound } from '@/lib/uiSound';
+import { useBusiness, formatSlot } from '@/lib/business';
 
 const PARTY_SIZES = Array.from({ length: 10 }, (_, i) => i + 1);
 
@@ -48,6 +49,22 @@ export default function Reservations({
     panelHeading = 'A table worth craving.',
 }) {
     const { data: form, setData, post, errors, processing, reset, clearErrors } = useForm(EMPTY_FORM);
+    const { time_slots: slots = [], open_time: openTime = '13:00' } = useBusiness();
+
+    // Only fixed slots within opening hours; for today, hide times that
+    // have already passed (after-midnight slots still belong to tonight).
+    function slotsFor(date) {
+        const now = new Date();
+        const today = new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        if (date !== today) return slots;
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        const openMin = Number(openTime.split(':')[0]) * 60;
+        return slots.filter((t) => {
+            const [h, m] = t.split(':').map(Number);
+            const min = h * 60 + m;
+            return min < openMin ? nowMin >= openMin || nowMin < min : min > nowMin;
+        });
+    }
     const [submitted, setSubmitted] = useState(false);
 
     const panelRef = useRef(null);
@@ -187,7 +204,7 @@ export default function Reservations({
                                 />
 
                                 <FloatingField
-                                    label="Where should we send confirmation?"
+                                    label="Email (optional)"
                                     icon={LuMail}
                                     type="email"
                                     value={form.email}
@@ -241,11 +258,18 @@ export default function Reservations({
                                     label="Time"
                                     icon={LuClock}
                                     alwaysFloated
-                                    type="time"
+                                    as="select"
                                     value={form.time}
                                     onChange={update('time')}
                                     error={errors.time}
-                                />
+                                >
+                                    <option value="">Pick a time</option>
+                                    {slotsFor(form.date).map((t) => (
+                                        <option key={t} value={t}>
+                                            {formatSlot(t)}
+                                        </option>
+                                    ))}
+                                </FloatingField>
                             </div>
 
                             <FloatingField

@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { LuArrowUp, LuArrowDown, LuUpload, LuSave } from 'react-icons/lu';
 import { Zoomable } from '@/Components/Admin/ImageLightbox';
@@ -47,8 +47,9 @@ function ImageField({ label, value, onChange }) {
     );
 }
 
-function SectionCard({ block, isFirst, isLast, onMove }) {
+function SectionCard({ block, isFirst, isLast, onMove, onDirtyChange }) {
     const [fields, setFields] = useState(block.fields);
+    const [savedJson, setSavedJson] = useState(() => JSON.stringify(block.fields));
     const [imageUploads, setImageUploads] = useState({}); // dotted-path -> File
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
@@ -63,6 +64,9 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
             return next;
         });
     }
+
+    const dirty = JSON.stringify(fields) !== savedJson || Object.keys(imageUploads).length > 0;
+    useEffect(() => onDirtyChange(block.label, dirty), [dirty]);
 
     function setImage(path, file) {
         setImageUploads((prev) => ({ ...prev, [path]: file }));
@@ -87,6 +91,7 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
                 setImageUploads({});
                 const fresh = page.props.blocks?.find((b) => b.section_key === block.section_key);
                 if (fresh) setFields(fresh.fields);
+                setSavedJson(JSON.stringify(fresh?.fields ?? fields));
             },
             onError: (errors) => setError(Object.values(errors)[0] ?? 'Could not save this section.'),
             onFinish: () => setSaving(false),
@@ -98,14 +103,21 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
     return (
         <div className="rounded-sm border border-brand-border bg-brand-surfaceAlt p-6">
             <div className="mb-5 flex items-center justify-between">
-                <h3 className="font-display text-lg text-brand-foreground">{block.label}</h3>
+                <h3 className="font-display text-lg text-brand-foreground">
+                    {block.label}
+                    {dirty && (
+                        <span className="ml-3 rounded-full bg-brand-gold/15 px-2 py-0.5 align-middle font-sans text-[11px] uppercase tracking-wider text-brand-gold">
+                            Unsaved changes
+                        </span>
+                    )}
+                </h3>
                 <div className="flex items-center gap-1">
                     <button
                         type="button"
                         disabled={isFirst}
                         onClick={() => onMove(block, -1)}
                         aria-label="Move up"
-                        className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold disabled:opacity-30"
+                        className="flex h-10 w-10 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold disabled:opacity-30"
                     >
                         <LuArrowUp className="h-4 w-4" />
                     </button>
@@ -114,7 +126,7 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
                         disabled={isLast}
                         onClick={() => onMove(block, 1)}
                         aria-label="Move down"
-                        className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold disabled:opacity-30"
+                        className="flex h-10 w-10 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold disabled:opacity-30"
                     >
                         <LuArrowDown className="h-4 w-4" />
                     </button>
@@ -124,12 +136,12 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
             <div className="space-y-4">
                 {block.section_key === 'hero' && (
                     <>
-                        <TextInput label="Eyebrow Text (small text above headline — leave blank for automatic time-of-day greeting)" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
+                        <TextInput label="Small heading above title (optional — blank shows a Good Morning/Evening greeting)" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
                         <TextInput label="Headline" value={f.title} onChange={(v) => setField('title', v)} />
                         <Textarea label="Subheadline" value={f.subtitle} onChange={(v) => setField('subtitle', v)} />
                         <div className="grid grid-cols-2 gap-4">
-                            <TextInput label="Button 1 Label" value={f.cta_label} onChange={(v) => setField('cta_label', v)} />
-                            <TextInput label="Button 2 Label" value={f.secondary_label} onChange={(v) => setField('secondary_label', v)} />
+                            <TextInput label="Main button text" value={f.cta_label} onChange={(v) => setField('cta_label', v)} />
+                            <TextInput label="Second button text" value={f.secondary_label} onChange={(v) => setField('secondary_label', v)} />
                         </div>
                         <p className="text-xs uppercase tracking-wider text-brand-foregroundMuted">Background Slideshow Images</p>
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -142,11 +154,11 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
 
                 {block.section_key === 'about' && (
                     <>
-                        <TextInput label="Eyebrow Text" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
+                        <TextInput label="Small heading above title (optional)" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
                         <TextInput label="Headline" value={f.heading} onChange={(v) => setField('heading', v)} />
                         <TextInput label="Highlighted Quote" value={f.quote} onChange={(v) => setField('quote', v)} />
                         <Textarea
-                            label="Story Text (separate paragraphs with a blank line)"
+                            label="About us text (press Enter twice for a new paragraph)"
                             rows={8}
                             value={f.body}
                             onChange={(v) => setField('body', v)}
@@ -157,7 +169,7 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
 
                 {block.section_key === 'crave_break' && (
                     <>
-                        <TextInput label="Eyebrow Text" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
+                        <TextInput label="Small heading above title (optional)" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
                         <TextInput label="Headline" value={f.heading} onChange={(v) => setField('heading', v)} />
                         <p className="text-xs uppercase tracking-wider text-brand-foregroundMuted">Photo Tiles</p>
                         <div className="grid grid-cols-2 gap-4">
@@ -173,13 +185,13 @@ function SectionCard({ block, isFirst, isLast, onMove }) {
 
                 {block.section_key === 'reservations_banner' && (
                     <>
-                        <TextInput label="Eyebrow Text" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
+                        <TextInput label="Small heading above title (optional)" value={f.eyebrow} onChange={(v) => setField('eyebrow', v)} />
                         <TextInput label="Headline" value={f.heading} onChange={(v) => setField('heading', v)} />
                         <Textarea label="Intro Text" value={f.intro} onChange={(v) => setField('intro', v)} />
                         <ImageField label="Side Photo" value={f.image} onChange={(file) => setImage('image', file)} />
                         <div className="grid grid-cols-2 gap-4">
-                            <TextInput label="Photo Overlay Eyebrow" value={f.panel_eyebrow} onChange={(v) => setField('panel_eyebrow', v)} />
-                            <TextInput label="Photo Overlay Caption" value={f.panel_heading} onChange={(v) => setField('panel_heading', v)} />
+                            <TextInput label="Text on the photo — line 1 (small)" value={f.panel_eyebrow} onChange={(v) => setField('panel_eyebrow', v)} />
+                            <TextInput label="Text on the photo — line 2 (large)" value={f.panel_heading} onChange={(v) => setField('panel_heading', v)} />
                         </div>
                     </>
                 )}
@@ -231,6 +243,27 @@ function Textarea({ label, value, onChange, rows = 3 }) {
 
 export default function Content({ blocks = [] }) {
     const [ordered, setOrdered] = useState(blocks);
+    const [dirty, setDirty] = useState({}); // section label -> bool
+    const unsaved = Object.keys(dirty).filter((k) => dirty[k]);
+    const onDirtyChange = (label, isDirty) => setDirty((d) => (d[label] === isDirty ? d : { ...d, [label]: isDirty }));
+
+    // Warn before leaving with unsaved edits (tab close or admin navigation).
+    useEffect(() => {
+        if (!unsaved.length) return undefined;
+        const onUnload = (e) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', onUnload);
+        const off = router.on('before', (e) => {
+            if (e.detail.visit.method !== 'get' || e.detail.visit.url.pathname === '/admin/content') return true;
+            return window.confirm(`You have unsaved changes in: ${unsaved.join(', ')}. Leave without saving?`);
+        });
+        return () => {
+            window.removeEventListener('beforeunload', onUnload);
+            off();
+        };
+    }, [unsaved.join('|')]);
 
     function move(block, direction) {
         const index = ordered.findIndex((b) => b.section_key === block.section_key);
@@ -258,6 +291,11 @@ export default function Content({ blocks = [] }) {
                 Edit the text and photos shown on the homepage, section by section. Use the arrows to
                 change the order sections appear on the site.
             </p>
+            {unsaved.length > 0 && (
+                <div className="sticky top-16 z-20 mb-4 rounded-sm border border-brand-gold bg-brand-surface px-4 py-3 text-sm text-brand-gold shadow-lg">
+                    Unsaved changes in <strong>{unsaved.join(', ')}</strong> — press that section&rsquo;s Save button.
+                </div>
+            )}
             <div className="space-y-6">
                 {ordered.map((block, i) => (
                     <SectionCard
@@ -266,6 +304,7 @@ export default function Content({ blocks = [] }) {
                         isFirst={i === 0}
                         isLast={i === ordered.length - 1}
                         onMove={move}
+                        onDirtyChange={onDirtyChange}
                     />
                 ))}
             </div>

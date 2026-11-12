@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BusinessController;
 use App\Http\Controllers\Api\V1\ContactMessageController;
 use App\Http\Controllers\Api\V1\ContentBlockController;
 use App\Http\Controllers\Api\V1\GalleryImageController;
@@ -23,6 +24,7 @@ Route::prefix('v1')->group(function (): void {
     // write these; the Flutter app reads them instead of hardcoding copy/colors.
     Route::get('/content-blocks', [ContentBlockController::class, 'index']);
     Route::get('/theme', [ThemeController::class, 'show']);
+    Route::get('/business', [BusinessController::class, 'show']);
 
     Route::middleware('throttle:api')->group(function (): void {
         Route::post('/reservations', [ReservationController::class, 'store']);

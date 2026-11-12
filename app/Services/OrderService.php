@@ -36,7 +36,7 @@ class OrderService
 
             foreach ($data['items'] as $line) {
                 $menuItem = $menuItems->get($line['menu_item_id']);
-                if (! $menuItem) {
+                if (! $menuItem || ! $menuItem->is_available) {
                     continue;
                 }
 
@@ -53,7 +53,14 @@ class OrderService
                 $total += $unitPrice * $quantity;
             }
 
-            $order->update(['total' => $total]);
+            $fee = app(BusinessSettingsService::class)->deliveryFee();
+
+            $order->update([
+                'subtotal' => $total,
+                'delivery_fee' => $fee,
+                'payment_method' => 'Cash on Delivery',
+                'total' => $total + $fee,
+            ]);
 
             return $order->fresh('items');
         });

@@ -47,6 +47,8 @@ class ContactFlowTest extends TestCase
     {
         $response = $this->post('/contact', ['name' => '', 'email' => 'bad', 'phone' => '', 'message' => '']);
 
-        $response->assertSessionHasErrors(['name', 'email', 'phone', 'message']);
+        // Phone is optional on the contact form (email is enough to reply).
+        $response->assertSessionHasErrors(['name', 'email', 'message']);
+        $response->assertSessionDoesntHaveErrors('phone');
     }
 }

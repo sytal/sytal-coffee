@@ -281,7 +281,7 @@ function LoginFormPanel({ form, onSubmit, onSwitch, idPrefix = 'login' }) {
 
             <p className="mt-6 text-center text-xs text-brand-foregroundMuted">
                 New here?{' '}
-                <button type="button" onClick={onSwitch} className="text-brand-gold hover:underline">
+                <button type="button" onClick={onSwitch} className="inline-flex min-h-10 items-center px-1 text-sm text-brand-gold hover:underline">
                     Create an account
                 </button>
             </p>
@@ -358,7 +358,7 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
 
             <p className="mt-6 text-center text-xs text-brand-foregroundMuted">
                 Already have an account?{' '}
-                <button type="button" onClick={onSwitch} className="text-brand-gold hover:underline">
+                <button type="button" onClick={onSwitch} className="inline-flex min-h-10 items-center px-1 text-sm text-brand-gold hover:underline">
                     Sign in
                 </button>
             </p>

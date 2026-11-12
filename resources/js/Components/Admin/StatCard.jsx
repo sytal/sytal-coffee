@@ -1,6 +1,12 @@
-export default function StatCard({ icon: Icon, label, value, trend, trendUp = true }) {
+import { Link } from '@inertiajs/react';
+
+export default function StatCard({ icon: Icon, label, value, trend, trendUp = true, href }) {
+    const Wrapper = href ? Link : 'div';
     return (
-        <div className="flex items-center gap-3 rounded-sm border border-brand-border bg-brand-surface p-3.5">
+        <Wrapper
+            href={href}
+            className="flex items-center gap-3 rounded-sm border border-brand-border bg-brand-surface p-3.5 transition hover:border-brand-gold/60"
+        >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand-gold/40 text-brand-gold">
                 <Icon className="h-4 w-4" />
             </span>
@@ -20,6 +26,6 @@ export default function StatCard({ icon: Icon, label, value, trend, trendUp = tr
                     {label}
                 </p>
             </div>
-        </div>
+        </Wrapper>
     );
 }

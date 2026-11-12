@@ -16,12 +16,34 @@ import {
     LuReceipt,
     LuFileText,
     LuPalette,
+    LuStore,
 } from 'react-icons/lu';
 import ToastHost from '@/Components/Admin/ToastHost';
+import ConfirmHost from '@/Components/Admin/ConfirmHost';
 import { LightboxProvider } from '@/Components/Admin/ImageLightbox';
 import { showToast } from '@/lib/toast';
 
-const NOTIF_POLL_MS = 15000;
+const NOTIF_POLL_MS = 10000;
+
+// Short two-tone chime via Web Audio — no audio file needed.
+function playChime() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [880, 1320].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.0001, ctx.currentTime + i * 0.18);
+            gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + i * 0.18 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.18 + 0.35);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.18);
+            osc.stop(ctx.currentTime + i * 0.18 + 0.4);
+        });
+    } catch {
+        // Audio blocked until the first click — ignore.
+    }
+}
 
 const NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin', icon: LuLayoutDashboard },
@@ -32,6 +54,7 @@ const NAV_ITEMS = [
     { label: 'Gallery', href: '/admin/gallery', icon: LuImage },
     { label: 'Website Content', href: '/admin/content', icon: LuFileText },
     { label: 'Appearance', href: '/admin/appearance', icon: LuPalette },
+    { label: 'Business Info', href: '/admin/business', icon: LuStore },
 ];
 
 export default function AdminLayout({ title, children }) {
@@ -73,10 +96,27 @@ export default function AdminLayout({ title, children }) {
     useEffect(() => {
         let cancelled = false;
 
+        let seen = null;
+
         async function poll() {
             try {
                 const { data } = await axios.get('/admin/notifications');
-                if (!cancelled) setNotifications(data);
+                if (cancelled) return;
+                setNotifications(data);
+                const keys = data.map((n) => `${n.type}-${n.id}`);
+                const fresh = seen ? data.filter((n) => !seen.has(`${n.type}-${n.id}`)) : [];
+                seen = new Set(keys);
+                if (fresh.length) {
+                    playChime();
+                    showToast(fresh.length === 1 ? fresh[0].title : `${fresh.length} new notifications`);
+                    // Keep dashboard numbers and lists current without a manual reload.
+                    if (window.location.pathname === '/admin') {
+                        router.reload({ preserveScroll: true, preserveState: true });
+                    }
+                    if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
+                        new Notification('Crunches Admin', { body: fresh[0].title, icon: '/favicon.svg' });
+                    }
+                }
             } catch {
                 // Best-effort — notifications are a convenience, not critical.
             }
@@ -91,6 +131,22 @@ export default function AdminLayout({ title, children }) {
     }, []);
 
     const unreadCount = notifications.length;
+
+    // "(3) Admin — …" in the browser tab so a busy kitchen notices.
+    useEffect(() => {
+        const base = document.title.replace(/^\(\d+\)\s*/, '');
+        document.title = unreadCount ? `(${unreadCount}) ${base}` : base;
+    });
+
+    // Ask once for desktop notifications (only shown while the tab is hidden).
+    useEffect(() => {
+        const ask = () => {
+            if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+            window.removeEventListener('click', ask);
+        };
+        window.addEventListener('click', ask);
+        return () => window.removeEventListener('click', ask);
+    }, []);
 
     async function markRead(n) {
         setNotifications((list) => list.filter((x) => !(x.type === n.type && x.id === n.id)));
@@ -131,7 +187,7 @@ export default function AdminLayout({ title, children }) {
                     <button
                         type="button"
                         onClick={() => setSidebarOpen(false)}
-                        className="text-brand-foregroundMuted lg:hidden"
+                        className="flex h-10 w-10 items-center justify-center text-brand-foregroundMuted lg:hidden"
                         aria-label="Close sidebar"
                     >
                         <LuX className="h-5 w-5" />
@@ -195,7 +251,7 @@ export default function AdminLayout({ title, children }) {
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(true)}
-                            className="text-brand-foregroundMuted lg:hidden"
+                            className="flex h-10 w-10 items-center justify-center text-brand-foregroundMuted lg:hidden"
                             aria-label="Open sidebar"
                         >
                             <LuMenu className="h-5 w-5" />
@@ -270,7 +326,10 @@ export default function AdminLayout({ title, children }) {
                                                     >
                                                         <Link
                                                             href={n.href}
-                                                            onClick={() => setNotifOpen(false)}
+                                                            onClick={() => {
+                                                                setNotifOpen(false);
+                                                                markRead(n);
+                                                            }}
                                                             className="min-w-0 flex-1"
                                                         >
                                                             <p className="text-brand-foreground">{n.title}</p>
@@ -316,6 +375,7 @@ export default function AdminLayout({ title, children }) {
                 <main className="flex-1 overflow-x-hidden p-6">{children}</main>
             </div>
 
+            <ConfirmHost />
             <ToastHost />
         </div>
         </LightboxProvider>

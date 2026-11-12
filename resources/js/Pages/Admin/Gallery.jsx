@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { confirmDialog } from '@/Components/Admin/ConfirmHost';
 import SlideOver from '@/Components/Admin/SlideOver';
 import FloatingField from '@/Components/FloatingField';
 import { LuUpload, LuTrash2, LuPencil } from 'react-icons/lu';
@@ -15,15 +16,13 @@ const MAX_IMAGE_MB = 4;
  */
 export default function Gallery({ images = [] }) {
     const [panel, setPanel] = useState(null); // null | { mode: 'upload' } | { mode: 'edit', image }
-    const [file, setFile] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [files, setFiles] = useState([]); // [{ file, preview, label }]
     const [label, setLabel] = useState('');
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
 
     function openUpload() {
-        setFile(null);
-        setPreview(null);
+        setFiles([]);
         setLabel('');
         setErrors({});
         setPanel({ mode: 'upload' });
@@ -35,17 +34,20 @@ export default function Gallery({ images = [] }) {
         setPanel({ mode: 'edit', image });
     }
 
+    // Several photos can be picked at once; each gets an optional label.
     function handleFile(e) {
-        const chosen = e.target.files?.[0] ?? null;
-        setErrors({});
-        if (chosen && chosen.size > MAX_IMAGE_MB * 1024 * 1024) {
-            setErrors({ image: `The image must be ${MAX_IMAGE_MB} MB or smaller.` });
-            e.target.value = '';
-            return;
-        }
-        setFile(chosen);
-        setPreview(chosen ? URL.createObjectURL(chosen) : null);
+        const chosen = Array.from(e.target.files ?? []);
+        const tooBig = chosen.filter((f) => f.size > MAX_IMAGE_MB * 1024 * 1024);
+        setErrors(tooBig.length ? { image: `Skipped ${tooBig.map((f) => f.name).join(', ')} — images must be ${MAX_IMAGE_MB} MB or smaller.` } : {});
+        setFiles((prev) => [
+            ...prev,
+            ...chosen.filter((f) => !tooBig.includes(f)).map((file) => ({ file, preview: URL.createObjectURL(file), label: '' })),
+        ]);
+        e.target.value = '';
     }
+
+    const setFileLabel = (i, value) => setFiles((list) => list.map((f, j) => (j === i ? { ...f, label: value } : f)));
+    const removeFile = (i) => setFiles((list) => list.filter((_, j) => j !== i));
 
     function submit(e) {
         e.preventDefault();
@@ -63,19 +65,21 @@ export default function Gallery({ images = [] }) {
             return;
         }
 
-        if (!file) {
+        if (!files.length) {
             setSaving(false);
-            setErrors({ image: 'Choose an image to upload.' });
+            setErrors({ image: 'Choose at least one image to upload.' });
             return;
         }
         const formData = new FormData();
-        formData.append('image', file);
-        formData.append('label', label);
+        files.forEach(({ file, label: l }) => {
+            formData.append('images[]', file);
+            formData.append('labels[]', l);
+        });
         router.post('/admin/gallery', formData, { ...options, forceFormData: true });
     }
 
-    function handleDelete(img) {
-        if (!window.confirm(`Delete "${img.label}"?`)) return;
+    async function handleDelete(img) {
+        if (!(await confirmDialog(`Delete "${img.label}"?`))) return;
         router.delete(`/admin/gallery/${img.id}`, { preserveScroll: true });
     }
 
@@ -154,18 +158,39 @@ export default function Gallery({ images = [] }) {
                         <div>
                             <FloatingField
                                 id="gallery-image"
-                                label={`Image (JPG, PNG or WebP, up to ${MAX_IMAGE_MB} MB)`}
+                                label={`Images (JPG, PNG or WebP, up to ${MAX_IMAGE_MB} MB each — pick several at once)`}
                                 type="file"
+                                multiple
                                 accept="image/*"
                                 onChange={handleFile}
                                 error={errors.image}
                             />
-                            {preview && (
-                                <img src={preview} alt="Preview" className="mt-3 h-40 w-full rounded-sm border border-brand-border object-cover" />
-                            )}
+                            {Object.entries(errors)
+                                .filter(([k]) => k.startsWith('images'))
+                                .slice(0, 1)
+                                .map(([k, msg]) => (
+                                    <p key={k} className="mt-2 text-xs text-brand-danger">{msg}</p>
+                                ))}
+                            <ul className="mt-3 space-y-3">
+                                {files.map((f, i) => (
+                                    <li key={f.preview} className="flex items-center gap-3">
+                                        <img src={f.preview} alt="" className="h-14 w-14 shrink-0 rounded-sm border border-brand-border object-cover" />
+                                        <input
+                                            value={f.label}
+                                            maxLength={150}
+                                            onChange={(e) => setFileLabel(i, e.target.value)}
+                                            placeholder="Label (optional)"
+                                            className="min-w-0 flex-1 rounded-sm border border-brand-border bg-brand-background px-3 py-2 text-sm text-brand-foreground outline-none focus:border-brand-gold"
+                                        />
+                                        <button type="button" onClick={() => removeFile(i)} aria-label="Remove" className="flex h-10 w-10 items-center justify-center text-brand-foregroundMuted hover:text-brand-danger">
+                                            <LuTrash2 className="h-4 w-4" />
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     )}
-                    <FloatingField
+                    {panel?.mode === 'edit' && <FloatingField
                         id="gallery-label"
                         label="Label"
                         value={label}
@@ -173,13 +198,13 @@ export default function Gallery({ images = [] }) {
                         onChange={(e) => setLabel(e.target.value)}
                         placeholder="e.g. The Terrace"
                         error={errors.label}
-                    />
+                    />}
                     <button
                         type="submit"
                         disabled={saving}
                         className="w-full rounded-sm bg-brand-gold px-6 py-3 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight disabled:opacity-60"
                     >
-                        {saving ? 'Saving…' : panel?.mode === 'edit' ? 'Save Label' : 'Upload'}
+                        {saving ? 'Saving…' : panel?.mode === 'edit' ? 'Save Label' : files.length > 1 ? `Upload ${files.length} images` : 'Upload'}
                     </button>
                 </form>
             </SlideOver>

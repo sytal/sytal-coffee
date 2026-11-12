@@ -39,7 +39,9 @@ export default function OrderCart() {
         if (!open) setSuccess(null);
     }, [open]);
 
-    const total = items.reduce((sum, i) => sum + numericPrice(i.price) * i.quantity, 0);
+    const subtotal = items.reduce((sum, i) => sum + numericPrice(i.price) * i.quantity, 0);
+    const deliveryFee = Number(usePage().props.business?.delivery_fee ?? 0);
+    const total = subtotal + deliveryFee;
 
     function submitOrder(e) {
         e.preventDefault();
@@ -191,7 +193,12 @@ export default function OrderCart() {
                                             ))}
                                         </ul>
 
-                                        <div className="mt-5 flex items-center justify-between border-t border-brand-border pt-4 text-sm">
+                                        <div className="mt-5 space-y-1 border-t border-brand-border pt-4 text-sm text-brand-foregroundMuted">
+                                            <div className="flex justify-between"><span>Subtotal</span><span>Rs. {subtotal.toLocaleString()}</span></div>
+                                            <div className="flex justify-between"><span>Delivery</span><span>{deliveryFee ? `Rs. ${deliveryFee.toLocaleString()}` : 'Free'}</span></div>
+                                            <div className="flex justify-between"><span>Payment</span><span>Cash on delivery</span></div>
+                                        </div>
+                                        <div className="mt-2 flex items-center justify-between text-sm">
                                             <span className="text-brand-foregroundMuted">Total</span>
                                             <span className="font-display text-lg text-brand-gold">
                                                 Rs. {total.toLocaleString()}

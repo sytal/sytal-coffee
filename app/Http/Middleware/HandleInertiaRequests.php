@@ -35,6 +35,9 @@ class HandleInertiaRequests extends Middleware
                 // Only what the UI needs — never timestamps or other internals.
                 'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role']),
             ],
+            // Phone, socials, hours, delivery fee — edited in Admin > Business Info.
+            'business' => fn () => app(\App\Services\BusinessSettingsService::class)->all()
+                + ['time_slots' => app(\App\Services\BusinessSettingsService::class)->timeSlots()],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

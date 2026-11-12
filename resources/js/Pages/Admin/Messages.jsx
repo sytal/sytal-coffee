@@ -1,11 +1,15 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { confirmDialog } from '@/Components/Admin/ConfirmHost';
 import StatusBadge from '@/Components/Admin/StatusBadge';
 import { LuTrash2, LuReply, LuMail } from 'react-icons/lu';
 
 export default function Messages({ messages = [] }) {
-    const [activeId, setActiveId] = useState(messages[0]?.id ?? null);
+    const [activeId, setActiveId] = useState(() => {
+        const id = typeof window === 'undefined' ? 0 : Number(new URLSearchParams(window.location.search).get('open'));
+        return messages.find((m) => m.id === id)?.id ?? messages[0]?.id ?? null;
+    });
     const active = messages.find((m) => m.id === activeId) ?? messages[0];
     const [reply, setReply] = useState('');
 
@@ -26,8 +30,8 @@ export default function Messages({ messages = [] }) {
         }
     }
 
-    function handleDelete(message) {
-        if (!window.confirm(`Delete the message from ${message.name}?`)) return;
+    async function handleDelete(message) {
+        if (!(await confirmDialog(`Delete the message from ${message.name}?`))) return;
         router.delete(`/admin/messages/${message.id}`, { preserveScroll: true });
     }
 

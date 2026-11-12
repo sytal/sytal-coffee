@@ -21,11 +21,17 @@ class Order extends Model
 
     public const STATUS_CANCELLED = 'Cancelled';
 
+    /** Pending → Preparing → Out for Delivery → Completed */
+    public const FLOW = ['Pending', 'Preparing', 'Out for Delivery', 'Completed'];
+
     protected $fillable = [
-        'user_id', 'delivery_address', 'phone', 'notes', 'status', 'total',
+        'user_id', 'delivery_address', 'phone', 'notes', 'status',
+        'subtotal', 'delivery_fee', 'payment_method', 'total',
     ];
 
     protected $casts = [
+        'subtotal' => 'decimal:2',
+        'delivery_fee' => 'decimal:2',
         'total' => 'decimal:2',
     ];
 

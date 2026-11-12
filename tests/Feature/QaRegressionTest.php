@@ -28,7 +28,55 @@ class QaRegressionTest extends TestCase
         $this->withAdminAuth()->get('/admin/menu')->assertOk();
 
         $this->assertEqualsCanonicalizing(['Loaded Fries', 'Burgers'], MenuCategory::pluck('name')->all());
-        $this->assertEqualsCanonicalizing(['Spicy', 'BBQ'], MenuTag::pluck('name')->all());
+        // Tag suggestions stay the short curated list; dish tags aren't copied in.
+        $this->assertNotContains('BBQ', MenuTag::pluck('name')->all());
+    }
+
+    public function test_new_reservation_appears_in_admin_notifications(): void
+    {
+        \App\Models\Reservation::create([
+            'name' => 'QA-Realtime', 'phone' => '03001234567', 'date' => now()->addDay()->toDateString(),
+            'time' => '20:00', 'party_size' => 2, 'status' => 'Pending',
+        ]);
+
+        $this->withAdminAuth()->getJson('/admin/notifications')
+            ->assertOk()
+            ->assertJsonFragment(['type' => 'reservation', 'title' => 'New booking: QA-Realtime']);
+    }
+
+    public function test_reservation_needs_phone_not_email_and_a_valid_slot(): void
+    {
+        $base = ['name' => 'A', 'phone' => '03001234567', 'date' => now()->addDay()->toDateString(), 'party_size' => 2];
+
+        $this->post('/reservations', $base + ['time' => '20:00'])->assertSessionHasNoErrors();
+        $this->post('/reservations', $base + ['time' => '09:00'])->assertSessionHasErrors('time');
+    }
+
+    public function test_sold_out_item_cannot_be_ordered_and_fee_is_added(): void
+    {
+        app(\App\Services\BusinessSettingsService::class)->update(['delivery_fee' => 150]);
+        $user = \App\Models\User::factory()->create();
+        $ok = MenuItem::factory()->create(['price' => 'Rs. 500']);
+        $soldOut = MenuItem::factory()->create(['is_available' => false]);
+
+        $this->actingAs($user)->post('/orders', [
+            'delivery_address' => 'House 1', 'phone' => '03001234567',
+            'items' => [['menu_item_id' => $soldOut->id, 'quantity' => 1]],
+        ])->assertSessionHasErrors('items.0.menu_item_id');
+
+        $this->actingAs($user)->post('/orders', [
+            'delivery_address' => 'House 1', 'phone' => '03001234567',
+            'items' => [['menu_item_id' => $ok->id, 'quantity' => 2]],
+        ])->assertSessionHasNoErrors();
+
+        $order = \App\Models\Order::latest('id')->first();
+        $this->assertEquals(1000, (float) $order->subtotal);
+        $this->assertEquals(1150, (float) $order->total);
+    }
+
+    public function test_login_page_redirects_signed_in_admin(): void
+    {
+        $this->withAdminAuth()->get('/login')->assertRedirect('/admin');
     }
 
     public function test_menu_item_price_is_validated_and_normalised(): void

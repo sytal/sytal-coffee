@@ -18,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        // Signed-in users who open /login or /register go back where they belong.
+        $middleware->redirectUsersTo(
+            fn (Request $request) => in_array($request->user()?->role, ['admin', 'manager'], true) ? '/admin' : '/'
+        );
+
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
         ]);

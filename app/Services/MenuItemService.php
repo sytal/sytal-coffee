@@ -22,7 +22,7 @@ class MenuItemService
 
     public function all(): Collection
     {
-        return MenuItem::query()->orderBy('category')->orderBy('sort_order')->get();
+        return MenuItem::query()->orderBy('sort_order')->orderBy('id')->get();
     }
 
     public function search(?string $query, ?string $category): Collection
@@ -31,6 +31,7 @@ class MenuItemService
             ->when($category && $category !== 'All', fn ($q) => $q->where('category', $category))
             ->when($query, fn ($q) => $q->where('name', 'like', "%{$query}%"))
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
     }
 
@@ -52,8 +53,6 @@ class MenuItemService
                 $existing[] = $name;
             }
         }
-
-        $this->rememberTags(MenuItem::pluck('tags')->flatten()->filter()->all());
     }
 
     /** @param  array<int, string>  $tags */

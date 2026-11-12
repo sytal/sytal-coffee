@@ -21,8 +21,18 @@ class StoreOrderRequest extends FormRequest
             'phone' => ['required', 'string', 'max:30', new \App\Rules\PhoneNumber],
             'notes' => ['nullable', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.menu_item_id' => ['required', 'integer', 'exists:menu_items,id'],
+            'items.*.menu_item_id' => [
+                'required', 'integer',
+                \Illuminate\Validation\Rule::exists('menu_items', 'id')->where('is_available', true),
+            ],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:50'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'items.*.menu_item_id.exists' => 'An item in your cart is sold out right now. Please remove it and try again.',
         ];
     }
 }

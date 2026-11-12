@@ -1,87 +1,89 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import StatCard from '@/Components/Admin/StatCard';
 import StatusBadge from '@/Components/Admin/StatusBadge';
 import { LuUtensils, LuCalendarCheck, LuMessageSquare, LuReceipt } from 'react-icons/lu';
 
-export default function Dashboard({ stats, recentReservations, recentMessages }) {
-    const RECENT_RESERVATIONS = recentReservations ?? [];
-    const RECENT_MESSAGES = recentMessages ?? [];
+const rs = (n) => `Rs. ${Number(n).toLocaleString('en-PK')}`;
 
+function Card({ title, href, children, className = '' }) {
+    return (
+        <div className={`rounded-sm border border-brand-border bg-brand-surface p-5 ${className}`}>
+            <div className="mb-3 flex items-center justify-between">
+                <h2 className="font-display text-lg text-brand-foreground">{title}</h2>
+                <Link href={href} className="py-2 text-xs uppercase tracking-wider text-brand-gold">
+                    View all
+                </Link>
+            </div>
+            {children}
+        </div>
+    );
+}
+
+function Row({ href, children }) {
+    return (
+        <button
+            type="button"
+            onClick={() => router.visit(href)}
+            className="flex w-full items-center gap-3 border-b border-brand-border/60 py-3 text-left text-sm transition last:border-0 hover:bg-brand-surfaceAlt"
+        >
+            {children}
+        </button>
+    );
+}
+
+const Empty = ({ children }) => <p className="py-6 text-center text-sm text-brand-foregroundMuted">{children}</p>;
+
+export default function Dashboard({ stats = {}, recentOrders = [], recentReservations = [], recentMessages = [] }) {
     return (
         <AdminLayout title="Dashboard">
             <Head title="Admin — Dashboard" />
 
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <StatCard icon={LuUtensils} label="Menu Items" value={stats?.menuItems ?? 0} />
-                <StatCard icon={LuCalendarCheck} label="Reservations Today" value={stats?.reservationsToday ?? 0} />
-                <StatCard icon={LuMessageSquare} label="Unread Messages" value={stats?.unreadMessages ?? 0} trendUp={false} />
-                <StatCard icon={LuReceipt} label="Orders Today" value={stats?.ordersToday ?? 0} />
+                <StatCard href="/admin/orders" icon={LuReceipt} label={`Orders Today · ${stats.activeOrders ?? 0} active`} value={stats.ordersToday ?? 0} />
+                <StatCard href="/admin/reservations?status=Pending" icon={LuCalendarCheck} label={`Bookings Today · ${stats.pendingReservations ?? 0} pending`} value={stats.reservationsToday ?? 0} />
+                <StatCard href="/admin/messages" icon={LuMessageSquare} label="Unread Messages" value={stats.unreadMessages ?? 0} />
+                <StatCard href="/admin/menu" icon={LuUtensils} label={`Menu Items · ${stats.soldOut ?? 0} sold out`} value={stats.menuItems ?? 0} />
             </div>
 
-            <div className="mt-5 grid grid-cols-1 items-start gap-5 lg:grid-cols-5">
-                <div className="rounded-sm border border-brand-border bg-brand-surface p-5 lg:col-span-3">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h2 className="font-display text-lg text-brand-foreground">Recent Reservations</h2>
-                        <a href="/admin/reservations" className="text-xs uppercase tracking-wider text-brand-gold">
-                            View all
-                        </a>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead>
-                                <tr className="border-b border-brand-border text-xs uppercase tracking-wider text-brand-foregroundMuted">
-                                    <th className="pb-3 pr-4 font-normal">Name</th>
-                                    <th className="pb-3 pr-4 font-normal">Guests</th>
-                                    <th className="pb-3 pr-4 font-normal">Date</th>
-                                    <th className="pb-3 font-normal">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {RECENT_RESERVATIONS.map((r) => (
-                                    <tr key={r.id} className="border-b border-brand-border/60 last:border-0">
-                                        <td className="py-3 pr-4 text-brand-foreground">{r.name}</td>
-                                        <td className="py-3 pr-4 text-brand-foregroundMuted">{r.party_size}</td>
-                                        <td className="py-3 pr-4 text-brand-foregroundMuted">
-                                            {r.date} &middot; {r.time}
-                                        </td>
-                                        <td className="py-3">
-                                            <StatusBadge status={r.status} />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        {RECENT_RESERVATIONS.length === 0 && (
-                            <p className="py-6 text-center text-sm text-brand-foregroundMuted">
-                                No reservations yet.
-                            </p>
-                        )}
-                    </div>
-                </div>
+            <div className="mt-5 grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
+                <Card title="Latest Orders" href="/admin/orders">
+                    {recentOrders.map((o) => (
+                        <Row key={o.id} href={`/admin/orders?open=${o.id}`}>
+                            <span className="whitespace-nowrap font-mono text-brand-gold">#{o.id}</span>
+                            <span className="min-w-0 flex-1 truncate text-brand-foreground">{o.user?.name ?? 'Guest'}</span>
+                            <span className="whitespace-nowrap text-brand-foregroundMuted">{rs(o.total)}</span>
+                            <StatusBadge status={o.status} />
+                        </Row>
+                    ))}
+                    {recentOrders.length === 0 && <Empty>No orders yet.</Empty>}
+                </Card>
 
-                <div className="rounded-sm border border-brand-border bg-brand-surface p-5 lg:col-span-2">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h2 className="font-display text-lg text-brand-foreground">Recent Messages</h2>
-                        <a href="/admin/messages" className="text-xs uppercase tracking-wider text-brand-gold">
-                            View all
-                        </a>
-                    </div>
-                    <div className="space-y-4">
-                        {RECENT_MESSAGES.map((m) => (
-                            <div key={m.id} className="border-b border-brand-border/60 pb-4 last:border-0 last:pb-0">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm text-brand-foreground">{m.name}</p>
-                                    <span className="text-xs text-brand-foregroundMuted">{new Date(m.created_at).toLocaleString()}</span>
-                                </div>
-                                <p className="mt-1 truncate text-sm text-brand-foregroundMuted">{m.message}</p>
-                            </div>
-                        ))}
-                        {RECENT_MESSAGES.length === 0 && (
-                            <p className="py-6 text-center text-sm text-brand-foregroundMuted">No messages yet.</p>
-                        )}
-                    </div>
-                </div>
+                <Card title="New Bookings" href="/admin/reservations">
+                    {recentReservations.map((r) => (
+                        <Row key={r.id} href={`/admin/reservations?open=${r.id}`}>
+                            <span className="min-w-0 flex-1 truncate text-brand-foreground">{r.name}</span>
+                            <span className="whitespace-nowrap text-brand-foregroundMuted">
+                                {r.party_size} · {r.date} {r.time}
+                            </span>
+                            <StatusBadge status={r.status} />
+                        </Row>
+                    ))}
+                    {recentReservations.length === 0 && <Empty>No reservations yet.</Empty>}
+                </Card>
+
+                <Card title="Recent Messages" href="/admin/messages" className="lg:col-span-2">
+                    {recentMessages.map((m) => (
+                        <Row key={m.id} href={`/admin/messages?open=${m.id}`}>
+                            <span className="w-32 shrink-0 truncate text-brand-foreground">{m.name}</span>
+                            <span className="min-w-0 flex-1 truncate text-brand-foregroundMuted">{m.message}</span>
+                            <span className="hidden whitespace-nowrap text-xs text-brand-foregroundMuted sm:inline">
+                                {new Date(m.created_at).toLocaleString()}
+                            </span>
+                        </Row>
+                    ))}
+                    {recentMessages.length === 0 && <Empty>No messages yet.</Empty>}
+                </Card>
             </div>
         </AdminLayout>
     );

@@ -21,6 +21,12 @@ class ReservationService
         return Reservation::create($data + ['status' => 'Pending']);
     }
 
+    public function delete(Reservation $reservation): void
+    {
+        $reservation->delete();
+        \App\Models\NotificationRead::where('type', 'reservation')->where('ref_id', $reservation->id)->delete();
+    }
+
     public function updateStatus(Reservation $reservation, string $status): Reservation
     {
         $reservation->update(['status' => $status]);

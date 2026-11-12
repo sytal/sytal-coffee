@@ -1,7 +1,8 @@
 import { Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiInstagram, FiFacebook, FiTwitter, FiMapPin, FiPhone, FiClock } from 'react-icons/fi';
+import { FiMapPin, FiPhone, FiClock } from 'react-icons/fi';
+import { useBusiness, socialLinks } from '@/lib/business';
 import useSmoothScroll from '@/lib/useSmoothScroll';
 
 const QUICK_LINKS = [
@@ -12,11 +13,6 @@ const QUICK_LINKS = [
     { label: 'Contact', href: '#contact' },
 ];
 
-const SOCIALS = [
-    { label: 'Instagram', href: 'https://instagram.com', Icon: FiInstagram },
-    { label: 'Facebook', href: 'https://facebook.com', Icon: FiFacebook },
-    { label: 'Twitter', href: 'https://twitter.com', Icon: FiTwitter },
-];
 
 const fadeUp = {
     hidden: { opacity: 0, y: 24 },
@@ -62,6 +58,8 @@ function NewsletterForm() {
 
 export default function Footer() {
     const scrollToSection = useSmoothScroll();
+    const business = useBusiness();
+    const SOCIALS = socialLinks(business);
 
     return (
         <footer className="border-t border-brand-border/60 bg-brand-surface">
@@ -89,7 +87,7 @@ export default function Footer() {
                                     target="_blank"
                                     rel="noreferrer"
                                     aria-label={label}
-                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
                                 >
                                     <Icon size={16} />
                                 </a>
@@ -101,7 +99,7 @@ export default function Footer() {
                         <h3 className="font-display text-sm uppercase tracking-widest text-brand-gold">
                             Quick Links
                         </h3>
-                        <nav className="flex flex-col gap-3">
+                        <nav className="flex flex-col">
                             {QUICK_LINKS.map((link) => (
                                 <a
                                     key={link.href}
@@ -110,7 +108,7 @@ export default function Footer() {
                                         e.preventDefault();
                                         scrollToSection(link.href.slice(1));
                                     }}
-                                    className="text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
+                                    className="flex min-h-10 items-center text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
                                 >
                                     {link.label}
                                 </a>
@@ -125,15 +123,17 @@ export default function Footer() {
                         <ul className="flex flex-col gap-3 text-sm text-brand-foregroundMuted">
                             <li className="flex items-start gap-2">
                                 <FiMapPin className="mt-0.5 shrink-0 text-brand-gold" size={15} />
-                                <span>Gulberg Thana Road, Faisalabad</span>
+                                <span>{business.address}</span>
                             </li>
-                            <li className="flex items-start gap-2">
-                                <FiPhone className="mt-0.5 shrink-0 text-brand-gold" size={15} />
-                                <span>Call for reservations</span>
-                            </li>
+                            {business.phone && (
+                                <li className="flex items-start gap-2">
+                                    <FiPhone className="mt-0.5 shrink-0 text-brand-gold" size={15} />
+                                    <a href={`tel:${business.phone}`} className="hover:text-brand-gold">{business.phone}</a>
+                                </li>
+                            )}
                             <li className="flex items-start gap-2">
                                 <FiClock className="mt-0.5 shrink-0 text-brand-gold" size={15} />
-                                <span>Daily, 1pm&ndash;1am</span>
+                                <span>{business.hours_label}</span>
                             </li>
                         </ul>
                     </div>

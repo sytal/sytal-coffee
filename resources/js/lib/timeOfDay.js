@@ -11,24 +11,29 @@ export function getTimeOfDay(date = new Date()) {
     return { key: 'night', label: 'Good Night' };
 }
 
-export function getOpenStatus(date = new Date()) {
-    // Normalize hours after midnight (0–1am) onto the same 24+ scale as
-    // CLOSE_HOUR=25, so "open until 1am" doesn't wrap around to "closed".
+const toHours = (t) => {
+    const [h, m] = String(t).split(':').map(Number);
+    return h + (m || 0) / 60;
+};
+
+// openTime/closeTime are "HH:MM" from Admin > Business Info; closing after
+// midnight (e.g. 13:00–01:00) is handled by shifting onto a 24+ scale.
+export function getOpenStatus(date = new Date(), openTime = '13:00', closeTime = '01:00') {
+    const open = toHours(openTime);
+    let close = toHours(closeTime);
+    if (close <= open) close += 24;
     let hour = date.getHours() + date.getMinutes() / 60;
-    if (hour < OPEN_HOUR) hour += 24;
-    const isOpen = hour >= OPEN_HOUR && hour < CLOSE_HOUR;
+    if (hour < open) hour += 24;
+    const isOpen = hour >= open && hour < close;
 
     return {
         isOpen,
-        label: isOpen
-            ? `Open Now · Closes ${formatHour(CLOSE_HOUR)}`
-            : `Closed · Opens ${formatHour(OPEN_HOUR)}`,
+        label: isOpen ? `Open Now · Closes ${formatHour(close)}` : `Closed · Opens ${formatHour(open)}`,
     };
 }
 
-function formatHour(hour24) {
-    const normalized = hour24 % 24; // CLOSE_HOUR=25 means "1am"
-    const period = normalized >= 12 ? 'PM' : 'AM';
-    const hour12 = normalized % 12 === 0 ? 12 : normalized % 12;
-    return `${hour12}:00 ${period}`;
+function formatHour(hours) {
+    const h = Math.floor(hours) % 24;
+    const m = Math.round((hours % 1) * 60);
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
 }

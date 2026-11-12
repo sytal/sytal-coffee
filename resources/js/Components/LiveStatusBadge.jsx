@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { getOpenStatus } from '@/lib/timeOfDay';
+import { useBusiness } from '@/lib/business';
 
 export default function LiveStatusBadge({ className = '' }) {
-    const [status, setStatus] = useState(() => getOpenStatus());
+    const { open_time: open, close_time: close } = useBusiness();
+    const [status, setStatus] = useState(() => getOpenStatus(new Date(), open, close));
 
     useEffect(() => {
-        const id = setInterval(() => setStatus(getOpenStatus()), 60_000);
+        const tick = () => setStatus(getOpenStatus(new Date(), open, close));
+        tick();
+        const id = setInterval(tick, 60_000);
         return () => clearInterval(id);
-    }, []);
+    }, [open, close]);
 
     return (
         <div

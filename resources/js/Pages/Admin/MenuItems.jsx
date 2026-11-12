@@ -1,9 +1,44 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import { confirmDialog } from '@/Components/Admin/ConfirmHost';
 import SlideOver from '@/Components/Admin/SlideOver';
 import FloatingField from '@/Components/FloatingField';
-import { LuPlus, LuPencil, LuTrash2, LuSearch } from 'react-icons/lu';
+import { LuPlus, LuPencil, LuTrash2, LuSearch, LuArrowUp, LuArrowDown } from 'react-icons/lu';
+
+// One-click "available / sold out today" switch.
+function AvailabilityToggle({ item }) {
+    const on = item.is_available !== false;
+    return (
+        <button
+            type="button"
+            role="switch"
+            aria-checked={on}
+            onClick={() => router.patch(`/admin/menu/${item.id}/availability`, { is_available: !on }, { preserveScroll: true })}
+            className={`flex min-h-10 items-center gap-2 whitespace-nowrap rounded-full border px-3 text-xs transition ${
+                on ? 'border-brand-success/60 text-brand-success' : 'border-brand-danger/60 text-brand-danger'
+            }`}
+        >
+            <span className={`h-2 w-2 rounded-full ${on ? 'bg-brand-success' : 'bg-brand-danger'}`} />
+            {on ? 'Available' : 'Sold out'}
+        </button>
+    );
+}
+
+function MoveButtons({ item }) {
+    const move = (direction) => router.patch(`/admin/menu/${item.id}/move`, { direction }, { preserveScroll: true });
+    const cls = 'flex h-10 w-8 items-center justify-center text-brand-foregroundMuted transition hover:text-brand-gold';
+    return (
+        <span className="flex">
+            <button type="button" onClick={() => move('up')} className={cls} aria-label={`Move ${item.name} up`}>
+                <LuArrowUp className="h-4 w-4" />
+            </button>
+            <button type="button" onClick={() => move('down')} className={cls} aria-label={`Move ${item.name} down`}>
+                <LuArrowDown className="h-4 w-4" />
+            </button>
+        </span>
+    );
+}
 import { Zoomable } from '@/Components/Admin/ImageLightbox';
 
 const MAX_TAGS = 4;
@@ -78,7 +113,6 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
         const file = e.target.files?.[0];
         if (file && file.size > MAX_IMAGE_MB * 1024 * 1024) {
             setErrors((prev) => ({ ...prev, image: `The image must be ${MAX_IMAGE_MB} MB or smaller.` }));
-            e.target.value = '';
             setImagePreview(editingItem?.image ?? null);
             return;
         }
@@ -119,8 +153,8 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
         }
     }
 
-    function handleDelete(item) {
-        if (!window.confirm(`Delete "${item.name}"?`)) return;
+    async function handleDelete(item) {
+        if (!(await confirmDialog(`Delete "${item.name}"?`))) return;
         router.delete(`/admin/menu/${item.id}`);
     }
 
@@ -155,8 +189,8 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
         }
     }
 
-    function handleDeleteCategory(name) {
-        if (!window.confirm(`Delete category "${name}"?`)) return;
+    async function handleDeleteCategory(name) {
+        if (!(await confirmDialog(`Delete category "${name}"?`))) return;
         router.delete(`/admin/categories/${categoryIds[name]}`, { preserveScroll: true });
     }
 
@@ -212,7 +246,7 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                                     <button
                                         type="button"
                                         onClick={() => openEditCategory(c.name)}
-                                        className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                        className="flex h-10 w-10 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
                                         aria-label={`Edit ${c.name}`}
                                     >
                                         <LuPencil className="h-3.5 w-3.5" />
@@ -220,7 +254,7 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                                     <button
                                         type="button"
                                         onClick={() => handleDeleteCategory(c.name)}
-                                        className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
+                                        className="flex h-10 w-10 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-danger hover:text-brand-danger"
                                         aria-label={`Delete ${c.name}`}
                                     >
                                         <LuTrash2 className="h-3.5 w-3.5" />
@@ -286,6 +320,10 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                                 <p className="truncate text-brand-foreground">{item.name}</p>
                                 <p className="text-xs text-brand-foregroundMuted">{item.category}</p>
                                 <p className="mt-1 text-brand-gold">{item.price}</p>
+                                <div className="mt-2 flex items-center gap-1">
+                                    <AvailabilityToggle item={item} />
+                                    {category !== 'All' && <MoveButtons item={item} />}
+                                </div>
                             </div>
                             <div className="flex shrink-0 gap-2">
                                 <button
@@ -323,6 +361,7 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                             <th className="p-4 font-normal">Item</th>
                             <th className="p-4 font-normal">Category</th>
                             <th className="p-4 font-normal">Price</th>
+                            <th className="p-4 font-normal">Today</th>
                             <th className="p-4 font-normal text-right">Actions</th>
                         </tr>
                     </thead>
@@ -339,9 +378,13 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
                                     <span className="text-brand-foreground">{item.name}</span>
                                 </td>
                                 <td className="p-4 text-brand-foregroundMuted">{item.category}</td>
-                                <td className="p-4 text-brand-gold">{item.price}</td>
+                                <td className="whitespace-nowrap p-4 text-brand-gold">{item.price}</td>
                                 <td className="p-4">
-                                    <div className="flex justify-end gap-2">
+                                    <AvailabilityToggle item={item} />
+                                </td>
+                                <td className="p-4">
+                                    <div className="flex items-center justify-end gap-2">
+                                        {category !== 'All' && <MoveButtons item={item} />}
                                         <button
                                             type="button"
                                             onClick={() => openEdit(item)}
@@ -518,10 +561,10 @@ export default function MenuItems({ menuItems = [], categories = [], availableTa
 
                     <button
                         type="submit"
-                        disabled={submitting}
-                        className="w-full rounded-sm bg-brand-gold px-6 py-3 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight disabled:opacity-60"
+                        disabled={submitting || Boolean(errors.image)}
+                        className="w-full rounded-sm bg-brand-gold px-6 py-3 text-sm font-semibold uppercase tracking-wider text-brand-background transition hover:bg-brand-goldLight disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {editingItem ? 'Save Changes' : 'Add Item'}
+                        {errors.image ? 'Choose a smaller image first' : editingItem ? 'Save Changes' : 'Add Item'}
                     </button>
                 </form>
             </SlideOver>

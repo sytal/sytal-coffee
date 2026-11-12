@@ -14,37 +14,21 @@ import {
     LuMail,
     LuMessageCircle,
 } from 'react-icons/lu';
-import { FiInstagram, FiFacebook, FiTwitter } from 'react-icons/fi';
+import { useBusiness, socialLinks } from '@/lib/business';
 
 const EMPTY_FORM = { name: '', email: '', phone: '', message: '' };
-
-const CONTACT_INFO = [
-    {
-        icon: LuMapPin,
-        label: 'Address',
-        value: 'Gulberg Thana Road, Faisalabad',
-    },
-    {
-        icon: LuPhone,
-        label: 'Phone',
-        value: 'Call for reservations',
-    },
-    {
-        icon: LuClock,
-        label: 'Hours',
-        value: 'Daily, 1pm – 1am',
-    },
-];
-
-const SOCIAL_LINKS = [
-    { icon: FiInstagram, label: 'Instagram', href: 'https://instagram.com' },
-    { icon: FiFacebook, label: 'Facebook', href: 'https://facebook.com' },
-    { icon: FiTwitter, label: 'Twitter', href: 'https://twitter.com' },
-];
 
 const isValidEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
 export default function Contact() {
+    const business = useBusiness();
+    const CONTACT_INFO = [
+        { icon: LuMapPin, label: 'Address', value: business.address },
+        business.phone && { icon: LuPhone, label: 'Phone', value: business.phone, href: `tel:${business.phone}` },
+        business.email && { icon: LuMail, label: 'Email', value: business.email, href: `mailto:${business.email}` },
+        { icon: LuClock, label: 'Hours', value: business.hours_label },
+    ].filter(Boolean);
+    const SOCIAL_LINKS = socialLinks(business).map(({ Icon, ...rest }) => ({ icon: Icon, ...rest }));
     const { data: form, setData, post, errors, processing, reset, clearErrors } = useForm(EMPTY_FORM);
     const [submitted, setSubmitted] = useState(false);
 
@@ -126,7 +110,7 @@ export default function Contact() {
                             style={{ background: infoGlow }}
                         />
                         <div className="space-y-8">
-                            {CONTACT_INFO.map(({ icon: Icon, label, value }) => (
+                            {CONTACT_INFO.map(({ icon: Icon, label, value, href }) => (
                                 <div key={label} className="flex items-start gap-4">
                                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-brand-gold/40 text-brand-gold">
                                         <Icon className="h-5 w-5" />
@@ -135,13 +119,17 @@ export default function Contact() {
                                         <p className="text-xs uppercase tracking-wider text-brand-foregroundMuted">
                                             {label}
                                         </p>
-                                        <p className="mt-1 text-brand-foreground">{value}</p>
+                                        {href ? (
+                                            <a href={href} className="mt-1 block break-all text-brand-foreground hover:text-brand-gold">{value}</a>
+                                        ) : (
+                                            <p className="mt-1 text-brand-foreground">{value}</p>
+                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="mt-10 flex gap-4 border-t border-brand-border pt-8">
+                        {SOCIAL_LINKS.length > 0 && <div className="mt-10 flex gap-4 border-t border-brand-border pt-8">
                             {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
                                 <a
                                     key={label}
@@ -154,7 +142,7 @@ export default function Contact() {
                                     <Icon className="h-4 w-4" />
                                 </a>
                             ))}
-                        </div>
+                        </div>}
                     </motion.div>
 
                     <motion.div
@@ -208,13 +196,13 @@ export default function Contact() {
                                 </div>
 
                                 <FloatingField
-                                    label="Best number to reach you"
+                                    label="Phone (optional)"
                                     icon={LuPhone}
                                     type="tel"
                                     value={form.phone}
                                     onChange={update('phone')}
                                     error={errors.phone}
-                                    valid={form.phone.trim().length > 0}
+                                    valid={form.phone.trim().length >= 10}
                                 />
 
                                 <FloatingField

@@ -10,6 +10,12 @@ import { LuExpand, LuRotateCcw, LuPlus, LuUtensilsCrossed } from 'react-icons/lu
  *
  * `size` controls image aspect ratio / text scale: 'featured' | 'regular'.
  */
+const SoldOut = () => (
+    <span className="shrink-0 rounded-full border border-brand-danger/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand-danger">
+        Sold out today
+    </span>
+);
+
 export default function FlipCard({ item, index, size = 'regular', onZoom, onAddToOrder }) {
     const [flipped, setFlipped] = useState(false);
     const [imageFailed, setImageFailed] = useState(false);
@@ -124,7 +130,8 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
                             >
                                 {item.price}
                             </span>
-                            {onAddToOrder && (
+                            {onAddToOrder && item.is_available === false && <SoldOut />}
+                            {onAddToOrder && item.is_available !== false && (
                                 <button
                                     type="button"
                                     onClick={(e) => {
@@ -174,7 +181,8 @@ export default function FlipCard({ item, index, size = 'regular', onZoom, onAddT
 
                     <div className="mt-4 flex items-center justify-between gap-2">
                         <span className="font-display text-brand-gold">{item.price}</span>
-                        {onAddToOrder && (
+                        {onAddToOrder && item.is_available === false && <SoldOut />}
+                        {onAddToOrder && item.is_available !== false && (
                             <button
                                 type="button"
                                 onClick={(e) => {

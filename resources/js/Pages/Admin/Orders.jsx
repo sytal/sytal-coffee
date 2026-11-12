@@ -5,7 +5,26 @@ import axios from 'axios';
 import AdminLayout from '@/Layouts/AdminLayout';
 import SlideOver from '@/Components/Admin/SlideOver';
 import StatusBadge from '@/Components/Admin/StatusBadge';
-import { LuEye, LuSearch, LuRefreshCw } from 'react-icons/lu';
+import { LuEye, LuSearch, LuRefreshCw, LuChevronRight } from 'react-icons/lu';
+
+const FLOW = ['Pending', 'Preparing', 'Out for Delivery', 'Completed'];
+const nextStatus = (s) => (FLOW.indexOf(s) >= 0 ? FLOW[FLOW.indexOf(s) + 1] : undefined);
+const rs = (n) => `Rs. ${Number(n).toLocaleString('en-PK')}`;
+
+// One click moves an order to its next step (Pending → Preparing → …).
+function NextStepButton({ order, onChange }) {
+    const next = nextStatus(order.status);
+    if (!next) return null;
+    return (
+        <button
+            type="button"
+            onClick={() => onChange(order, next)}
+            className="flex min-h-10 items-center gap-1 whitespace-nowrap rounded-sm border border-brand-gold px-3 text-xs text-brand-gold transition hover:bg-brand-gold hover:text-brand-background"
+        >
+            {next === 'Out for Delivery' ? 'Out' : next} <LuChevronRight className="h-4 w-4" />
+        </button>
+    );
+}
 
 // Total pieces (2 × fries + 1 × burger = 3), not the number of lines.
 const itemCount = (o) => (o.items ?? []).reduce((sum, i) => sum + (Number(i.quantity) || 0), 0);
@@ -22,7 +41,10 @@ export default function Orders({ orders = [] }) {
     const [query, setQuery] = useState(() =>
         typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('search') ?? ''
     );
-    const [viewing, setViewing] = useState(null);
+    const [viewing, setViewing] = useState(() => {
+        const id = typeof window === 'undefined' ? null : Number(new URLSearchParams(window.location.search).get('open'));
+        return orders.find((o) => o.id === id) ?? null;
+    });
     const [newCount, setNewCount] = useState(0);
     const latestIdRef = useRef(orders.reduce((max, o) => Math.max(max, o.id), 0));
 
@@ -126,8 +148,8 @@ export default function Orders({ orders = [] }) {
                 </div>
             </div>
 
-            {/* Mobile: stacked cards */}
-            <div className="mt-6 flex flex-col gap-3 sm:hidden">
+            {/* Phones/tablets: cards (the table only fits from 1280px) */}
+            <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 xl:hidden">
                 {rows.map((o) => (
                     <div key={o.id} className="rounded-sm border border-brand-border bg-brand-surface p-4">
                         <div className="flex items-start justify-between gap-3">
@@ -142,13 +164,14 @@ export default function Orders({ orders = [] }) {
                         </div>
                         <div className="mt-3 flex items-center justify-between text-sm text-brand-foregroundMuted">
                             <span>{itemCount(o)} items</span>
-                            <span className="text-brand-gold">Rs. {Number(o.total).toLocaleString()}</span>
+                            <span className="whitespace-nowrap text-brand-gold">{rs(o.total)}</span>
                         </div>
-                        <div className="mt-3 flex justify-end">
+                        <div className="mt-3 flex justify-end gap-2">
+                            <NextStepButton order={o} onChange={updateStatus} />
                             <button
                                 type="button"
                                 onClick={() => setViewing(o)}
-                                className="flex h-8 w-8 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
+                                className="flex h-10 w-10 items-center justify-center rounded-sm border border-brand-border text-brand-foregroundMuted transition hover:border-brand-gold hover:text-brand-gold"
                                 aria-label={`View order ${o.id}`}
                             >
                                 <LuEye className="h-3.5 w-3.5" />
@@ -163,8 +186,8 @@ export default function Orders({ orders = [] }) {
                 )}
             </div>
 
-            {/* Tablet+: table */}
-            <div className="mt-6 hidden overflow-x-auto rounded-sm border border-brand-border bg-brand-surface sm:block">
+            {/* Desktop: table */}
+            <div className="mt-6 hidden overflow-x-auto rounded-sm border border-brand-border bg-brand-surface xl:block">
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="border-b border-brand-border text-xs uppercase tracking-wider text-brand-foregroundMuted">
@@ -185,11 +208,11 @@ export default function Orders({ orders = [] }) {
                                     <div>{o.user?.name ?? 'Guest'}</div>
                                     <div className="text-xs">{o.user?.email}</div>
                                 </td>
-                                <td className="max-w-[200px] truncate p-4 text-brand-foregroundMuted">
+                                <td className="min-w-[160px] max-w-[260px] truncate p-4 text-brand-foregroundMuted" title={o.delivery_address}>
                                     {o.delivery_address}
                                 </td>
                                 <td className="p-4 text-brand-foregroundMuted">{itemCount(o)}</td>
-                                <td className="p-4 text-brand-gold">Rs. {Number(o.total).toLocaleString()}</td>
+                                <td className="whitespace-nowrap p-4 text-brand-gold">{rs(o.total)}</td>
                                 <td className="p-4">
                                     <select
                                         value={o.status}
@@ -204,7 +227,8 @@ export default function Orders({ orders = [] }) {
                                     </select>
                                 </td>
                                 <td className="p-4">
-                                    <div className="flex justify-end">
+                                    <div className="flex justify-end gap-2">
+                                        <NextStepButton order={o} onChange={updateStatus} />
                                         <button
                                             type="button"
                                             onClick={() => setViewing(o)}
@@ -267,8 +291,13 @@ export default function Orders({ orders = [] }) {
                             </ul>
                         </div>
 
-                        <div className="flex items-center justify-between border-t border-brand-border pt-4">
-                            <span className="text-brand-foregroundMuted">Total</span>
+                        <div className="flex flex-col gap-1 border-t border-brand-border pt-4 text-brand-foregroundMuted">
+                            <div className="flex justify-between"><span>Subtotal</span><span>{rs(viewing.subtotal ?? viewing.total)}</span></div>
+                            <div className="flex justify-between"><span>Delivery fee</span><span>{Number(viewing.delivery_fee) ? rs(viewing.delivery_fee) : 'Free'}</span></div>
+                            <div className="flex justify-between"><span>Payment</span><span>{viewing.payment_method ?? 'Cash on Delivery'}</span></div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-brand-foregroundMuted">Total to collect</span>
                             <span className="font-display text-lg text-brand-gold">
                                 Rs. {Number(viewing.total).toLocaleString()}
                             </span>

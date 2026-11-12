@@ -8,7 +8,6 @@
 
         <!-- Favicon -->
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="alternate icon" href="/favicon.ico" sizes="any">
         @php($activeTheme = app(\App\Services\ThemeService::class)->active())
         @php($darkColors = $activeTheme['preset']['dark'])
         @php($lightColors = $activeTheme['preset']['light'])

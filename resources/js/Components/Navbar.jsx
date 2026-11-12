@@ -96,12 +96,12 @@ export default function Navbar() {
                     : 'border-transparent bg-transparent backdrop-blur-0'
             }`}
         >
-            <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5">
+            <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5 xl:gap-6">
                 <Link href="/" className="font-display text-xl tracking-wide text-brand-foreground">
                     Crunches <span className="text-brand-gold">Cafe</span>
                 </Link>
 
-                <nav className="hidden items-center gap-8 xl:flex">
+                <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
                     {NAV_LINKS.map((link) => {
                         const active = activeSection === link.href.slice(1);
                         return (
@@ -109,7 +109,7 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 onClick={(e) => handleNavClick(e, link.href)}
-                                className={`relative whitespace-nowrap py-1 text-sm uppercase tracking-wider transition hover:text-brand-gold ${
+                                className={`relative whitespace-nowrap py-1 text-xs uppercase xl:text-sm tracking-wider transition hover:text-brand-gold ${
                                     active ? 'text-brand-gold' : 'text-brand-foregroundMuted'
                                 }`}
                             >
@@ -124,9 +124,9 @@ export default function Navbar() {
                     })}
                 </nav>
 
-                <div className="hidden items-center gap-4 xl:flex">
-                    <LiveStatusBadge className="hidden lg:inline-flex" />
-                    <SoundToggle />
+                <div className="hidden items-center gap-3 lg:flex xl:gap-4">
+                    <LiveStatusBadge className="hidden xl:inline-flex" />
+                    <span className="hidden xl:contents"><SoundToggle /></span>
                     {user ? (
                         <div className="flex items-center gap-3">
                             <Link
@@ -134,7 +134,7 @@ export default function Navbar() {
                                 className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm text-brand-foregroundMuted transition hover:text-brand-gold"
                             >
                                 <LuReceipt className="h-4 w-4 shrink-0" />
-                                My Orders
+                                <span className="hidden xl:inline">My Orders</span>
                             </Link>
                             {user.role && ['admin', 'manager'].includes(user.role) && (
                                 <Link
@@ -169,7 +169,7 @@ export default function Navbar() {
                 <button
                     type="button"
                     onClick={() => setOpen((v) => !v)}
-                    className="-mr-2 flex h-11 w-11 items-center justify-center text-2xl text-brand-foreground xl:hidden"
+                    className="-mr-2 flex h-11 w-11 items-center justify-center text-2xl text-brand-foreground lg:hidden"
                     aria-label="Toggle menu"
                     aria-expanded={open}
                 >
@@ -185,7 +185,7 @@ export default function Navbar() {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="flex max-h-[calc(100vh-5rem)] flex-col gap-1 overflow-y-auto border-t border-brand-border/60 bg-brand-background px-6 py-4 shadow-lg xl:hidden"
+                        className="flex max-h-[calc(100vh-5rem)] flex-col gap-1 overflow-y-auto border-t border-brand-border/60 bg-brand-background px-6 py-4 shadow-lg lg:hidden"
                     >
                         {NAV_LINKS.map((link) => {
                             const active = activeSection === link.href.slice(1);

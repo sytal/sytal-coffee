@@ -158,7 +158,7 @@ export default function Gallery({ images = [] }) {
                         <div>
                             <FloatingField
                                 id="gallery-image"
-                                label={`Images (JPG, PNG or WebP, up to ${MAX_IMAGE_MB} MB each — pick several at once)`}
+                                label="Images"
                                 type="file"
                                 multiple
                                 accept="image/*"

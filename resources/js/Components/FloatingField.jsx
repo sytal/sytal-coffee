@@ -1,5 +1,66 @@
-import { useId } from 'react';
-import { LuCircleCheck } from 'react-icons/lu';
+import { useId, useState } from 'react';
+import { LuCircleCheck, LuImageUp } from 'react-icons/lu';
+
+/**
+ * Styled file picker: a dashed drop zone instead of the browser's plain
+ * "Choose File / No file chosen" control. The real <input type="file"> sits
+ * invisibly on top, so click, keyboard and drag-and-drop all still work and
+ * forms that read the input by name are unaffected.
+ */
+function FileDrop({ id, error, onChange, multiple, accept, hint, ...props }) {
+    const [names, setNames] = useState([]);
+    const [dragging, setDragging] = useState(false);
+
+    return (
+        <div
+            className={`group relative flex items-center gap-4 rounded-sm border-2 border-dashed px-4 py-5 transition ${
+                error
+                    ? 'border-brand-danger/70'
+                    : dragging
+                      ? 'border-brand-gold bg-brand-gold/10'
+                      : 'border-brand-border hover:border-brand-gold/70 hover:bg-brand-surfaceAlt'
+            } focus-within:border-brand-gold focus-within:ring-2 focus-within:ring-brand-gold/40`}
+        >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                <LuImageUp className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1 text-sm">
+                {names.length ? (
+                    <>
+                        <span className="block truncate font-medium text-brand-foreground">
+                            {names.length === 1 ? names[0] : `${names.length} images selected`}
+                        </span>
+                        <span className="text-xs text-brand-gold">Click to change</span>
+                    </>
+                ) : (
+                    <>
+                        <span className="block font-medium text-brand-foreground">
+                            <span className="text-brand-gold">Click to choose</span> or drag &amp; drop
+                        </span>
+                        <span className="block text-xs text-brand-foregroundMuted">
+                            {hint ?? `JPG, PNG or WebP · up to 4 MB${multiple ? ' each · several at once' : ''}`}
+                        </span>
+                    </>
+                )}
+            </span>
+            <input
+                id={id}
+                type="file"
+                multiple={multiple}
+                accept={accept}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                onDragEnter={() => setDragging(true)}
+                onDragLeave={() => setDragging(false)}
+                onDrop={() => setDragging(false)}
+                onChange={(e) => {
+                    setNames(Array.from(e.target.files ?? []).map((f) => f.name));
+                    onChange?.(e);
+                }}
+                {...props}
+            />
+        </div>
+    );
+}
 
 /**
  * Labeled field: a small uppercase caption sits above the input, with the
@@ -34,6 +95,19 @@ export default function FloatingField({
     const autoId = useId().replace(/:/g, '');
     const fieldId = id ?? `field-${label?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${autoId}`;
     const leftPad = prefix ? 'pl-[4.5rem]' : Icon ? 'pl-11' : 'pl-4';
+
+    if (props.type === 'file') {
+        const { type: _type, ...fileProps } = props;
+        return (
+            <div>
+                <label htmlFor={fieldId} className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-brand-foregroundMuted">
+                    {label}
+                </label>
+                <FileDrop id={fieldId} error={error} {...fileProps} />
+                {error && <span className="mt-1.5 block text-xs text-brand-danger">{error}</span>}
+            </div>
+        );
+    }
 
     return (
         <div>

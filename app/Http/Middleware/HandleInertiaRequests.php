@@ -34,6 +34,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 // Only what the UI needs — never timestamps or other internals.
                 'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role']),
+                'is_demo' => \App\Http\Middleware\DemoReadOnly::isDemoAdmin($request->user()),
             ],
             // Phone, socials, hours, delivery fee — edited in Admin > Business Info.
             'business' => fn () => app(\App\Services\BusinessSettingsService::class)->all()

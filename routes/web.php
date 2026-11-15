@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Role-gated admin panel, wired to the real backend services/models below.
-Route::prefix('admin')->middleware(['auth', 'role:admin,manager'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'role:admin,manager', 'demo.readonly'])->group(function () {
     Route::get('/', function (ContactMessageService $contactMessageService) {
         return Inertia::render('Admin/Dashboard', [
             'stats' => [

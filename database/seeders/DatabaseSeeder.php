@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             MenuTagSeeder::class,
             GalleryImageSeeder::class,
             ContentBlockSeeder::class,
+            DemoUserSeeder::class,
+            DemoDataSeeder::class,
         ]);
     }
 }

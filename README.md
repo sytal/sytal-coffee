@@ -1,58 +1,197 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+
+# Crunches Cafe: Website & Admin Panel
+
+A full-stack restaurant platform for a fast-food cafe in Faisalabad. It includes a public website with online ordering and table reservations, an admin panel that controls everything the site shows, and a REST API used by the [Flutter mobile app](https://github.com/sytal/crunches-cafe-app).
+
+**Live demo:** _coming soon_ · **Mobile app:** [crunches-cafe-app](https://github.com/sytal/crunches-cafe-app)
+
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![Inertia](https://img.shields.io/badge/Inertia.js-2-9553E9)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-57_passing-2EA44F)
+
+![Crunches Cafe website and mobile app](docs/screenshots/banner.jpg)
+
+</div>
+
+## Try the demo
+
+| Role | Email | Password | What you can do |
+|---|---|---|---|
+| **Admin** (read-only) | `demo.admin@crunchescafe.com` | `DemoAdmin#2026` | Open every admin screen. Saving is disabled so the demo stays clean. |
+| **Customer** | `demo.customer@crunchescafe.com` | `DemoCustomer#2026` | Place orders, view order history, book a table. Works on the website and the app. |
+
+Sign in at `/login`. Admins are sent to `/admin`.
+
+## Features
+
+### Public website
+- **Hero slider and live status.** An animated hero shows an "Open now / Opens at 1:00 PM" badge calculated from the cafe's business hours.
+- **Interactive menu.** Category tabs, live search, dish tags and a full-screen dish view.
+- **Online ordering.** Customers add dishes to a tray, check out with cash on delivery and track orders on the *My Orders* page.
+- **Table reservations.** Bookings use time slots generated from opening hours, with validation for party size and date.
+- **Contact form and newsletter.** Messages land in the admin inbox with a live notification.
+- **Light, dark and auto themes.** Three colour themes that admins switch without a deploy. Auto follows the visitor's device.
+- **Responsive and smooth.** Inertia SPA navigation (no full page reloads), Framer Motion animations and Lenis smooth scrolling.
+
+### Admin panel
+- **Dashboard.** Today's orders, bookings and unread messages, plus the latest activity.
+- **Real-time notifications.** New orders, bookings and messages raise a toast with a chime and a tab badge. Desktop notifications fire while the tab is in the background.
+- **Orders.** One-click status flow: Pending → Preparing → Out for Delivery → Completed. Includes filters, search and an order detail view.
+- **Menu management.** Add, edit, delete, reorder and mark items sold out. Categories, tags and image upload with a drag-and-drop zone.
+- **Reservations and messages.** Confirm or cancel bookings. Read and clear messages.
+- **Website content editor.** Edit headings, text and images of every homepage section, and reorder sections.
+- **Gallery, appearance and business info.** Manage images, the colour theme, phone, address, opening hours, socials and delivery fee. Both the website and the app pick up these changes.
+- **Role-based access.** `admin` and `manager` roles. A read-only demo admin mode for public showcases.
+
+### REST API (`/api/v1`)
+Powers the mobile app. Public endpoints cover the menu, categories, gallery, content, theme and business info. Login, register, profile and orders use **Laravel Sanctum** tokens. Write endpoints are throttled.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/web-home.jpg" alt="Home, light theme"></td>
+    <td><img src="docs/screenshots/web-home-dark.jpg" alt="Home, dark theme"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Home: light theme</sub></td>
+    <td align="center"><sub>Home: dark theme</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/web-menu.jpg" alt="Menu"></td>
+    <td><img src="docs/screenshots/web-reservations-dark.jpg" alt="Reservations"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Menu with categories, search and tags</sub></td>
+    <td align="center"><sub>Table reservations</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/web-about.jpg" alt="About"></td>
+    <td><img src="docs/screenshots/admin-login.jpg" alt="Sign in"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Our story</sub></td>
+    <td align="center"><sub>Sign in / register</sub></td>
+  </tr>
+</table>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="docs/screenshots/web-mobile-home.jpg" width="260" alt="Mobile home">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/web-mobile-menu.jpg" width="260" alt="Mobile menu">
+  <br><sub>Fully responsive on phones</sub>
 </p>
 
-## About Laravel
+### Admin panel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<table>
+  <tr>
+    <td><img src="docs/screenshots/admin-dashboard.jpg" alt="Admin dashboard"></td>
+    <td><img src="docs/screenshots/admin-orders.jpg" alt="Orders"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Dashboard</sub></td>
+    <td align="center"><sub>Orders and status flow</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/admin-menu.jpg" alt="Menu items"></td>
+    <td><img src="docs/screenshots/admin-reservations.jpg" alt="Reservations"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Menu management</sub></td>
+    <td align="center"><sub>Reservations</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/admin-content.jpg" alt="Website content"></td>
+    <td><img src="docs/screenshots/admin-appearance.jpg" alt="Appearance"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Website content editor</sub></td>
+    <td align="center"><sub>Themes: light, dark and auto</sub></td>
+  </tr>
+</table>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### One backend, two front ends
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+![Admin panel and mobile app](docs/screenshots/ecosystem.jpg)
 
-## Learning Laravel
+## Tech stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Layer | Tools |
+|---|---|
+| Backend | Laravel 13 (PHP 8.3+), Eloquent, form requests, a service layer and role middleware |
+| Frontend | React 18 with Inertia.js 2, Tailwind CSS, Framer Motion, Lenis and React Icons, built with Vite |
+| Database | MySQL (InnoDB) |
+| API and auth | Laravel Sanctum tokens for the app, session auth for the web |
+| Testing | PHPUnit feature tests (57 tests) on an in-memory SQLite database |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project structure
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+app/
+  Http/Controllers/     Web and API v1 controllers
+  Http/Middleware/      Role gate, demo read-only guard, Inertia shared props
+  Http/Requests/        Validation for orders, reservations and contact
+  Models/               MenuItem, Order, Reservation, ContentBlock, ThemeSetting, ...
+  Services/             Business logic (orders, menu, content, theme, business info)
+database/seeders/       Menu, content, gallery, admin and demo data
+resources/js/
+  Pages/                Home, Auth, Orders and Admin/* (Inertia pages)
+  Components/           Website sections and admin UI components
+  config/colors.js      Single source of truth for colours
+routes/web.php          Website and admin routes
+routes/api.php          REST API for the mobile app
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Getting started
 
-## Contributing
+**Requirements:** PHP 8.3+, Composer, Node 20+ and MySQL.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/sytal/sytal-coffee.git
+cd sytal-coffee
 
-## Code of Conduct
+composer install
+npm install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+cp .env.example .env
+php artisan key:generate
+# Set DB_DATABASE, DB_USERNAME, DB_PASSWORD, ADMIN_EMAIL and ADMIN_PASSWORD in .env
 
-## Security Vulnerabilities
+php artisan migrate --seed
+npm run build            # or `npm run dev` while developing
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Admin image uploads go straight to `public/uploads/`, so no `storage:link` is needed. The `php/uploads.ini` file raises PHP's upload limit for local development. Start the server with `PHP_INI_SCAN_DIR=":$PWD/php" php artisan serve` to load it.
 
-## License
+### Demo mode
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+To host a public demo, set this in `.env`:
+
+```env
+DEMO_MODE=true
+```
+
+Then seed the demo accounts and sample data:
+
+```bash
+php artisan db:seed --class=DemoUserSeeder
+php artisan db:seed --class=DemoDataSeeder   # sample orders, bookings and messages around today's date
+```
+
+`DemoDataSeeder` replaces only its own records, so it is safe to run on a daily schedule to keep the demo fresh. With demo mode on, the demo admin can browse everything but any change returns *"Demo account is read-only"*.
+
+## Running tests
+
+```bash
+php artisan test
+```
+
+## Related
+
+- **Mobile app:** [sytal/crunches-cafe-app](https://github.com/sytal/crunches-cafe-app). A Flutter app for Android and the web that uses this API.

@@ -372,6 +372,12 @@ export default function AdminLayout({ title, children }) {
                     )}
                 </AnimatePresence>
 
+                {auth?.is_demo && (
+                    <div className="border-b border-brand-border bg-brand-gold/10 px-6 py-2 text-center text-sm text-brand-gold">
+                        You are viewing the <strong>demo admin</strong> — feel free to look around. Changes are disabled.
+                    </div>
+                )}
+
                 <main className="flex-1 overflow-x-hidden p-6">{children}</main>
             </div>
 

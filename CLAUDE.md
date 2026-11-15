@@ -20,4 +20,5 @@ Laravel 13 + Inertia.js + React restaurant website. Single app, no separate fron
 
 ## Notes
 - Port 8000 is occupied by another local service on this machine; this app runs on 8011.
-- GitHub: https://github.com/sytal/sytal-coffee (private, `main` branch)
+- GitHub: https://github.com/sytal/sytal-coffee (public, `main` branch); app repo: https://github.com/sytal/kavo-app
+- Brand: KAVO — "Coffee Brings Energy". Live: https://kavo.sytal.io, admin: https://kavo-admin.sytal.io (set `ADMIN_URL`)

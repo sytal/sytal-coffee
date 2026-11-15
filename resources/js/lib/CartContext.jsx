@@ -8,8 +8,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
  * they sign in to order). Prices are re-computed server-side on checkout.
  */
 const CartContext = createContext(null);
-const STORAGE_KEY = 'crunches-cart-v1';
-const REOPEN_KEY = 'crunches-cart-reopen';
+const STORAGE_KEY = 'kavo-cart-v1';
+const REOPEN_KEY = 'kavo-cart-reopen';
 
 function loadItems() {
     try {

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { LuLock, LuMail, LuPhone, LuUser } from 'react-icons/lu';
 import FloatingField from '@/Components/FloatingField';
+import BrandLogo from '@/Components/BrandLogo';
 
 /**
  * Combined Login + Register screen. Both routes (`/login`, `/register`)
@@ -83,7 +84,7 @@ export default function AuthScreen({ initialMode }) {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-brand-background px-4 py-10 font-sans text-brand-foreground sm:px-6">
-            <Head title={isLogin ? 'Sign In — Crunches Cafe' : 'Create Account — Crunches Cafe'} />
+            <Head title={isLogin ? 'Sign In — KAVO' : 'Create Account — KAVO'} />
 
             <div className="relative w-full max-w-5xl overflow-hidden rounded-[28px] border border-brand-border bg-brand-surface shadow-2xl shadow-black/40">
                 {/* Mobile: simple stacked layout, no diagonal clip. */}
@@ -103,9 +104,7 @@ export default function AuthScreen({ initialMode }) {
                         </AnimatePresence>
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-background via-brand-background/20 to-transparent" />
                         <div className="absolute bottom-3 left-4">
-                            <p className="font-display text-lg text-brand-foreground">
-                                Crunches <span className="text-brand-gold">Cafe</span>
-                            </p>
+                            <BrandLogo size="sm" />
                         </div>
                     </div>
                     <div className="p-6 sm:p-8">
@@ -168,7 +167,7 @@ export default function AuthScreen({ initialMode }) {
                             <div className="absolute inset-0 bg-gradient-to-t from-brand-background/80 via-brand-background/10 to-brand-background/20" />
                             <div className={`absolute bottom-10 ${imageSide === 'right' ? 'right-12 text-right' : 'left-12 text-left'} max-w-xs`}>
                                 <p className="font-display text-2xl leading-snug text-brand-foreground">{image.caption}</p>
-                                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-brand-gold">Crunches Cafe</p>
+                                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-brand-gold">KAVO · Coffee Brings Energy</p>
                             </div>
                         </motion.div>
                     </AnimatePresence>
@@ -235,8 +234,8 @@ function LoginFormPanel({ form, onSubmit, onSwitch, idPrefix = 'login' }) {
     const { data, setData, processing, errors } = form;
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }}>
-            <Link href="/" className="mb-1 inline-block font-display text-2xl text-brand-foreground">
-                Crunches <span className="text-brand-gold">Cafe</span>
+            <Link href="/" className="mb-3 inline-block" aria-label="KAVO home">
+                <BrandLogo size="lg" />
             </Link>
             <p className="mb-6 text-sm text-brand-foregroundMuted">
                 Sign in to place an order, check your order history, or manage the cafe.
@@ -293,8 +292,8 @@ function RegisterFormPanel({ form, onSubmit, onSwitch, idPrefix = 'register' }) 
     const { data, setData, processing, errors } = form;
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }}>
-            <Link href="/" className="mb-1 inline-block font-display text-2xl text-brand-foreground">
-                Crunches <span className="text-brand-gold">Cafe</span>
+            <Link href="/" className="mb-3 inline-block" aria-label="KAVO home">
+                <BrandLogo size="lg" />
             </Link>
             <p className="mb-6 text-sm text-brand-foregroundMuted">Create an account to place orders and track your order history.</p>
 

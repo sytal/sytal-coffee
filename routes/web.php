@@ -509,8 +509,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin,manager', 'demo.readonly
             'close_time' => ['required', 'date_format:H:i', 'different:open_time'],
             'delivery_fee' => ['required', 'integer', 'min:0', 'max:5000'],
         ], [
-            'instagram.url' => 'Paste the full link, e.g. https://instagram.com/crunchescafe',
-            'facebook.url' => 'Paste the full link, e.g. https://facebook.com/crunchescafe',
+            'instagram.url' => 'Paste the full link, e.g. https://instagram.com/kavo',
+            'facebook.url' => 'Paste the full link, e.g. https://facebook.com/kavo',
             'close_time.different' => 'Closing time must be different from opening time.',
         ]);
         $business->update($data);

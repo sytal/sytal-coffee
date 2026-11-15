@@ -32,7 +32,7 @@ class ThemeService
         return [
             'classic_gold' => [
                 'name' => 'Classic Orange',
-                'description' => 'Amber & gold — the original Crunches look.',
+                'description' => 'Amber & gold — the original KAVO look.',
                 'dark' => [
                     'background' => '#0c0b09',
                     'surface' => '#17140f',

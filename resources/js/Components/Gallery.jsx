@@ -39,7 +39,7 @@ export default function Gallery({ galleryImages = [] }) {
                         A Space to Savor
                     </h2>
                     <p className="mt-4 text-lg text-brand-foregroundMuted">
-                        A glimpse into the Crunches experience — neon lights, loud energy,
+                        A glimpse into the KAVO experience — neon lights, loud energy,
                         and unmistakably ours.
                     </p>
                 </motion.div>

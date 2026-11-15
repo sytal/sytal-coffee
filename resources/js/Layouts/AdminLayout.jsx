@@ -22,6 +22,7 @@ import ToastHost from '@/Components/Admin/ToastHost';
 import ConfirmHost from '@/Components/Admin/ConfirmHost';
 import { LightboxProvider } from '@/Components/Admin/ImageLightbox';
 import { showToast } from '@/lib/toast';
+import BrandLogo from '@/Components/BrandLogo';
 
 const NOTIF_POLL_MS = 10000;
 
@@ -114,7 +115,7 @@ export default function AdminLayout({ title, children }) {
                         router.reload({ preserveScroll: true, preserveState: true });
                     }
                     if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
-                        new Notification('Crunches Admin', { body: fresh[0].title, icon: '/favicon.svg' });
+                        new Notification('KAVO Admin', { body: fresh[0].title, icon: '/favicon.svg' });
                     }
                 }
             } catch {
@@ -181,8 +182,8 @@ export default function AdminLayout({ title, children }) {
                 }`}
             >
                 <div className="flex h-20 items-center justify-between border-b border-brand-border px-6">
-                    <Link href="/" className="font-display text-lg tracking-wide text-brand-foreground">
-                        Crunches <span className="text-brand-gold">Admin</span>
+                    <Link href="/admin" aria-label="KAVO Admin">
+                        <BrandLogo size="sm" suffix="Admin" />
                     </Link>
                     <button
                         type="button"

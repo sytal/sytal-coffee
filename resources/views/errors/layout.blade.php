@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title') · Crunches Cafe</title>
+    <title>@yield('title') · KAVO</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <style>
         :root { --bg: #faf3e6; --surface: #f2e3c6; --fg: #2b2118; --muted: #6b5a48; --accent: #b3541e; }
@@ -28,7 +28,7 @@
 </head>
 <body>
 <main>
-    <a class="brand" href="/">Crunches <span>Cafe</span></a>
+    <a class="brand" href="/">KAVO <span>·</span></a>
     <p class="code">@yield('code')</p>
     <h1>@yield('heading')</h1>
     <p>@yield('message')</p>

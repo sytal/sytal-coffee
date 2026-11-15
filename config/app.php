@@ -55,6 +55,13 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     /*
+     | Optional separate host for the admin panel, e.g. https://kavo-admin.sytal.io.
+     | When set, "/" on that host opens the admin panel and /admin on the public
+     | site redirects there (see App\Http\Middleware\AdminDomain).
+     */
+    'admin_url' => env('ADMIN_URL'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------

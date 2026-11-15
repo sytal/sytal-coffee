@@ -13,11 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         foreach ([
-            'The Crunches Loaded' => '/images/menu/crunches-loaded.jpg',
+            'The KAVO Loaded' => '/images/menu/kavo-loaded.jpg',
             'Peri Peri Fries' => '/images/menu/peri-peri-fries.jpg',
             'Smoky BBQ Fries' => '/images/menu/smoky-bbq-fries.jpg',
             'Classic Salted Fries' => '/images/menu/classic-salted-fries.jpg',
-            'Crunches Signature Stack' => '/images/menu/signature-stack.jpg',
+            'KAVO Signature Stack' => '/images/menu/signature-stack.jpg',
             'Smoky BBQ Burger' => '/images/menu/smoky-bbq-burger.jpg',
             'Zinger Crunch Burger' => '/images/menu/zinger-crunch-burger.jpg',
             'Cheese Melt Burger' => '/images/menu/cheese-melt-burger.jpg',

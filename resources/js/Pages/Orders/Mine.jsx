@@ -23,7 +23,7 @@ export default function Mine({ orders = [] }) {
 
     return (
         <SiteLayout>
-            <Head title="My Orders — Crunches Cafe" />
+            <Head title="My Orders — KAVO" />
             <div className="mx-auto max-w-4xl px-6 py-28 sm:py-36">
                 <p className="mb-2 font-mono text-xs uppercase tracking-[0.3em] text-brand-gold">
                     Order History

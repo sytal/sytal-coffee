@@ -4,10 +4,16 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Crunches Cafe') }}</title>
+        <title inertia>{{ config('app.name', 'KAVO') }}</title>
 
         <!-- Favicon -->
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <meta name="description" content="KAVO — Coffee Brings Energy. Handcrafted coffee, loaded fries, burgers and desserts in Faisalabad. Order online or book a table.">
+        <meta property="og:title" content="KAVO — Coffee Brings Energy">
+        <meta property="og:description" content="Handcrafted coffee, loaded fries, burgers and desserts in Faisalabad. Order online or book a table.">
+        <meta property="og:image" content="{{ url('/images/brand/og-image.jpg') }}">
+        <meta property="og:type" content="website">
         @php($activeTheme = app(\App\Services\ThemeService::class)->active())
         @php($darkColors = $activeTheme['preset']['dark'])
         @php($lightColors = $activeTheme['preset']['light'])

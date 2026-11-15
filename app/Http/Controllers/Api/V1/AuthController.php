@@ -14,7 +14,7 @@ use Illuminate\Validation\ValidationException;
  * Token-based auth for the Flutter app (and any other API client), backed
  * by Sanctum personal access tokens. This mirrors the website's session
  * auth (RegisterController / LoginController) against the same `users`
- * table, so a Crunches Cafe account works on both platforms.
+ * table, so a KAVO account works on both platforms.
  */
 class AuthController extends Controller
 {
@@ -35,7 +35,7 @@ class AuthController extends Controller
             'role' => User::ROLE_CUSTOMER,
         ]);
 
-        $token = $user->createToken('crunches-cafe-app')->plainTextToken;
+        $token = $user->createToken('kavo-app')->plainTextToken;
 
         return response()->json([
             'user' => $user,
@@ -58,7 +58,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $token = $user->createToken('crunches-cafe-app')->plainTextToken;
+        $token = $user->createToken('kavo-app')->plainTextToken;
 
         return response()->json([
             'user' => $user,

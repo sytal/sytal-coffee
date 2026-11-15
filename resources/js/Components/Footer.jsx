@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FiMapPin, FiPhone, FiClock } from 'react-icons/fi';
 import { useBusiness, socialLinks } from '@/lib/business';
 import useSmoothScroll from '@/lib/useSmoothScroll';
+import BrandLogo from '@/Components/BrandLogo';
 
 const QUICK_LINKS = [
     { label: 'Home', href: '#home' },
@@ -72,12 +73,12 @@ export default function Footer() {
                     className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4"
                 >
                     <div className="flex flex-col gap-4 lg:col-span-1">
-                        <Link href="/" className="font-display text-2xl tracking-wide text-brand-foreground">
-                            Crunches <span className="text-brand-gold">Cafe</span>
+                        <Link href="/" aria-label="KAVO home">
+                            <BrandLogo size="lg" tagline />
                         </Link>
                         <p className="text-sm leading-relaxed text-brand-foregroundMuted">
-                            Faisalabad's go-to fast food cafe — loaded fries, stacked burgers, and desserts worth
-                            the drive. Gulberg's favorite hangout spot.
+                            Faisalabad's go-to coffee spot — handcrafted coffee, loaded fries, stacked burgers, and
+                            desserts worth the drive. Gulberg's favorite hangout.
                         </p>
                         <div className="flex items-center gap-4 pt-2">
                             {SOCIALS.map(({ label, href, Icon }) => (
@@ -151,7 +152,7 @@ export default function Footer() {
 
                 <div className="mt-14 flex flex-col items-center gap-2 border-t border-brand-border/60 pt-8 text-center sm:flex-row sm:justify-between sm:text-left">
                     <p className="text-xs text-brand-foregroundMuted">
-                        &copy; {new Date().getFullYear()} Crunches Cafe. All rights reserved.
+                        &copy; {new Date().getFullYear()} KAVO. All rights reserved.
                     </p>
                     <p className="text-xs text-brand-foregroundMuted">Built with care.</p>
                 </div>

@@ -11,9 +11,9 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         User::query()->updateOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@crunchescafe.com')],
+            ['email' => env('ADMIN_EMAIL', 'admin@kavo.sytal.io')],
             [
-                'name' => 'Crunches Admin',
+                'name' => 'KAVO Admin',
                 'password' => Hash::make(env('ADMIN_PASSWORD', 'change-this-password')),
                 'role' => User::ROLE_ADMIN,
                 'email_verified_at' => now(),

@@ -25,8 +25,8 @@ class ContentBlockService
                 'sort_order' => 1,
                 'fields' => [
                     'eyebrow' => '',
-                    'title' => 'Crunches Cafe',
-                    'subtitle' => "Faisalabad\u{2019}s favorite fast food hangout \u{2014} loaded fries, stacked burgers, and desserts built for sharing (or not).",
+                    'title' => 'KAVO',
+                    'subtitle' => "Faisalabad\u{2019}s favorite coffee spot \u{2014} handcrafted coffee, loaded fries, stacked burgers, and desserts built for sharing (or not).",
                     'cta_label' => 'Book a Table',
                     'secondary_label' => 'View the Menu',
                     'images' => [
@@ -46,7 +46,7 @@ class ContentBlockService
                     'heading' => 'Built on Late Nights & Loaded Plates',
                     'quote' => "No fuss, no pretense \u{2014} just a kitchen that doesn\u{2019}t slow down after dark.",
                     'body' => implode("\n\n", [
-                        "Crunches started on Gulberg Thana Road with one idea: Faisalabad deserved a late-night spot that didn't cut corners on flavor. No fuss, no pretense \u{2014} just loaded fries, stacked burgers, and a kitchen that doesn't slow down after dark.",
+                        "KAVO started on Gulberg Thana Road with one idea: Faisalabad deserved a late-night spot that didn't cut corners on flavor. No fuss, no pretense \u{2014} just great coffee, loaded fries, stacked burgers, and a kitchen that doesn't slow down after dark.",
                         "Today it's the spot where the crew lands after a long day \u{2014} neon signage out front, a menu built for sharing (or not), and a kitchen that's always running hot.",
                         "From crispy loaded fries to our signature stacked burgers and that molten chocolate brownie everyone talks about, every item earns its spot on the menu the hard way: by actually being good.",
                         "We're not trying to be fine dining. We're trying to be the place you crave at 11pm \u{2014} and the reviews say we're getting it right.",

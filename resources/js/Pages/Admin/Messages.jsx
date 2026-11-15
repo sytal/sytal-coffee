@@ -16,7 +16,7 @@ export default function Messages({ messages = [] }) {
     // There's no outgoing mail server wired up, so replies open the admin's
     // own email app, pre-addressed to the customer with the typed text.
     function mailtoFor(message, body = '') {
-        const subject = encodeURIComponent('Re: your message to Crunches Cafe');
+        const subject = encodeURIComponent('Re: your message to KAVO');
         return `mailto:${message.email}?subject=${subject}${body ? `&body=${encodeURIComponent(body)}` : ''}`;
     }
 

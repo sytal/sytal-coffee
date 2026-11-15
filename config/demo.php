@@ -11,12 +11,12 @@ return [
     'enabled' => (bool) env('DEMO_MODE', false),
 
     'admin' => [
-        'email' => env('DEMO_ADMIN_EMAIL', 'demo.admin@crunchescafe.com'),
+        'email' => env('DEMO_ADMIN_EMAIL', 'demo.admin@kavo.sytal.io'),
         'password' => env('DEMO_ADMIN_PASSWORD', 'DemoAdmin#2026'),
     ],
 
     'customer' => [
-        'email' => env('DEMO_CUSTOMER_EMAIL', 'demo.customer@crunchescafe.com'),
+        'email' => env('DEMO_CUSTOMER_EMAIL', 'demo.customer@kavo.sytal.io'),
         'password' => env('DEMO_CUSTOMER_PASSWORD', 'DemoCustomer#2026'),
     ],
 ];

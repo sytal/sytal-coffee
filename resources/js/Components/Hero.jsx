@@ -27,8 +27,8 @@ const DEFAULT_IMAGES = [
 
 export default function Hero({
     eyebrow,
-    title = 'Crunches Cafe',
-    subtitle = 'Faisalabad’s favorite fast food hangout — loaded fries, stacked burgers, and desserts built for sharing (or not).',
+    title = 'KAVO',
+    subtitle = 'Faisalabad’s favorite coffee spot — handcrafted coffee, loaded fries, stacked burgers, and desserts built for sharing (or not).',
     ctaLabel = 'Book a Table',
     ctaHref = '#reservations',
     secondaryLabel = 'View the Menu',
@@ -45,7 +45,7 @@ export default function Hero({
 
     const [imageIndex, setImageIndex] = useState(0);
     const [timeOfDay] = useState(() => getTimeOfDay());
-    const displayEyebrow = eyebrow ? eyebrow : `${timeOfDay.label} · Fast Food Cafe, Faisalabad`;
+    const displayEyebrow = eyebrow ? eyebrow : `${timeOfDay.label} · Coffee Brings Energy`;
 
     useEffect(() => {
         if (reduce || images.length <= 1) return;

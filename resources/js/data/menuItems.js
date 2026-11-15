@@ -97,7 +97,7 @@ function buildItems(category, names) {
 }
 
 const LOADED_FRIES_NAMES = [
-    'The Crunches Loaded', 'Peri Peri Fries', 'Smoky BBQ Fries', 'Classic Salted Fries',
+    'The KAVO Loaded', 'Peri Peri Fries', 'Smoky BBQ Fries', 'Classic Salted Fries',
     'Nacho Cheese Fries', 'Garlic Parmesan Fries', 'Spicy Chicken Fries', 'Waffle Bacon Fries',
     'Jalapeño Cheese Fries', 'Masala Fries', 'Mexican Loaded Fries', 'Cheese & Chili Fries',
     'Sour Cream & Onion Fries', 'Pizza Fries', 'Chipotle Mayo Fries', 'Loaded Curly Fries',
@@ -106,7 +106,7 @@ const LOADED_FRIES_NAMES = [
 ];
 
 const BURGERS_NAMES = [
-    'Crunches Signature Stack', 'Smoky BBQ Burger', 'Zinger Crunch Burger', 'Cheese Melt Burger',
+    'KAVO Signature Stack', 'Smoky BBQ Burger', 'Zinger Crunch Burger', 'Cheese Melt Burger',
     'Classic Beef Burger', 'Spicy Zinger Deluxe', 'Smash Burger', 'Jalapeño Chicken Burger',
     'Mushroom Swiss Burger', 'Double Trouble Burger', 'Grilled Chicken Burger', 'Peri Peri Chicken Burger',
     'BBQ Bacon Burger', 'Crispy Fish Burger', 'Chili Cheese Burger', 'Texas BBQ Burger',

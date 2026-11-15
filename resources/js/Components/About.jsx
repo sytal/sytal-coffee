@@ -11,7 +11,7 @@ const buildStats = (menuCount) => [
 ];
 
 const DEFAULT_PARAGRAPHS = [
-    `Crunches started on Gulberg Thana Road with one idea: Faisalabad
+    `KAVO started on Gulberg Thana Road with one idea: Faisalabad
     deserved a late-night spot that didn't cut corners on flavor. No
     fuss, no pretense — just loaded fries, stacked burgers, and a
     kitchen that doesn't slow down after dark.`,
@@ -123,7 +123,7 @@ export default function About({
                 >
                     <img
                         src={image}
-                        alt="Inside Crunches Cafe"
+                        alt="Inside KAVO"
                         loading="lazy"
                         decoding="async"
                         className="absolute inset-0 h-full w-full object-cover"

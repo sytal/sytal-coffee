@@ -62,6 +62,6 @@ class RegisterController extends Controller
         $intended = $request->session()->pull('url.intended');
         $target = $intended && ! str_contains(parse_url($intended, PHP_URL_PATH) ?? '', '/admin') ? $intended : '/';
 
-        return redirect($target)->with('success', 'Welcome to Crunches Cafe!');
+        return redirect($target)->with('success', 'Welcome to KAVO!');
     }
 }

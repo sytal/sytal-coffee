@@ -138,7 +138,7 @@ export default function Home({ menuItems = [], menuCategories = [], galleryImage
 
     return (
         <SiteLayout>
-            <Head title="Crunches Cafe — Fast Food & Hangout Spot in Faisalabad" />
+            <Head title="KAVO — Coffee Brings Energy | Coffee & Food in Faisalabad" />
             {sections.map((section, i) => (
                 <Fragment key={section.key}>
                     {i > 0 && (

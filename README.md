@@ -1,19 +1,24 @@
 <div align="center">
 
-# Crunches Cafe: Website & Admin Panel
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-dark.png">
+  <img src="docs/brand/logo-light.png" alt="KAVO — Coffee Brings Energy" width="460">
+</picture>
 
-A full-stack restaurant platform for a fast-food cafe in Faisalabad. It includes a public website with online ordering and table reservations, an admin panel that controls everything the site shows, and a REST API used by the [Flutter mobile app](https://github.com/sytal/crunches-cafe-app).
+# KAVO: Website & Admin Panel
 
-**Live demo:** _coming soon_ · **Mobile app:** [crunches-cafe-app](https://github.com/sytal/crunches-cafe-app)
+A full-stack platform for **KAVO**, a coffee and food cafe in Faisalabad. It includes a public website with online ordering and table reservations, an admin panel that controls everything the site shows, and a REST API used by the [KAVO mobile app](https://github.com/sytal/kavo-app).
+
+**🌐 Website:** [kavo.sytal.io](https://kavo.sytal.io) · **🛠 Admin:** [kavo-admin.sytal.io](https://kavo-admin.sytal.io) · **📱 App:** [kavo-app](https://github.com/sytal/kavo-app)
 
 ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![Inertia](https://img.shields.io/badge/Inertia.js-2-9553E9)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-57_passing-2EA44F)
+![Tests](https://img.shields.io/badge/tests-60_passing-2EA44F)
 
-![Crunches Cafe website and mobile app](docs/screenshots/banner.jpg)
+![KAVO website and mobile app](docs/screenshots/banner.jpg)
 
 </div>
 
@@ -21,15 +26,15 @@ A full-stack restaurant platform for a fast-food cafe in Faisalabad. It includes
 
 | Role | Email | Password | What you can do |
 |---|---|---|---|
-| **Admin** (read-only) | `demo.admin@crunchescafe.com` | `DemoAdmin#2026` | Open every admin screen. Saving is disabled so the demo stays clean. |
-| **Customer** | `demo.customer@crunchescafe.com` | `DemoCustomer#2026` | Place orders, view order history, book a table. Works on the website and the app. |
+| **Admin** (read-only) | `demo.admin@kavo.sytal.io` | `DemoAdmin#2026` | Open every admin screen. Saving is disabled so the demo stays clean. |
+| **Customer** | `demo.customer@kavo.sytal.io` | `DemoCustomer#2026` | Place orders, view order history, book a table. Works on the website and the app. |
 
-Sign in at `/login`. Admins are sent to `/admin`.
+Customers sign in on [kavo.sytal.io](https://kavo.sytal.io/login). The admin panel lives at [kavo-admin.sytal.io](https://kavo-admin.sytal.io).
 
 ## Features
 
 ### Public website
-- **Hero slider and live status.** An animated hero shows an "Open now / Opens at 1:00 PM" badge calculated from the cafe's business hours.
+- **Hero slider and live status.** An animated hero with the *Coffee Brings Energy* tagline shows an "Open now / Opens at 1:00 PM" badge calculated from the cafe's business hours.
 - **Interactive menu.** Category tabs, live search, dish tags and a full-screen dish view.
 - **Online ordering.** Customers add dishes to a tray, check out with cash on delivery and track orders on the *My Orders* page.
 - **Table reservations.** Bookings use time slots generated from opening hours, with validation for party size and date.
@@ -45,7 +50,7 @@ Sign in at `/login`. Admins are sent to `/admin`.
 - **Reservations and messages.** Confirm or cancel bookings. Read and clear messages.
 - **Website content editor.** Edit headings, text and images of every homepage section, and reorder sections.
 - **Gallery, appearance and business info.** Manage images, the colour theme, phone, address, opening hours, socials and delivery fee. Both the website and the app pick up these changes.
-- **Role-based access.** `admin` and `manager` roles. A read-only demo admin mode for public showcases.
+- **Role-based access.** `admin` and `manager` roles, an optional separate admin subdomain, and a read-only demo admin mode for public showcases.
 
 ### REST API (`/api/v1`)
 Powers the mobile app. Public endpoints cover the menu, categories, gallery, content, theme and business info. Login, register, profile and orders use **Laravel Sanctum** tokens. Write endpoints are throttled.
@@ -117,7 +122,7 @@ Powers the mobile app. Public endpoints cover the menu, categories, gallery, con
 
 ### One backend, two front ends
 
-![Admin panel and mobile app](docs/screenshots/ecosystem.jpg)
+![KAVO admin panel and mobile app](docs/screenshots/ecosystem.jpg)
 
 ## Tech stack
 
@@ -127,14 +132,14 @@ Powers the mobile app. Public endpoints cover the menu, categories, gallery, con
 | Frontend | React 18 with Inertia.js 2, Tailwind CSS, Framer Motion, Lenis and React Icons, built with Vite |
 | Database | MySQL (InnoDB) |
 | API and auth | Laravel Sanctum tokens for the app, session auth for the web |
-| Testing | PHPUnit feature tests (57 tests) on an in-memory SQLite database |
+| Testing | PHPUnit feature tests (60 tests) on an in-memory SQLite database |
 
 ## Project structure
 
 ```
 app/
   Http/Controllers/     Web and API v1 controllers
-  Http/Middleware/      Role gate, demo read-only guard, Inertia shared props
+  Http/Middleware/      Role gate, admin subdomain, demo read-only guard, Inertia shared props
   Http/Requests/        Validation for orders, reservations and contact
   Models/               MenuItem, Order, Reservation, ContentBlock, ThemeSetting, ...
   Services/             Business logic (orders, menu, content, theme, business info)
@@ -169,6 +174,17 @@ php artisan serve
 
 Admin image uploads go straight to `public/uploads/`, so no `storage:link` is needed. The `php/uploads.ini` file raises PHP's upload limit for local development. Start the server with `PHP_INI_SCAN_DIR=":$PWD/php" php artisan serve` to load it.
 
+### Deploying (website + admin subdomain)
+
+Point both domains at the same Laravel `public/` folder and set:
+
+```env
+APP_URL=https://kavo.sytal.io
+ADMIN_URL=https://kavo-admin.sytal.io
+```
+
+With `ADMIN_URL` set, opening the admin host goes straight to the admin sign-in, and any `/admin` link on the public site moves to the admin host. Leave it empty locally and everything runs on one host.
+
 ### Demo mode
 
 To host a public demo, set this in `.env`:
@@ -194,4 +210,4 @@ php artisan test
 
 ## Related
 
-- **Mobile app:** [sytal/crunches-cafe-app](https://github.com/sytal/crunches-cafe-app). A Flutter app for Android and the web that uses this API.
+- **Mobile app:** [sytal/kavo-app](https://github.com/sytal/kavo-app). A Flutter app for Android and the web that uses this API.

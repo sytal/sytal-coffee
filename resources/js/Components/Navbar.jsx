@@ -6,6 +6,7 @@ import useSmoothScroll from '@/lib/useSmoothScroll';
 import { playUiSound } from '@/lib/uiSound';
 import SoundToggle from '@/Components/SoundToggle';
 import LiveStatusBadge from '@/Components/LiveStatusBadge';
+import BrandLogo from '@/Components/BrandLogo';
 
 const NAV_LINKS = [
     { label: 'Home', href: '#home' },
@@ -97,8 +98,8 @@ export default function Navbar() {
             }`}
         >
             <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5 xl:gap-6">
-                <Link href="/" className="font-display text-xl tracking-wide text-brand-foreground">
-                    Crunches <span className="text-brand-gold">Cafe</span>
+                <Link href="/" aria-label="KAVO home">
+                    <BrandLogo />
                 </Link>
 
                 <nav className="hidden items-center gap-5 lg:flex xl:gap-8">

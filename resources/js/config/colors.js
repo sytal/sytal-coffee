@@ -1,5 +1,5 @@
 /**
- * Single source of truth for Crunches Cafe's color palette, at the
+ * Single source of truth for KAVO's color palette, at the
  * Tailwind-config level. The *values* below are the "classic_gold"
  * fallback (used if the DB-driven theme hasn't loaded yet, e.g. during a
  * Tailwind build) — but at runtime every brand.* color resolves through a

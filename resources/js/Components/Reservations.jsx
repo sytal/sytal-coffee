@@ -146,7 +146,7 @@ export default function Reservations({
                         />
                         <img
                             src={image}
-                            alt="A table set for reservations at Crunches Cafe"
+                            alt="A table set for reservations at KAVO"
                             loading="lazy"
                             decoding="async"
                             className="absolute inset-0 h-full w-full object-cover"

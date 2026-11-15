@@ -46,10 +46,10 @@ class AdminAuthTest extends TestCase
 
     public function test_login_rejects_wrong_credentials(): void
     {
-        User::factory()->create(['email' => 'admin@crunchescafe.com']);
+        User::factory()->create(['email' => 'admin@kavo.sytal.io']);
 
         $response = $this->post('/login', [
-            'email' => 'admin@crunchescafe.com',
+            'email' => 'admin@kavo.sytal.io',
             'password' => 'wrong-password',
         ]);
 
@@ -60,13 +60,13 @@ class AdminAuthTest extends TestCase
     public function test_login_succeeds_with_correct_credentials(): void
     {
         $admin = User::factory()->create([
-            'email' => 'admin@crunchescafe.com',
+            'email' => 'admin@kavo.sytal.io',
             'password' => bcrypt('correct-password'),
             'role' => User::ROLE_ADMIN,
         ]);
 
         $response = $this->post('/login', [
-            'email' => 'admin@crunchescafe.com',
+            'email' => 'admin@kavo.sytal.io',
             'password' => 'correct-password',
         ]);
 
